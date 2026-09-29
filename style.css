@@ -1,0 +1,227 @@
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:#2b211f;color:#3d2924}
+button,input{font:inherit}
+button{cursor:pointer}
+
+/* ===== KHUNG GAME: đúng tỉ lệ ảnh nền (941 x 1672) ===== */
+.game{
+  width:min(100%,920px);
+  aspect-ratio:941 / 1672;      /* đổi số này nếu ảnh của bạn có kích thước khác */
+  margin:auto;
+  position:relative;
+  overflow:hidden;
+  container-type:inline-size;   /* để dùng đơn vị cqw */
+  background:#d9a681 url("img/background.png") center / 100% 100% no-repeat;
+}
+.game > *{position:absolute;z-index:1}
+.scene,.counter,.kitchen{inset:0;pointer-events:none}
+.scene > *,.counter > *,.kitchen > *,.kitchen-inner > *{pointer-events:auto}
+/* Cho tất cả phần tử con tự đặt theo tọa độ trên ảnh nền */
+.scene > *,
+.counter > *,
+.kitchen > *,
+.kitchen-inner > *{
+  position:absolute;
+}
+
+/* ===== TOP BAR ===== */
+.top{
+  top:0;left:0;right:0;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1cqw;
+  padding:1.2cqw;
+  background:rgba(78,48,43,.72);
+}
+.stat{
+  min-height:6cqw;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;color:#fff;
+  background:#71483e;
+  border:3px solid #a36f60;
+  border-radius:1.6cqw;
+  box-shadow:inset 0 1px rgba(255,255,255,.15);
+  font-weight:800;
+  font-size:max(11px,2.1cqw);
+}
+
+/* ===== KHÁCH + BUBBLE (trên sàn gỗ, giữa ảnh) ===== */
+.window{display:none}            /* ảnh nền đã có cửa sổ */
+
+.customer{
+  left:34.5%;top:30.6%;
+  width:11cqw;margin:0;
+  text-align:center;
+}
+.head{
+  width:7.8cqw;height:7.8cqw;margin:auto;
+  border:max(2px,.4cqw) solid #56352e;
+  border-radius:50%;
+  background:#f5c6a7;
+  position:relative;
+}
+.head:before,.head:after{
+  content:"";position:absolute;top:3.3cqw;
+  width:.8cqw;height:1cqw;border-radius:50%;background:#392724;
+}
+.head:before{left:2.1cqw}
+.head:after{right:2.1cqw}
+.head span{
+  position:absolute;left:50%;bottom:1.7cqw;
+  width:2cqw;height:.8cqw;transform:translateX(-50%);
+  border-bottom:max(2px,.3cqw) solid #6d3d39;border-radius:50%;
+}
+.body{
+  width:9.2cqw;height:6cqw;margin:-.4cqw auto 0;
+  background:#f0ece4;
+  border:max(2px,.4cqw) solid #56352e;
+  border-radius:5cqw 5cqw 1.5cqw 1.5cqw;
+}
+
+.bubble{
+  left:55%;top:30.2%;
+  width:34%;margin:0;
+  padding:1cqw 1.4cqw;
+  background:#fffaf2;
+  border:3px solid #704538;
+  border-radius:2.2cqw;
+  text-align:center;
+  font-size:max(11px,1.8cqw);
+  line-height:1.35;font-weight:800;
+  box-shadow:0 4px 0 rgba(70,40,30,.15);
+}
+.bubble:after{               /* đuôi bubble chỉ sang trái, về phía khách */
+  content:"";position:absolute;
+  left:-1cqw;top:50%;margin-top:-.9cqw;
+  width:1.8cqw;height:1.8cqw;
+  background:#fffaf2;
+  border-left:3px solid #704538;
+  border-bottom:3px solid #704538;
+  transform:rotate(45deg);
+}
+.order{margin-top:.5cqw;font-size:max(9px,1.4cqw);color:#6d4538}
+
+/* ===== QUẦY NGUYÊN LIỆU ===== */
+.counter{padding:0;background:none;border:0}
+.counter > div[style]{display:none}   /* bỏ div đệm 14px */
+
+/* Tiêu đề: nằm vắt lên mép trên của từng khay */
+.section-title{
+  margin:0;
+  padding:.5cqw 1.2cqw;
+  color:#fff;background:#80513f;
+  border:2px solid #9d6c59;border-radius:1cqw;
+  font-weight:900;letter-spacing:.5px;
+  font-size:max(11px,1.9cqw);
+  z-index:3;
+}
+.section-title:first-child{left:22.5%;top:40.1%}   /* khay trên */
+.section-title:nth-child(4){left:9.8%;top:50.4%}   /* khay dưới */
+
+/* Khay trên: 5 nước lẩu */
+#broths{
+  left:21.8%;top:42%;
+  width:63.8%;height:7.2%;
+}
+/* Khay dưới: 10 nguyên liệu, 2 hàng */
+#ingredients{
+  left:9%;top:53.2%;
+  width:73.3%;height:11.1%;
+  grid-template-rows:repeat(2,1fr);
+}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:0;
+  align-items:center;
+}
+
+.ingredient{
+  height:100%;min-height:0;padding:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:.2cqw;
+  color:#fff3df;
+  background:transparent;border:0;border-radius:1.2cqw;
+  font-weight:800;
+  transition:transform .12s,background .12s,box-shadow .12s;
+}
+.ingredient:hover{transform:translateY(-2px)}
+.ingredient.selected{
+  background:rgba(255,220,150,.25);
+  box-shadow:0 0 0 3px #ffd17d,0 0 14px rgba(255,209,125,.7);
+  transform:translateY(-2px);
+}
+/* selector dài hơn để thắng khối <style> inline trong HTML */
+.cards .food-image{width:6.6cqw;height:6.6cqw;margin:0;object-fit:contain;display:block}
+.cards .food-fallback{width:6.6cqw;height:6.6cqw;line-height:6.6cqw;font-size:4.6cqw;margin:0;text-align:center}
+.name{
+  font-size:max(9px,1.8cqw);
+  color:#fff3df;
+  text-shadow:0 1px 2px rgba(40,20,15,.95);
+}
+
+/* ===== BẾP ===== */
+.kitchen{padding:0;background:none}
+.kitchen-inner{display:contents}
+
+/* Nồi lẩu: tâm trùng với mắt bếp (≈ 50%, 73.6%) */
+.pot{
+  left:50%;top:73.6%;
+  transform:translate(-50%,-50%);
+  width:18.6cqw;height:11cqw;
+  border-radius:50%;
+  border:.85cqw solid #211c1a;
+  background:radial-gradient(circle at 50% 45%,#8b776b,#433934 60%,#262120 61%);
+  box-shadow:0 .8cqw 0 #201918;
+}
+.pot:before{
+  content:"";position:absolute;
+  width:3.8cqw;height:1.9cqw;
+  border:.5cqw solid #211c1a;border-radius:50%;
+  left:-4.6cqw;top:3.6cqw;
+}
+.pot:after{
+  content:"♨";position:absolute;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  color:#fff;font-size:4cqw;opacity:.55;
+}
+
+/* Thanh nhiệt độ: mặt bàn bên trái bếp */
+.heatbox{
+  left:6.5%;top:70.8%;
+  width:24.5cqw;
+  padding:1cqw;
+  color:#4c3029;background:#ead7c3;
+  border-radius:1.3cqw;border:3px solid #70483c;
+}
+.heat-title{font-weight:900;margin-bottom:.4cqw;font-size:max(10px,1.7cqw)}
+input[type=range]{width:100%;margin:0}
+.heat-text{text-align:center;font-size:max(9px,1.5cqw);font-weight:800}
+
+/* Nút phục vụ: mặt bàn bên phải bếp */
+.serve{
+  left:82.7%;top:73.6%;
+  transform:translate(-50%,-50%);
+  width:24cqw;min-height:6.5cqw;
+  padding:1cqw;
+  color:#59352a;background:#ffd17d;
+  border:3px solid #704538;border-radius:1.4cqw;
+  font-size:max(12px,2.2cqw);font-weight:900;
+  box-shadow:0 4px 0 #422c26;
+}
+.serve:active{transform:translate(-50%,calc(-50% + 2px));box-shadow:0 2px 0 #422c26}
+.serve:disabled{opacity:.45;cursor:not-allowed}
+
+/* Thông báo: quầy gỗ dưới cùng */
+.message{
+  left:50%;top:83.1%;
+  transform:translateX(-50%);
+  width:70%;min-height:0;margin:0;
+  padding:.8cqw 1.2cqw;
+  color:#fff;text-align:center;font-weight:800;
+  font-size:max(11px,2cqw);
+  background:rgba(78,48,43,.8);
+  border-radius:1.2cqw;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+}

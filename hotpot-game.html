@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quán Lẩu - Hotpot Game</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+  .food-image {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 4px;
+  }
+  .food-fallback {
+    display: block;
+    font-size: 48px;
+    line-height: 64px;
+    height: 64px;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .kitchen .serve { z-index: 10; pointer-events: auto; }
+
+  /* ===== Thanh kiên nhẫn (xanh -> vàng -> đỏ) ===== */
+  .patience-bar {
+    height: 1.4cqw;
+    min-height: 9px;
+    margin-top: .5cqw;
+    background: rgba(0,0,0,.18);
+    border: 2px solid #704538;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  #patience-fill {
+    height: 100%;
+    width: 100%;
+    border-radius: 99px;
+    background: hsl(120 80% 45%);
+    transition: width .1s linear;
+  }
+
+  /* ===== Nồi trên bếp: hiện hình nước lẩu đang chọn ===== */
+  #pot-img { display: none; width: 100%; height: 100%; object-fit: contain; }
+  .game .pot.has-broth {
+    width: 23cqw;
+    height: 18.4cqw;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    animation: potPop .25s ease-out;
+  }
+  .game .pot.has-broth::before,
+  .game .pot.has-broth::after { display: none; }
+  .game .pot.has-broth #pot-img { display: block; }
+  @keyframes potPop {
+    0%   { transform: translate(-50%, -50%) scale(.85); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+  }
+
+  /* ===== Nút cài đặt trên thanh trên cùng ===== */
+  .top { grid-template-columns: 1fr 1fr 1fr 6.4cqw; }
+  .settings-btn {
+    min-height: 6cqw;
+    padding: 0;
+    font-size: max(16px, 3.2cqw);
+    color: #fff;
+    background: #71483e;
+    border: 3px solid #a36f60;
+    border-radius: 1.6cqw;
+    box-shadow: inset 0 1px rgba(255,255,255,.15);
+  }
+  .settings-btn:active { transform: translateY(2px); }
+
+  /* ===== Cửa sổ cài đặt / đóng cửa ===== */
+  .game .modal {
+    inset: 0;
+    z-index: 20;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(30,18,14,.62);
+  }
+  .game .modal.open { display: flex; }
+  .panel {
+    width: 62%;
+    padding: 3cqw;
+    background: #ead7c3;
+    border: 4px solid #70483c;
+    border-radius: 2.4cqw;
+    box-shadow: 0 1cqw 0 rgba(0,0,0,.3);
+    text-align: center;
+    color: #4c3029;
+  }
+  .panel h2 { margin: 0 0 2cqw; font-size: max(16px, 3cqw); }
+  .row-label { font-weight: 800; font-size: max(11px, 1.9cqw); margin-bottom: .8cqw; }
+  .lang-row { display: flex; gap: 1cqw; justify-content: center; margin-bottom: 2.4cqw; }
+  .panel button {
+    font-weight: 800;
+    font-size: max(12px, 2.2cqw);
+    padding: 1cqw 2cqw;
+    border-radius: 1.4cqw;
+    border: 3px solid #704538;
+    color: #59352a;
+    background: #f5e6d0;
+  }
+  .panel button.active { background: #ffd17d; box-shadow: 0 3px 0 #422c26; }
+  .panel .primary { display: block; width: 100%; margin-top: 1.2cqw; background: #ffd17d; box-shadow: 0 4px 0 #422c26; }
+  .panel .danger { display: block; width: 100%; margin-top: 1.4cqw; color: #fff; background: #a5473d; border-color: #6d2a24; }
+  .closed-text { line-height: 1.6; font-size: max(12px, 2.1cqw); font-weight: 700; margin-bottom: 1.5cqw; }
+</style>
+</head>
+
+<body>
+
+<div class="game">
+
+  <!-- TOP -->
+  <header class="top">
+    <div class="stat" id="day-stat"></div>
+    <div class="stat">
+      🪙 <span id="coins">10.000</span>
+    </div>
+    <div class="stat">
+      ⭐ <span id="stars">0</span>/5
+    </div>
+    <button type="button" class="settings-btn" id="settings-btn" aria-label="Settings">⚙️</button>
+  </header>
+
+  <!-- (nút ngôn ngữ đã chuyển vào cửa sổ cài đặt) -->
+
+  <!-- RESTAURANT -->
+  <section class="scene">
+
+    <div class="window"></div>
+
+    <div class="bubble">
+      <span id="bubble-text"></span>
+      <div class="order">
+        <span id="patience-label"></span>
+        <div class="patience-bar"><div id="patience-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="customer">
+      <div class="head"><span></span></div>
+      <div class="body"></div>
+    </div>
+
+  </section>
+
+  <!-- INGREDIENTS -->
+  <section class="counter">
+
+    <div class="section-title">🍲 <span id="title-broth"></span></div>
+    <div id="broths" class="cards"></div>
+
+    <div style="height:14px"></div>
+
+    <div class="section-title">🥩 <span id="title-ingredient"></span></div>
+    <div id="ingredients" class="cards"></div>
+
+  </section>
+
+  <!-- KITCHEN -->
+  <section class="kitchen">
+
+    <div class="kitchen-inner">
+      <div class="pot" id="pot"><img id="pot-img" alt=""></div>
+
+      <button id="serve" class="serve" disabled></button>
+    </div>
+
+    <div id="message" class="message"></div>
+
+  </section>
+
+  <!-- SETTINGS -->
+  <div class="modal" id="settings-modal">
+    <div class="panel">
+      <h2>⚙️ <span id="settings-title"></span></h2>
+
+      <div class="row-label" id="lang-label"></div>
+      <div class="lang-row">
+        <button type="button" id="lang-ja">🇯🇵 日本語</button>
+        <button type="button" id="lang-vi">🇻🇳 Tiếng Việt</button>
+      </div>
+
+      <button type="button" class="primary" id="resume-btn"></button>
+      <button type="button" class="danger" id="close-btn"></button>
+    </div>
+  </div>
+
+  <!-- CLOSED SHOP -->
+  <div class="modal" id="closed-modal">
+    <div class="panel">
+      <h2>🔒 <span id="closed-title"></span></h2>
+      <div class="closed-text" id="closed-text"></div>
+      <button type="button" class="primary" id="reopen-btn"></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(() => {
+
+  /* =========================
+     NGÔN NGỮ / 言語
+  ========================= */
+
+  const I18N = {
+    vi: {
+      day: "Ngày",
+      patience: "Kiên nhẫn",
+      titleBroth: "NƯỚC LẨU",
+      titleIngredient: "NGUYÊN LIỆU",
+      serve: "🍲 PHỤC VỤ",
+      start: "Chọn nước lẩu và nguyên liệu theo yêu cầu.",
+      timeout: "😤 Khách chờ quá lâu và bỏ đi!",
+      settings: "Cài đặt",
+      language: "Ngôn ngữ",
+      resume: "▶ Chơi tiếp",
+      closeShop: "🔒 Đóng cửa",
+      closedTitle: "Quán đã đóng cửa",
+      closedText: (d, c, s) => `Ngày ${d}<br>🪙 ${c} xu · ⭐ ${s}/5`,
+      reopen: "🔓 Mở cửa lại",
+      perfect: "🎉 Phục vụ hoàn hảo! +1.200 xu",
+      good: "👍 Khách khá hài lòng! +600 xu",
+      bad: "😅 Khách chưa hài lòng. +150 xu",
+      order: (b, i) => `"Cho tôi một nồi ${b.toLowerCase()}, thêm ${i.toLowerCase()} nhé!"`,
+      locale: "vi-VN"
+    },
+    ja: {
+      day: "日目",
+      patience: "忍耐度",
+      titleBroth: "スープ",
+      titleIngredient: "具材",
+      serve: "🍲 提供する",
+      start: "注文どおりにスープと具材を選んでください。",
+      timeout: "😤 待ちくたびれてお客さんが帰ってしまった!",
+      settings: "設定",
+      language: "言語",
+      resume: "▶ 続ける",
+      closeShop: "🔒 閉店する",
+      closedTitle: "閉店しました",
+      closedText: (d, c, s) => `${d}日目<br>🪙 ${c}コイン · ⭐ ${s}/5`,
+      reopen: "🔓 再開する",
+      perfect: "🎉 完璧な提供!+1,200コイン",
+      good: "👍 お客さんはまあ満足!+600コイン",
+      bad: "😅 お客さんは不満そう…+150コイン",
+      order: (b, i) => `「${b}の鍋に、${i}を入れてください!」`,
+      locale: "ja-JP"
+    }
+  };
+
+  /* =========================
+     GAME DATA
+     key, ảnh, emoji dự phòng, tên {vi, ja}
+  ========================= */
+
+  const broths = [
+    { key: "cay",       img: "img/broth_cay.png",       emoji: "🌶️", name: { vi: "Cay",       ja: "辛口" } },
+    { key: "tonkotsu",  img: "img/broth_tonkotsu.png",  emoji: "🍜", name: { vi: "Tonkotsu",  ja: "とんこつ" } },
+    { key: "ca_chua",   img: "img/broth_ca_chua.png",   emoji: "🍅", name: { vi: "Cà chua",   ja: "トマト" } },
+    { key: "thanh_dam", img: "img/broth_thanh_dam.png", emoji: "🥣", name: { vi: "Thanh đạm", ja: "あっさり" } },
+    { key: "sieu_cay",  img: "img/broth_sieu_cay.png",  emoji: "🔥", name: { vi: "Siêu cay",  ja: "激辛" } }
+  ];
+
+  const ingredients = [
+    { key: "bo",      img: "img/bo.png",      emoji: "🥩", name: { vi: "Bò",      ja: "牛肉" } },
+    { key: "heo",     img: "img/heo.png",     emoji: "🥓", name: { vi: "Heo",     ja: "豚肉" } },
+    { key: "tom",     img: "img/tom.png",     emoji: "🦐", name: { vi: "Tôm",     ja: "エビ" } },
+    { key: "nam",     img: "img/nam.png",     emoji: "🍄", name: { vi: "Nấm",     ja: "きのこ" } },
+    { key: "rau",     img: "img/rau.png",     emoji: "🥬", name: { vi: "Rau",     ja: "野菜" } },
+    { key: "dau_phu", img: "img/dau_phu.png", emoji: "🧈", name: { vi: "Đậu phụ", ja: "豆腐" } },
+    { key: "bap",     img: "img/bap.png",     emoji: "🌽", name: { vi: "Bắp",     ja: "とうもろこし" } },
+    { key: "mi",      img: "img/mi.png",      emoji: "🍜", name: { vi: "Mì",      ja: "麺" } },
+    { key: "ca_vien", img: "img/ca_vien.png", emoji: "🍡", name: { vi: "Cá viên", ja: "魚団子" } },
+    { key: "ha_cao",  img: "img/ha_cao.png",  emoji: "🥟", name: { vi: "Há cao",  ja: "エビ餃子" } }
+  ];
+
+  /* =========================
+     GAME STATE
+  ========================= */
+
+  let lang = "vi";
+  try {
+    const saved = localStorage.getItem("hotpot-lang");
+    if (saved === "ja" || saved === "vi") lang = saved;
+  } catch (e) {}
+
+  let selectedBroth = null;       // lưu key
+  let selectedIngredient = null;  // lưu key
+
+  let coins = 10000;
+  let stars = 0;
+  let day = 1;
+  const ORDER_TIME = 30000;   // thời gian kiên nhẫn của mỗi khách (ms) - đổi số này để chơi dễ/khó hơn
+  let timeLeft = ORDER_TIME;
+
+  let order = { broth: "cay", ingredient: "bo" };
+
+  // nội dung thông báo hiện tại: "start" | "perfect" | "good" | "bad"
+  let messageKey = "start";
+
+  /* =========================
+     DOM
+  ========================= */
+
+  const $ = (id) => document.getElementById(id);
+
+  const coinsEl = $("coins");
+  const starsEl = $("stars");
+  const brothsEl = $("broths");
+  const ingredientsEl = $("ingredients");
+  const serveBtn = $("serve");
+  const messageEl = $("message");
+
+  /* =========================
+     HELPERS
+  ========================= */
+
+  const t = () => I18N[lang];
+  const nameOf = (list, key) => list.find(x => x.key === key).name[lang];
+
+  function formatCoins(value) {
+    return value.toLocaleString(t().locale);
+  }
+
+  /* =========================
+     CARD
+  ========================= */
+
+  function createCard(item, isSelected, onClick) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "ingredient" + (isSelected ? " selected" : "");
+
+    const displayName = item.name[lang];
+
+    const img = document.createElement("img");
+    img.className = "food-image";
+    img.src = item.img;
+    img.alt = displayName;
+    img.addEventListener("error", () => {
+      const fallback = document.createElement("span");
+      fallback.className = "food-fallback";
+      fallback.textContent = item.emoji;
+      img.replaceWith(fallback);
+    });
+
+    const label = document.createElement("span");
+    label.className = "name";
+    label.textContent = displayName;
+
+    button.append(img, label);
+    button.addEventListener("click", onClick);
+    return button;
+  }
+
+  function renderPot() {
+    const pot = $("pot");
+    const img = $("pot-img");
+    const item = broths.find(b => b.key === selectedBroth);
+
+    if (!item) {
+      pot.classList.remove("has-broth");
+      img.removeAttribute("src");
+      return;
+    }
+
+    img.onerror = () => pot.classList.remove("has-broth"); // thiếu ảnh -> về nồi vẽ sẵn
+    img.alt = item.name[lang];
+    const potSrc = "img/pot_" + item.key + ".png";   // ảnh nồi riêng cho bếp
+    if (img.getAttribute("src") !== potSrc) {
+      pot.classList.remove("has-broth");
+      void pot.offsetWidth;              // để chạy lại hiệu ứng
+      img.src = potSrc;
+    }
+    pot.classList.add("has-broth");
+  }
+
+  function renderBroths() {
+    brothsEl.innerHTML = "";
+    broths.forEach(item => {
+      brothsEl.appendChild(
+        createCard(item, selectedBroth === item.key, () => {
+          selectedBroth = item.key;
+          updateServeButton();
+          renderBroths();
+          renderPot();
+        })
+      );
+    });
+  }
+
+  function renderIngredients() {
+    ingredientsEl.innerHTML = "";
+    ingredients.forEach(item => {
+      ingredientsEl.appendChild(
+        createCard(item, selectedIngredient === item.key, () => {
+          selectedIngredient = item.key;
+          updateServeButton();
+          renderIngredients();
+        })
+      );
+    });
+  }
+
+  function updateServeButton() {
+    serveBtn.disabled = !(selectedBroth && selectedIngredient);
+  }
+
+  /* =========================
+     TEXT (đổi theo ngôn ngữ)
+  ========================= */
+
+  function renderTexts() {
+    document.documentElement.lang = lang;
+
+    // tiếng Nhật: "1日目", tiếng Việt: "Ngày 1"
+    $("day-stat").innerHTML = lang === "ja"
+      ? `📅 ${day}${t().day}&nbsp; | &nbsp;18:00`
+      : `📅 ${t().day} ${day}&nbsp; | &nbsp;18:00`;
+
+    $("patience-label").textContent = t().patience;
+    $("title-broth").textContent = t().titleBroth;
+    $("title-ingredient").textContent = t().titleIngredient;
+    serveBtn.textContent = t().serve;
+
+    $("bubble-text").textContent = t().order(
+      nameOf(broths, order.broth),
+      nameOf(ingredients, order.ingredient)
+    );
+
+    messageEl.textContent = t()[messageKey];
+
+    $("lang-ja").classList.toggle("active", lang === "ja");
+    $("lang-vi").classList.toggle("active", lang === "vi");
+
+    $("settings-title").textContent = t().settings;
+    $("lang-label").textContent = "🌐 " + t().language;
+    $("resume-btn").textContent = t().resume;
+    $("close-btn").textContent = t().closeShop;
+    $("closed-title").textContent = t().closedTitle;
+    $("closed-text").innerHTML = t().closedText(day, formatCoins(coins), stars);
+    $("reopen-btn").textContent = t().reopen;
+  }
+
+  function setLang(next) {
+    lang = next;
+    try { localStorage.setItem("hotpot-lang", lang); } catch (e) {}
+    updateUI();
+  }
+
+  $("lang-ja").addEventListener("click", () => setLang("ja"));
+  $("lang-vi").addEventListener("click", () => setLang("vi"));
+
+  /* =========================
+     SETTINGS / ĐÓNG CỬA
+  ========================= */
+
+  const settingsModal = $("settings-modal");
+  const closedModal = $("closed-modal");
+
+  $("settings-btn").addEventListener("click", () => {
+    settingsModal.classList.add("open");
+  });
+
+  $("resume-btn").addEventListener("click", () => {
+    settingsModal.classList.remove("open");
+  });
+
+  // bấm ra ngoài bảng cũng là chơi tiếp
+  settingsModal.addEventListener("click", (e) => {
+    if (e.target === settingsModal) settingsModal.classList.remove("open");
+  });
+
+  $("close-btn").addEventListener("click", () => {
+    settingsModal.classList.remove("open");
+    renderTexts();               // cập nhật số liệu trên màn hình đóng cửa
+    closedModal.classList.add("open");
+  });
+
+  $("reopen-btn").addEventListener("click", () => {
+    coins = 10000;
+    stars = 0;
+    day = 1;
+    timeLeft = ORDER_TIME;
+    selectedBroth = null;
+    selectedIngredient = null;
+    messageKey = "start";
+    createNextOrder();
+    closedModal.classList.remove("open");
+    updateUI();
+  });
+
+  /* =========================
+     NEXT ORDER
+  ========================= */
+
+  function createNextOrder() {
+    order = {
+      broth: broths[Math.floor(Math.random() * broths.length)].key,
+      ingredient: ingredients[Math.floor(Math.random() * ingredients.length)].key
+    };
+  }
+
+  /* =========================
+     SERVE
+  ========================= */
+
+  serveBtn.addEventListener("click", () => {
+
+    let score = 0;
+    if (selectedBroth === order.broth) score += 50;
+    if (selectedIngredient === order.ingredient) score += 50;
+
+    if (score >= 100) {
+      coins += 1200;
+      stars = Math.min(5, stars + 1);
+      messageKey = "perfect";
+    } else if (score >= 50) {
+      coins += 600;
+      messageKey = "good";
+    } else {
+      coins += 150;
+      messageKey = "bad";
+    }
+
+    day++;
+    selectedBroth = null;
+    selectedIngredient = null;
+    createNextOrder();
+    timeLeft = ORDER_TIME;
+
+    updateUI();
+  });
+
+  /* =========================
+     UPDATE UI
+  ========================= */
+
+  function updateUI() {
+    renderTexts();
+
+    coinsEl.textContent = formatCoins(coins);
+    starsEl.textContent = stars;
+    renderPatience();
+
+    renderBroths();
+    renderIngredients();
+    renderPot();
+    updateServeButton();
+  }
+
+  /* =========================
+     KIÊN NHẪN: thanh đếm ngược xanh -> vàng -> đỏ
+  ========================= */
+
+  function renderPatience() {
+    const ratio = Math.max(0, Math.min(1, timeLeft / ORDER_TIME));
+    const fill = $("patience-fill");
+    fill.style.width = (ratio * 100) + "%";
+    // hue 120 = xanh lá, 60 = vàng, 0 = đỏ
+    fill.style.background = `hsl(${Math.round(ratio * 120)} 80% 45%)`;
+  }
+
+  function onTimeout() {
+    day++;
+    selectedBroth = null;
+    selectedIngredient = null;
+    messageKey = "timeout";
+    createNextOrder();
+    timeLeft = ORDER_TIME;
+    updateUI();
+  }
+
+  let lastTick = performance.now();
+  setInterval(() => {
+    const now = performance.now();
+    const dt = Math.min(now - lastTick, 250);   // tránh nhảy vọt khi quay lại từ tab khác
+    lastTick = now;
+
+    // tạm dừng khi đang mở Cài đặt hoặc quán đã đóng cửa
+    if (settingsModal.classList.contains("open") ||
+        closedModal.classList.contains("open")) return;
+
+    timeLeft -= dt;
+    if (timeLeft <= 0) {
+      onTimeout();
+    } else {
+      renderPatience();
+    }
+  }, 100);
+
+  updateUI();
+
+})();
+</script>
+
+</body>
+</html>
