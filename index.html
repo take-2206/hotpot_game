@@ -2,607 +2,697 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quán Lẩu - Hotpot Game</title>
-<link rel="stylesheet" href="style.css">
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>火鍋の店</title>
 <style>
-  .food-image {
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
-    display: block;
-    margin: 0 auto 4px;
-  }
-  .food-fallback {
-    display: block;
-    font-size: 48px;
-    line-height: 64px;
-    height: 64px;
-    text-align: center;
-    margin-bottom: 4px;
-  }
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif;background:#2b211f;color:#3d2924}
+button,input{font:inherit}
+button{cursor:pointer}
 
-  .kitchen .serve { z-index: 10; pointer-events: auto; }
+/* ===== KHUNG GAME: đúng tỉ lệ ảnh nền (941 x 1672) ===== */
+.game{
+  width:min(100%,920px);
+  aspect-ratio:941 / 1672;      /* đổi số này nếu ảnh của bạn có kích thước khác */
+  margin:auto;
+  position:relative;
+  overflow:hidden;
+  container-type:inline-size;   /* để dùng đơn vị cqw */
+  background:#d9a681 url("img/background.png") center / 100% 100% no-repeat;
+}
+.game > *{position:absolute;z-index:1}
+.scene,.counter,.kitchen{inset:0;pointer-events:none}
+.scene > *,.counter > *,.kitchen > *,.kitchen-inner > *{pointer-events:auto}
+.scene > *,
+.counter > *,
+.kitchen > *,
+.kitchen-inner > *{
+  position:absolute;
+}
 
-  /* ===== Thanh kiên nhẫn (xanh -> vàng -> đỏ) ===== */
-  .patience-bar {
-    height: 1.4cqw;
-    min-height: 9px;
-    margin-top: .5cqw;
-    background: rgba(0,0,0,.18);
-    border: 2px solid #704538;
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  #patience-fill {
-    height: 100%;
-    width: 100%;
-    border-radius: 99px;
-    background: hsl(120 80% 45%);
-    transition: width .1s linear;
-  }
+/* ===== TOP BAR ===== */
+.top{
+  top:0;left:0;right:0;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr auto;
+  gap:1cqw;
+  padding:1.2cqw;
+  background:rgba(78,48,43,.72);
+}
+.stat{
+  min-height:6cqw;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;color:#fff;
+  background:#71483e;
+  border:3px solid #a36f60;
+  border-radius:1.6cqw;
+  box-shadow:inset 0 1px rgba(255,255,255,.15);
+  font-weight:800;
+  font-size:max(11px,2.1cqw);
+}
 
-  /* ===== Nồi trên bếp: hiện hình nước lẩu đang chọn ===== */
-  #pot-img { display: none; width: 100%; height: 100%; object-fit: contain; }
-  .game .pot.has-broth {
-    width: 23cqw;
-    height: 18.4cqw;
-    border: 0;
-    background: none;
-    box-shadow: none;
-    border-radius: 0;
-    animation: potPop .25s ease-out;
-  }
-  .game .pot.has-broth::before,
-  .game .pot.has-broth::after { display: none; }
-  .game .pot.has-broth #pot-img { display: block; }
-  @keyframes potPop {
-    0%   { transform: translate(-50%, -50%) scale(.85); }
-    100% { transform: translate(-50%, -50%) scale(1); }
-  }
+/* ===== KHÁCH + BUBBLE ===== */
+.window{display:none}
 
-  /* ===== Nút cài đặt trên thanh trên cùng ===== */
-  .top { grid-template-columns: 1fr 1fr 1fr 6.4cqw; }
-  .settings-btn {
-    min-height: 6cqw;
-    padding: 0;
-    font-size: max(16px, 3.2cqw);
-    color: #fff;
-    background: #71483e;
-    border: 3px solid #a36f60;
-    border-radius: 1.6cqw;
-    box-shadow: inset 0 1px rgba(255,255,255,.15);
-  }
-  .settings-btn:active { transform: translateY(2px); }
+.customer{
+  left:34.5%;top:30.6%;
+  width:11cqw;margin:0;
+  text-align:center;
+}
+.head{
+  width:7.8cqw;height:7.8cqw;margin:auto;
+  border:max(2px,.4cqw) solid #56352e;
+  border-radius:50%;
+  background:#f5c6a7;
+  position:relative;
+}
+.head:before,.head:after{
+  content:"";position:absolute;top:3.3cqw;
+  width:.8cqw;height:1cqw;border-radius:50%;background:#392724;
+}
+.head:before{left:2.1cqw}
+.head:after{right:2.1cqw}
+.head span{
+  position:absolute;left:50%;bottom:1.7cqw;
+  width:2cqw;height:.8cqw;transform:translateX(-50%);
+  border-bottom:max(2px,.3cqw) solid #6d3d39;border-radius:50%;
+}
+.body{
+  width:9.2cqw;height:6cqw;margin:-.4cqw auto 0;
+  background:#f0ece4;
+  border:max(2px,.4cqw) solid #56352e;
+  border-radius:5cqw 5cqw 1.5cqw 1.5cqw;
+}
 
-  /* ===== Cửa sổ cài đặt / đóng cửa ===== */
-  .game .modal {
-    inset: 0;
-    z-index: 20;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: rgba(30,18,14,.62);
-  }
-  .game .modal.open { display: flex; }
-  .panel {
-    width: 62%;
-    padding: 3cqw;
-    background: #ead7c3;
-    border: 4px solid #70483c;
-    border-radius: 2.4cqw;
-    box-shadow: 0 1cqw 0 rgba(0,0,0,.3);
-    text-align: center;
-    color: #4c3029;
-  }
-  .panel h2 { margin: 0 0 2cqw; font-size: max(16px, 3cqw); }
-  .row-label { font-weight: 800; font-size: max(11px, 1.9cqw); margin-bottom: .8cqw; }
-  .lang-row { display: flex; gap: 1cqw; justify-content: center; margin-bottom: 2.4cqw; }
-  .panel button {
-    font-weight: 800;
-    font-size: max(12px, 2.2cqw);
-    padding: 1cqw 2cqw;
-    border-radius: 1.4cqw;
-    border: 3px solid #704538;
-    color: #59352a;
-    background: #f5e6d0;
-  }
-  .panel button.active { background: #ffd17d; box-shadow: 0 3px 0 #422c26; }
-  .panel .primary { display: block; width: 100%; margin-top: 1.2cqw; background: #ffd17d; box-shadow: 0 4px 0 #422c26; }
-  .panel .danger { display: block; width: 100%; margin-top: 1.4cqw; color: #fff; background: #a5473d; border-color: #6d2a24; }
-  .closed-text { line-height: 1.6; font-size: max(12px, 2.1cqw); font-weight: 700; margin-bottom: 1.5cqw; }
+.bubble{
+  left:55%;top:30.2%;
+  width:34%;margin:0;
+  padding:1cqw 1.4cqw;
+  background:#fffaf2;
+  border:3px solid #704538;
+  border-radius:2.2cqw;
+  text-align:center;
+  font-size:max(11px,1.8cqw);
+  line-height:1.35;font-weight:800;
+  box-shadow:0 4px 0 rgba(70,40,30,.15);
+}
+.bubble:after{
+  content:"";position:absolute;
+  left:-1cqw;top:50%;margin-top:-.9cqw;
+  width:1.8cqw;height:1.8cqw;
+  background:#fffaf2;
+  border-left:3px solid #704538;
+  border-bottom:3px solid #704538;
+  transform:rotate(45deg);
+}
+.order{margin-top:.5cqw;font-size:max(9px,1.4cqw);color:#6d4538}
+
+/* ===== QUẦY NGUYÊN LIỆU ===== */
+.counter{padding:0;background:none;border:0}
+.counter > div[style]{display:none}
+
+.section-title{
+  margin:0;
+  padding:.5cqw 1.2cqw;
+  color:#fff;background:#80513f;
+  border:2px solid #9d6c59;border-radius:1cqw;
+  font-weight:900;letter-spacing:.5px;
+  font-size:max(11px,1.9cqw);
+  z-index:3;
+}
+.section-title:first-child{left:22.5%;top:40.1%}   /* khay trên */
+.section-title:nth-child(4){left:9.8%;top:50.4%}   /* khay dưới */
+
+#broths{
+  left:21.8%;top:42%;
+  width:63.8%;height:7.2%;
+}
+#ingredients{
+  left:9%;top:53.2%;
+  width:73.3%;height:11.1%;
+  grid-template-rows:repeat(2,1fr);
+}
+.cards{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:0;
+  align-items:center;
+}
+
+.ingredient{
+  height:100%;min-height:0;padding:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:.2cqw;
+  color:#fff3df;
+  background:transparent;border:0;border-radius:1.2cqw;
+  font-weight:800;
+  transition:transform .12s,background .12s,box-shadow .12s;
+}
+.ingredient:hover{transform:translateY(-2px)}
+.ingredient.selected{
+  background:rgba(255,220,150,.25);
+  box-shadow:0 0 0 3px #ffd17d,0 0 14px rgba(255,209,125,.7);
+  transform:translateY(-2px);
+}
+.cards .food-image{width:6.6cqw;height:6.6cqw;margin:0;object-fit:contain;display:block}
+.cards .food-fallback{width:6.6cqw;height:6.6cqw;line-height:6.6cqw;font-size:4.6cqw;margin:0;text-align:center}
+.name{
+  font-size:max(9px,1.8cqw);
+  color:#fff3df;
+  text-shadow:0 1px 2px rgba(40,20,15,.95);
+}
+
+/* ===== BẾP ===== */
+.kitchen{padding:0;background:none}
+.kitchen-inner{display:contents}
+
+.pot{
+  left:50%;top:73.6%;
+  transform:translate(-50%,-50%);
+  width:18.6cqw;height:11cqw;
+  border-radius:50%;
+  border:.85cqw solid #211c1a;
+  background:radial-gradient(circle at 50% 45%,#8b776b,#433934 60%,#262120 61%);
+  box-shadow:0 .8cqw 0 #201918;
+}
+.pot:before{
+  content:"";position:absolute;
+  width:3.8cqw;height:1.9cqw;
+  border:.5cqw solid #211c1a;border-radius:50%;
+  left:-4.6cqw;top:3.6cqw;
+}
+.pot:after{
+  content:"♨";position:absolute;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  color:#fff;font-size:4cqw;opacity:.55;
+}
+
+.heatbox{
+  left:6.5%;top:70.8%;
+  width:24.5cqw;
+  padding:1cqw;
+  color:#4c3029;background:#ead7c3;
+  border-radius:1.3cqw;border:3px solid #70483c;
+}
+.heat-title{font-weight:900;margin-bottom:.4cqw;font-size:max(10px,1.7cqw)}
+input[type=range]{width:100%;margin:0}
+.heat-text{text-align:center;font-size:max(9px,1.5cqw);font-weight:800}
+
+.serve{
+  left:82.7%;top:73.6%;
+  transform:translate(-50%,-50%);
+  width:24cqw;min-height:6.5cqw;
+  padding:1cqw;
+  color:#59352a;background:#ffd17d;
+  border:3px solid #704538;border-radius:1.4cqw;
+  font-size:max(12px,2.2cqw);font-weight:900;
+  box-shadow:0 4px 0 #422c26;
+}
+.serve:active{transform:translate(-50%,calc(-50% + 2px));box-shadow:0 2px 0 #422c26}
+.serve:disabled{opacity:.45;cursor:not-allowed}
+
+.message{
+  left:50%;top:83.1%;
+  transform:translateX(-50%);
+  width:70%;min-height:0;margin:0;
+  padding:.8cqw 1.2cqw;
+  color:#fff;text-align:center;font-weight:800;
+  font-size:max(11px,2cqw);
+  background:rgba(78,48,43,.8);
+  border-radius:1.2cqw;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+}
+
+/* ===== NÚT DỪNG ===== */
+.game.paused *{animation-play-state:paused!important}
+#pauseModal .btn-play{width:100%}
+
+/* ===== LÀM ĐẸP NÚT TRONG GAME ===== */
+/* Nút dừng: tròn, cùng phong cách nút kem của menu */
+.pause-btn{
+  width:6cqw;height:6cqw;min-height:0;padding:0;
+  align-self:center;
+  color:transparent;
+  background:
+    linear-gradient(#5a3a2e,#5a3a2e) 36% 50% / 11% 40% no-repeat,
+    linear-gradient(#5a3a2e,#5a3a2e) 64% 50% / 11% 40% no-repeat,
+    linear-gradient(#fbeed6,#efd7b0);
+  border:3px solid #b98a62;border-radius:50%;
+  box-shadow:0 .5cqw 0 #a07650;
+  transition:transform .12s,filter .12s;
+}
+.pause-btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.pause-btn:active{transform:translateY(.3cqw);box-shadow:0 .15cqw 0 #a07650}
+
+/* Tên món: có nền mờ để dễ đọc trên mọi ảnh nền */
+.name{
+  padding:.15cqw 1cqw;
+  background:rgba(60,32,24,.6);
+  border-radius:1cqw;
+  line-height:1.25;
+  white-space:nowrap;
+}
+.ingredient{outline:none}
+.ingredient:active{transform:translateY(.3cqw) scale(.97)}
+.ingredient .food-image,.ingredient .food-fallback{filter:drop-shadow(0 .3cqw .3cqw rgba(40,20,15,.45));transition:transform .15s}
+.ingredient:hover .food-image,.ingredient:hover .food-fallback{transform:scale(1.08)}
+.ingredient.selected{
+  background:rgba(255,209,125,.3);
+  box-shadow:0 0 0 .35cqw #ffd17d,0 0 2.2cqw rgba(255,209,125,.85);
+  animation:pop .25s;
+}
+.ingredient.selected .name{background:#ffd17d;color:#59352a;text-shadow:none}
+.ingredient.selected:after{
+  content:"✓";position:absolute;top:-.6cqw;right:.2cqw;
+  width:2.6cqw;height:2.6cqw;line-height:2.4cqw;text-align:center;
+  font-size:1.8cqw;font-weight:900;color:#59352a;
+  background:#ffd17d;border:2px solid #704538;border-radius:50%;
+}
+.ingredient{position:relative}
+@keyframes pop{0%{transform:scale(.92)}60%{transform:scale(1.06)}100%{transform:translateY(-2px)}}
+
+/* Nút phục vụ: đỏ nổi bật như nút Play */
+.serve{
+  display:flex;align-items:center;justify-content:center;gap:.6cqw;
+  color:#fff;
+  background:linear-gradient(#ee5560,#cf2f3c);
+  border:3px solid #fff3e6;outline:3px solid #a9242f;
+  border-radius:999px;
+  box-shadow:0 .8cqw 0 #8c1d27;
+  text-shadow:0 2px 0 rgba(120,20,30,.6);
+  letter-spacing:.5px;
+  transition:filter .12s,box-shadow .12s;
+}
+.serve:before{content:"🍲";font-size:1.15em}
+.serve:hover:not(:disabled){filter:brightness(1.07)}
+.serve:active:not(:disabled){transform:translate(-50%,calc(-50% + .5cqw));box-shadow:0 .2cqw 0 #8c1d27}
+.serve:disabled{opacity:.5;filter:grayscale(.5);cursor:not-allowed}
+
+/* Thông báo: gọn, tự ẩn khi trống */
+.message{width:auto;min-width:30%;max-width:84%;border-radius:999px;padding:.8cqw 2.4cqw;box-shadow:0 .3cqw 0 rgba(30,15,10,.35)}
+.message:empty{display:none}
+
+/* ===== THANH KIÊN NHẪN CỦA KHÁCH ===== */
+.timebar{height:2.6cqw;background:#c9b49c;border:2px solid #70483c;border-radius:1.3cqw;overflow:hidden}
+.timefill{height:100%;width:100%;background:hsl(120 80% 45%)}
+.customer .timebar{position:absolute;left:0;right:0;top:-3cqw;height:1.9cqw;border-radius:1cqw;box-shadow:0 2px 0 rgba(40,20,15,.35)}
+.customer{transition:transform .8s ease-out,opacity .8s}
+.customer.walking .head,.customer.walking .body{animation:bob .3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-.9cqw)}}
+.bubble{opacity:0;transform:scale(.5);transform-origin:left center;transition:opacity .3s,transform .3s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.bubble.show{opacity:1;transform:scale(1)}
+.customer.angry{animation:shake .15s 4}
+.customer.angry .head{background:#f08a7a}
+.customer.angry .head span{border-bottom:0;border-top:max(2px,.3cqw) solid #6d3d39;bottom:1.2cqw}
+.customer.leaving{transform:translateX(-35cqw);opacity:0;transition:transform .7s ease-in,opacity .7s}   /* đổi dấu - thành + nếu muốn khách đi sang phải */
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-.8cqw)}75%{transform:translateX(.8cqw)}}
+
+/* ===== MÀN HÌNH BẮT ĐẦU ===== */
+.start-screen{position:fixed;inset:0;z-index:1000;background:#2b211f url("img/title-bg.png") center / cover no-repeat;transition:opacity .4s}
+.start-screen.hide{opacity:0;pointer-events:none}
+.menu{position:absolute;left:7%;top:5%;width:min(36vw,520px);display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vh,18px)}
+.logo{width:100%;text-align:center;margin-bottom:clamp(6px,2vh,24px)}
+.logo-main{font-size:clamp(44px,8vw,120px);font-weight:900;line-height:1.05;color:#fff6e8;-webkit-text-stroke:clamp(3px,.5vw,8px) #9b1f2a;paint-order:stroke fill;text-shadow:0 .5vw 0 #7a1620,0 1vw 1.2vw rgba(60,10,10,.45)}
+.logo-sub{display:inline-block;margin-top:1vh;padding:1vh 2vw;font-size:clamp(11px,1.5vw,22px);font-weight:800;line-height:1.4;color:#5a3a2e;background:#f3e0bf;border:3px solid #b98a62;border-radius:12px;box-shadow:0 4px 0 rgba(90,50,30,.35)}
+.logo-sub span{color:#d9363e}
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:.6em;font-weight:900;border-radius:999px;transition:transform .12s,filter .12s}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.btn:active{transform:translateY(3px)}
+.btn-play{padding:clamp(12px,2.4vh,26px) 1em;font-size:clamp(20px,2.6vw,40px);color:#fff;background:linear-gradient(#ee5560,#cf2f3c);border:4px solid #fff3e6;outline:4px solid #a9242f;box-shadow:0 .7vh 0 #8c1d27;text-shadow:0 2px 0 rgba(120,20,30,.6)}
+.tri{width:0;height:0;border-left:.9em solid #fff;border-top:.55em solid transparent;border-bottom:.55em solid transparent}
+.btn-sub{width:84%;padding:clamp(9px,1.8vh,20px) 1em;font-size:clamp(16px,1.9vw,30px);color:#5a3a2e;background:linear-gradient(#fbeed6,#efd7b0);border:3px solid #fff6e6;outline:3px solid #b98a62;box-shadow:0 .5vh 0 #a07650}
+.top-icons{position:absolute;top:2vh;right:2vw;display:flex;gap:1vw}
+.icon-btn{width:clamp(38px,4.6vw,64px);height:clamp(38px,4.6vw,64px);font-size:clamp(18px,2.2vw,30px);color:#5a3a2e;background:#f6e3c3;border:3px solid #b98a62;border-radius:50%;box-shadow:0 3px 0 #a07650}
+@media (max-aspect-ratio:1/1){
+  .menu{left:50%;top:auto;bottom:6%;transform:translateX(-50%);width:min(82vw,460px)}
+  .logo-main{font-size:clamp(48px,17vw,110px)}
+  .logo-sub{font-size:clamp(12px,3.4vw,20px);padding:1vh 5vw}
+  .btn-play{font-size:clamp(22px,6vw,38px)}
+  .btn-sub{font-size:clamp(16px,4.4vw,28px)}
+  .icon-btn{width:44px;height:44px;font-size:20px}
+}
+
+/* ===== BẢNG CÀI ĐẶT ===== */
+.modal{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;background:rgba(30,18,14,.6);transition:opacity .25s}
+.modal.hide{opacity:0;pointer-events:none}
+.panel{width:min(88vw,460px);max-height:88vh;overflow:auto;padding:clamp(16px,3vh,30px);display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.6vh,14px);background:#f6e3c3;border:4px solid #b98a62;border-radius:24px;box-shadow:0 8px 0 #a07650,0 0 0 5px #fff6e6 inset;color:#5a3a2e}
+.panel h2{margin:0;font-size:clamp(22px,3vw,34px);color:#9b1f2a}
+.langs{display:flex;gap:8px;width:100%}
+.lang-btn{flex:1;padding:10px 4px;font-weight:800;color:#5a3a2e;background:#fbeed6;border:3px solid #b98a62;border-radius:14px}
+.lang-btn.active{background:#ee5560;color:#fff;border-color:#a9242f}
+.panel .btn-sub{width:100%}
+.btn-danger{color:#9b1f2a}
+.btn-close{padding:10px 2em;font-size:clamp(15px,1.6vw,22px);color:#fff;background:#a07650;border:0;border-radius:999px;width:auto}
+.rules-text{width:100%;font-size:clamp(14px,1.5vw,18px);line-height:1.6;text-align:left}
+.rules-text ol{margin:0;padding-left:1.3em}
+.two-btns{display:flex;gap:10px;width:100%}
+.two-btns .btn{flex:1;width:auto}
+.two-btns .btn-play{font-size:clamp(16px,2vw,24px);padding:12px .5em}
+
+/* ===== KHOẢNG CÁCH GIỮA CÁC NÚT (viền ngoài không dính nhau) ===== */
+.menu{gap:clamp(14px,2.4vh,26px)}
+.panel{gap:clamp(14px,2.2vh,20px)}
+
+/* ===== NÚT TRONG BẢNG: nhỏ gọn, không xuống dòng ===== */
+.panel{width:min(86vw,400px)}
+.panel .btn{width:100%;white-space:nowrap}
+.panel .btn-play{font-size:clamp(16px,1.6vw,22px);padding:clamp(10px,1.5vh,15px) 1em;border-width:3px;outline-width:3px;box-shadow:0 5px 0 #8c1d27}
+.panel .btn-sub{font-size:clamp(14px,1.4vw,19px);padding:clamp(9px,1.3vh,13px) 1em}
+.panel .btn-close{width:auto}
+.panel .two-btns .btn{width:auto}
+#dayTxt{text-align:center}
 </style>
 </head>
-
 <body>
 
-<div class="game">
+<div class="game" id="gameRoot">
+  <div class="top">
+    <div class="stat" id="sDay"></div>
+    <div class="stat" id="sMoney"></div>
+    <div class="stat" id="sCust"></div>
+    <button class="stat pause-btn" id="pauseBtn" aria-label="Pause"></button>
+  </div>
 
-  <!-- TOP -->
-  <header class="top">
-    <div class="stat" id="day-stat"></div>
-    <div class="stat">
-      🪙 <span id="coins">10.000</span>
-    </div>
-    <div class="stat">
-      ⭐ <span id="stars">0</span>/5
-    </div>
-    <button type="button" class="settings-btn" id="settings-btn" aria-label="Settings">⚙️</button>
-  </header>
-
-  <!-- (nút ngôn ngữ đã chuyển vào cửa sổ cài đặt) -->
-
-  <!-- RESTAURANT -->
-  <section class="scene">
-
+  <div class="scene">
     <div class="window"></div>
+    <div class="customer"><div class="timebar"><div class="timefill" id="timeFill"></div></div><div class="head"><span></span></div><div class="body"></div></div>
+    <div class="bubble"><span data-i="want"></span><div class="order" id="orderTxt"></div></div>
+  </div>
 
-    <div class="bubble">
-      <span id="bubble-text"></span>
-      <div class="order">
-        <span id="patience-label"></span>
-        <div class="patience-bar"><div id="patience-fill"></div></div>
-      </div>
-    </div>
-
-    <div class="customer">
-      <div class="head"><span></span></div>
-      <div class="body"></div>
-    </div>
-
-  </section>
-
-  <!-- INGREDIENTS -->
-  <section class="counter">
-
-    <div class="section-title">🍲 <span id="title-broth"></span></div>
-    <div id="broths" class="cards"></div>
-
+  <div class="counter">
+    <h3 class="section-title" data-i="broth"></h3>
+    <div class="cards" id="broths"></div>
     <div style="height:14px"></div>
-
-    <div class="section-title">🥩 <span id="title-ingredient"></span></div>
-    <div id="ingredients" class="cards"></div>
-
-  </section>
-
-  <!-- KITCHEN -->
-  <section class="kitchen">
-
-    <div class="kitchen-inner">
-      <div class="pot" id="pot"><img id="pot-img" alt=""></div>
-
-      <button id="serve" class="serve" disabled></button>
-    </div>
-
-    <div id="message" class="message"></div>
-
-  </section>
-
-  <!-- SETTINGS -->
-  <div class="modal" id="settings-modal">
-    <div class="panel">
-      <h2>⚙️ <span id="settings-title"></span></h2>
-
-      <div class="row-label" id="lang-label"></div>
-      <div class="lang-row">
-        <button type="button" id="lang-ja">🇯🇵 日本語</button>
-        <button type="button" id="lang-vi">🇻🇳 Tiếng Việt</button>
-      </div>
-
-      <button type="button" class="primary" id="resume-btn"></button>
-      <button type="button" class="danger" id="close-btn"></button>
-    </div>
+    <h3 class="section-title" data-i="ingr"></h3>
+    <div class="cards" id="ingredients"></div>
   </div>
 
-  <!-- CLOSED SHOP -->
-  <div class="modal" id="closed-modal">
-    <div class="panel">
-      <h2>🔒 <span id="closed-title"></span></h2>
-      <div class="closed-text" id="closed-text"></div>
-      <button type="button" class="primary" id="reopen-btn"></button>
-    </div>
-  </div>
-
+  <div class="kitchen"><div class="kitchen-inner">
+    <div class="pot"></div>
+    <button class="serve" id="serveBtn" data-i="serve" disabled></button>
+    <div class="message" id="msg"></div>
+  </div></div>
 </div>
 
+<!-- ===== MÀN HÌNH BẮT ĐẦU ===== -->
+<div class="start-screen" id="startScreen">
+  <div class="top-icons">
+    <button class="icon-btn" id="soundBtn" aria-label="Sound">🔊</button>
+    <button class="icon-btn" id="gearBtn" aria-label="Settings">⚙</button>
+  </div>
+  <div class="menu">
+    <div class="logo">
+      <div class="logo-main">火鍋の店</div>
+      <div class="logo-sub">おいしい火鍋で、<br>みんなを笑顔に <span>♥</span></div>
+    </div>
+    <button class="btn btn-play" id="playBtn"><i class="tri"></i><span data-i="start"></span></button>
+    <button class="btn btn-sub" id="continueBtn">📖&nbsp; <span data-i="continue"></span></button>
+    <button class="btn btn-sub" id="settingsBtn">⚙&nbsp; <span data-i="settings"></span></button>
+  </div>
+</div>
+
+<div class="modal hide" id="settingsModal"><div class="panel">
+  <h2 data-i="settings"></h2>
+  <div class="langs">
+    <button class="lang-btn" data-lang="vi">Tiếng Việt</button>
+    <button class="lang-btn" data-lang="ja">日本語</button>
+    <button class="lang-btn" data-lang="en">English</button>
+  </div>
+  <button class="btn btn-sub" id="rulesBtn">📜&nbsp; <span data-i="rules"></span></button>
+  <button class="btn btn-sub btn-danger" id="restartBtn">🔄&nbsp; <span data-i="restart"></span></button>
+  <button class="btn btn-close" data-close="settingsModal"><span data-i="close"></span></button>
+</div></div>
+
+<div class="modal hide" id="rulesModal"><div class="panel">
+  <h2 data-i="rules"></h2>
+  <div class="rules-text" data-i="rulesText" data-html></div>
+  <button class="btn btn-close" data-close="rulesModal"><span data-i="close"></span></button>
+</div></div>
+
+<div class="modal hide" id="confirmModal"><div class="panel">
+  <h2 data-i="restart"></h2>
+  <p class="rules-text" data-i="confirmText"></p>
+  <div class="two-btns">
+    <button class="btn btn-sub" data-close="confirmModal"><span data-i="no"></span></button>
+    <button class="btn btn-play" id="confirmYes"><span data-i="yes"></span></button>
+  </div>
+</div></div>
+
+<div class="modal hide" id="pauseModal"><div class="panel">
+  <h2 data-i="pause"></h2>
+  <button class="btn btn-play" id="resumeBtn"><i class="tri"></i><span data-i="resume"></span></button>
+  <button class="btn btn-sub btn-danger" id="closeEarlyBtn">🔒&nbsp; <span data-i="closeEarly"></span></button>
+</div></div>
+
+<div class="modal hide" id="dayModal"><div class="panel">
+  <h2 id="dayTitle"></h2>
+  <p class="rules-text" id="dayTxt"></p>
+  <button class="btn btn-play" id="nextBtn"></button>
+</div></div>
+
 <script>
-(() => {
+/* ===== DỮ LIỆU MÓN (đổi img / emoji / tên ở đây; không có ảnh thì tự hiện emoji) ===== */
+const broths = [
+  { key:"cay",       img:"img/broth_cay.png",       emoji:"🌶️", name:{ vi:"Cay",       ja:"辛口",     en:"Spicy" } },
+  { key:"tonkotsu",  img:"img/broth_tonkotsu.png",  emoji:"🍜", name:{ vi:"Tonkotsu",  ja:"とんこつ", en:"Tonkotsu" } },
+  { key:"ca_chua",   img:"img/broth_ca_chua.png",   emoji:"🍅", name:{ vi:"Cà chua",   ja:"トマト",   en:"Tomato" } },
+  { key:"thanh_dam", img:"img/broth_thanh_dam.png", emoji:"🥣", name:{ vi:"Thanh đạm", ja:"あっさり", en:"Clear" } },
+  { key:"sieu_cay",  img:"img/broth_sieu_cay.png",  emoji:"🔥", name:{ vi:"Siêu cay",  ja:"激辛",     en:"Extra spicy" } }
+];
+const ingredients = [
+  { key:"bo",      img:"img/bo.png",      emoji:"🥩", name:{ vi:"Bò",      ja:"牛肉",         en:"Beef" } },
+  { key:"heo",     img:"img/heo.png",     emoji:"🥓", name:{ vi:"Heo",     ja:"豚肉",         en:"Pork" } },
+  { key:"tom",     img:"img/tom.png",     emoji:"🦐", name:{ vi:"Tôm",     ja:"エビ",         en:"Shrimp" } },
+  { key:"nam",     img:"img/nam.png",     emoji:"🍄", name:{ vi:"Nấm",     ja:"きのこ",       en:"Mushroom" } },
+  { key:"rau",     img:"img/rau.png",     emoji:"🥬", name:{ vi:"Rau",     ja:"野菜",         en:"Veggies" } },
+  { key:"dau_phu", img:"img/dau_phu.png", emoji:"🧈", name:{ vi:"Đậu phụ", ja:"豆腐",         en:"Tofu" } },
+  { key:"bap",     img:"img/bap.png",     emoji:"🌽", name:{ vi:"Bắp",     ja:"とうもろこし", en:"Corn" } },
+  { key:"mi",      img:"img/mi.png",      emoji:"🍜", name:{ vi:"Mì",      ja:"麺",           en:"Noodles" } },
+  { key:"ca_vien", img:"img/ca_vien.png", emoji:"🍡", name:{ vi:"Cá viên", ja:"魚団子",       en:"Fish ball" } },
+  { key:"ha_cao",  img:"img/ha_cao.png",  emoji:"🥟", name:{ vi:"Há cao",  ja:"エビ餃子",     en:"Har gow" } }
+];
+const nm=o=>o.name[lang]||o.name.en||o.name.vi;
+const DAY_SECONDS=150;   // 1 ngày chơi thật = 150 giây (2,5 phút); đổi 120–180 tùy ý
+const GOAL=8;           // số khách phục vụ đúng để qua ngày
 
-  /* =========================
-     NGÔN NGỮ / 言語
-  ========================= */
-
-  const I18N = {
-    vi: {
-      day: "Ngày",
-      patience: "Kiên nhẫn",
-      titleBroth: "NƯỚC LẨU",
-      titleIngredient: "NGUYÊN LIỆU",
-      serve: "🍲 PHỤC VỤ",
-      start: "Chọn nước lẩu và nguyên liệu theo yêu cầu.",
-      timeout: "😤 Khách chờ quá lâu và bỏ đi!",
-      settings: "Cài đặt",
-      language: "Ngôn ngữ",
-      resume: "▶ Chơi tiếp",
-      closeShop: "🔒 Đóng cửa",
-      closedTitle: "Quán đã đóng cửa",
-      closedText: (d, c, s) => `Ngày ${d}<br>🪙 ${c} xu · ⭐ ${s}/5`,
-      reopen: "🔓 Mở cửa lại",
-      perfect: "🎉 Phục vụ hoàn hảo! +1.200 xu",
-      good: "👍 Khách khá hài lòng! +600 xu",
-      bad: "😅 Khách chưa hài lòng. +150 xu",
-      order: (b, i) => `"Cho tôi một nồi ${b.toLowerCase()}, thêm ${i.toLowerCase()} nhé!"`,
-      locale: "vi-VN"
-    },
-    ja: {
-      day: "日目",
-      patience: "忍耐度",
-      titleBroth: "スープ",
-      titleIngredient: "具材",
-      serve: "🍲 提供する",
-      start: "注文どおりにスープと具材を選んでください。",
-      timeout: "😤 待ちくたびれてお客さんが帰ってしまった!",
-      settings: "設定",
-      language: "言語",
-      resume: "▶ 続ける",
-      closeShop: "🔒 閉店する",
-      closedTitle: "閉店しました",
-      closedText: (d, c, s) => `${d}日目<br>🪙 ${c}コイン · ⭐ ${s}/5`,
-      reopen: "🔓 再開する",
-      perfect: "🎉 完璧な提供!+1,200コイン",
-      good: "👍 お客さんはまあ満足!+600コイン",
-      bad: "😅 お客さんは不満そう…+150コイン",
-      order: (b, i) => `「${b}の鍋に、${i}を入れてください!」`,
-      locale: "ja-JP"
-    }
-  };
-
-  /* =========================
-     GAME DATA
-     key, ảnh, emoji dự phòng, tên {vi, ja}
-  ========================= */
-
-  const broths = [
-    { key: "cay",       img: "img/broth_cay.png",       emoji: "🌶️", name: { vi: "Cay",       ja: "辛口" } },
-    { key: "tonkotsu",  img: "img/broth_tonkotsu.png",  emoji: "🍜", name: { vi: "Tonkotsu",  ja: "とんこつ" } },
-    { key: "ca_chua",   img: "img/broth_ca_chua.png",   emoji: "🍅", name: { vi: "Cà chua",   ja: "トマト" } },
-    { key: "thanh_dam", img: "img/broth_thanh_dam.png", emoji: "🥣", name: { vi: "Thanh đạm", ja: "あっさり" } },
-    { key: "sieu_cay",  img: "img/broth_sieu_cay.png",  emoji: "🔥", name: { vi: "Siêu cay",  ja: "激辛" } }
-  ];
-
-  const ingredients = [
-    { key: "bo",      img: "img/bo.png",      emoji: "🥩", name: { vi: "Bò",      ja: "牛肉" } },
-    { key: "heo",     img: "img/heo.png",     emoji: "🥓", name: { vi: "Heo",     ja: "豚肉" } },
-    { key: "tom",     img: "img/tom.png",     emoji: "🦐", name: { vi: "Tôm",     ja: "エビ" } },
-    { key: "nam",     img: "img/nam.png",     emoji: "🍄", name: { vi: "Nấm",     ja: "きのこ" } },
-    { key: "rau",     img: "img/rau.png",     emoji: "🥬", name: { vi: "Rau",     ja: "野菜" } },
-    { key: "dau_phu", img: "img/dau_phu.png", emoji: "🧈", name: { vi: "Đậu phụ", ja: "豆腐" } },
-    { key: "bap",     img: "img/bap.png",     emoji: "🌽", name: { vi: "Bắp",     ja: "とうもろこし" } },
-    { key: "mi",      img: "img/mi.png",      emoji: "🍜", name: { vi: "Mì",      ja: "麺" } },
-    { key: "ca_vien", img: "img/ca_vien.png", emoji: "🍡", name: { vi: "Cá viên", ja: "魚団子" } },
-    { key: "ha_cao",  img: "img/ha_cao.png",  emoji: "🥟", name: { vi: "Há cao",  ja: "エビ餃子" } }
-  ];
-
-  /* =========================
-     GAME STATE
-  ========================= */
-
-  let lang = "vi";
-  try {
-    const saved = localStorage.getItem("hotpot-lang");
-    if (saved === "ja" || saved === "vi") lang = saved;
-  } catch (e) {}
-
-  let selectedBroth = null;       // lưu key
-  let selectedIngredient = null;  // lưu key
-
-  let coins = 10000;
-  let stars = 0;
-  let day = 1;
-  const ORDER_TIME = 30000;   // thời gian kiên nhẫn của mỗi khách (ms) - đổi số này để chơi dễ/khó hơn
-  let timeLeft = ORDER_TIME;
-
-  let order = { broth: "cay", ingredient: "bo" };
-
-  // nội dung thông báo hiện tại: "start" | "perfect" | "good" | "bad"
-  let messageKey = "start";
-
-  /* =========================
-     DOM
-  ========================= */
-
-  const $ = (id) => document.getElementById(id);
-
-  const coinsEl = $("coins");
-  const starsEl = $("stars");
-  const brothsEl = $("broths");
-  const ingredientsEl = $("ingredients");
-  const serveBtn = $("serve");
-  const messageEl = $("message");
-
-  /* =========================
-     HELPERS
-  ========================= */
-
-  const t = () => I18N[lang];
-  const nameOf = (list, key) => list.find(x => x.key === key).name[lang];
-
-  function formatCoins(value) {
-    return value.toLocaleString(t().locale);
+/* ===== NGÔN NGỮ ===== */
+const I18N={
+ vi:{start:'Bắt đầu',continue:'Tiếp tục',settings:'Cài đặt',rules:'Luật chơi',restart:'Bắt đầu lại từ đầu',close:'Đóng',yes:'Đồng ý',no:'Hủy',
+  confirmText:'Toàn bộ tiến trình sẽ bị xóa và bạn sẽ quay lại Ngày 1. Bạn chắc chứ?',
+  rulesText:'<ol><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền.</li><li>Đến 22:00 quán tự đóng cửa. Phục vụ đúng ít nhất 8 khách để sang ngày tiếp theo. Ngày càng nhiều nguyên liệu hơn!</li></ol>',
+  day:'Ngày',cust:'Khách',want:'Khách muốn:',broth:'NƯỚC LẨU',ingr:'NGUYÊN LIỆU',patience:'😊 Độ kiên nhẫn',serve:'PHỤC VỤ',
+  angry:'Khách giận bỏ về! -',closed:'🔒 22:00 – Quán đã đóng cửa!',pause:'Tạm dừng',resume:'Tiếp tục',closeEarly:'Đóng cửa sớm',closedEarly:'🔒 Quán đã đóng cửa sớm!',ok:'Chính xác! +',bad:'Sai rồi! -',pick:'Hãy chọn nước lẩu trước!',
+  win:'Hoàn thành ngày',lose:'Chưa đạt ngày',res:'Phục vụ đúng',next:'Ngày tiếp theo ▶',retry:'Chơi lại ngày này ▶',
+  },
+ ja:{start:'はじめる',continue:'つづきから',settings:'設定',rules:'あそびかた',restart:'最初からやり直す',close:'閉じる',yes:'はい',no:'キャンセル',
+  confirmText:'すべての進行状況が消えて、1日目に戻ります。よろしいですか？',
+  rulesText:'<ol><li>営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。</li><li>注文どおりのスープと具材を選びます。</li><li>お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。</li><li>「提供」を押すと、正解でお金がもらえ、間違いは減ります。</li><li>22:00になると自動で閉店。8人以上に正しく出せれば次の日へ。日ごとに具材が増えます！</li></ol>',
+  day:'日目',cust:'客',want:'ご注文：',broth:'スープ',ingr:'具材',patience:'😊 お客さんの我慢',serve:'提供',
+  angry:'お客さんが怒って帰った！ -',closed:'🔒 22:00 – 閉店です！',pause:'一時停止',resume:'再開',closeEarly:'早めに閉店',closedEarly:'🔒 早めに閉店しました！',ok:'正解！ +',bad:'ちがう！ -',pick:'先にスープを選んでね！',
+  win:'クリア：',lose:'失敗：',res:'正解数',next:'次の日へ ▶',retry:'もう一度 ▶',
+  },
+ en:{start:'Start',continue:'Continue',settings:'Settings',rules:'How to play',restart:'Restart from the beginning',close:'Close',yes:'Yes',no:'Cancel',
+  confirmText:'All progress will be erased and you will return to Day 1. Are you sure?',
+  rulesText:'<ol><li>The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.</li><li>Pick the exact broth and ingredients they ask for.</li><li>Watch the patience bar: green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.</li><li>Press Serve: correct earns money, wrong loses money.</li><li>At 22:00 the shop closes automatically. Serve at least 8 correctly to reach the next day. More ingredients each day!</li></ol>',
+  day:'Day',cust:'Guest',want:'Order:',broth:'BROTH',ingr:'INGREDIENTS',patience:'😊 Patience',serve:'SERVE',
+  angry:'Customer left angry! -',closed:'🔒 22:00 – We are closed!',pause:'Paused',resume:'Resume',closeEarly:'Close early',closedEarly:'🔒 Closed early!',ok:'Correct! +',bad:'Wrong! -',pick:'Pick a broth first!',
+  win:'Day cleared:',lose:'Day failed:',res:'Correct',next:'Next day ▶',retry:'Retry day ▶',
   }
+};
+let lang=localStorage.getItem('hotpot_lang')||'vi';
+const $=id=>document.getElementById(id);
+const T=()=>I18N[lang];
 
-  /* =========================
-     CARD
-  ========================= */
+/* ===== TRẠNG THÁI ===== */
+const KEY='hotpot_save';
+let S=JSON.parse(localStorage.getItem(KEY)||'null')||{day:1,money:0};
+let n=0,good=0,order=null,selB=null,selF=new Set(),playing=false,muted=false;
+const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+let timer=null,deadline=0,dur=15000;
+let clockTimer=null,dayStart=0,clockR=0,clockRunning=false,ready=false;
+let paused=false,pauseStart=0,closeKey='closed';
+// setTimeout nhưng tự chờ khi đang tạm dừng
+function setReady(v){ready=v;$('serveBtn').disabled=!v}
+const later=(fn,ms)=>setTimeout(function w(){paused?setTimeout(w,100):fn()},ms);
+const cust=()=>document.querySelector('.customer'),bub=()=>document.querySelector('.bubble');
 
-  function createCard(item, isSelected, onClick) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "ingredient" + (isSelected ? " selected" : "");
+/* ===== DỰNG KHAY ===== */
+function card(attr,i,src,emo){
+  return `<button class="ingredient" data-${attr}="${i}"><img class="food-image" src="${src}" alt=""><span class="name"></span></button>`;
+}
+function build(){
+  $('broths').innerHTML=broths.map((o,i)=>card('b',i,o.img)).join('');
+  $('ingredients').innerHTML=ingredients.map((o,i)=>card('f',i,o.img)).join('');
+  // ảnh lỗi -> hiện emoji thay thế
+  document.querySelectorAll('.cards .food-image').forEach(img=>img.addEventListener('error',()=>{
+    const b=img.closest('.ingredient');
+    const e=b.dataset.b!==undefined?broths[b.dataset.b].emoji:ingredients[b.dataset.f].emoji;
+    const d=document.createElement('div');d.className='food-fallback';d.textContent=e;img.replaceWith(d);
+  }));
+  $('broths').onclick=e=>{const b=e.target.closest('[data-b]');if(!b)return;selB=+b.dataset.b;paint()};
+  $('ingredients').onclick=e=>{const b=e.target.closest('[data-f]');if(!b)return;const k=+b.dataset.f;selF.has(k)?selF.delete(k):selF.add(k);paint()};
+}
 
-    const displayName = item.name[lang];
-
-    const img = document.createElement("img");
-    img.className = "food-image";
-    img.src = item.img;
-    img.alt = displayName;
-    img.addEventListener("error", () => {
-      const fallback = document.createElement("span");
-      fallback.className = "food-fallback";
-      fallback.textContent = item.emoji;
-      img.replaceWith(fallback);
-    });
-
-    const label = document.createElement("span");
-    label.className = "name";
-    label.textContent = displayName;
-
-    button.append(img, label);
-    button.addEventListener("click", onClick);
-    return button;
+function paint(){
+  const t=T();
+  document.querySelectorAll('[data-b]').forEach(b=>{b.classList.toggle('selected',+b.dataset.b===selB);b.querySelector('.name').textContent=nm(broths[b.dataset.b])});
+  document.querySelectorAll('[data-f]').forEach(b=>{b.classList.toggle('selected',selF.has(+b.dataset.f));b.querySelector('.name').textContent=nm(ingredients[b.dataset.f])});
+  $('sDay').textContent=lang==='ja'?S.day+t.day:t.day+' '+S.day;
+  $('sMoney').textContent='💰 '+S.money;
+  $('sCust').textContent=clockStr();
+  if(order){
+    const f=[...order.f].map(i=>nm(ingredients[i])).join(', ');
+    $('orderTxt').innerHTML=`${nm(broths[order.b])}<br>${f}`;
   }
-
-  function renderPot() {
-    const pot = $("pot");
-    const img = $("pot-img");
-    const item = broths.find(b => b.key === selectedBroth);
-
-    if (!item) {
-      pot.classList.remove("has-broth");
-      img.removeAttribute("src");
-      return;
-    }
-
-    img.onerror = () => pot.classList.remove("has-broth"); // thiếu ảnh -> về nồi vẽ sẵn
-    img.alt = item.name[lang];
-    const potSrc = "img/pot_" + item.key + ".png";   // ảnh nồi riêng cho bếp
-    if (img.getAttribute("src") !== potSrc) {
-      pot.classList.remove("has-broth");
-      void pot.offsetWidth;              // để chạy lại hiệu ứng
-      img.src = potSrc;
-    }
-    pot.classList.add("has-broth");
-  }
-
-  function renderBroths() {
-    brothsEl.innerHTML = "";
-    broths.forEach(item => {
-      brothsEl.appendChild(
-        createCard(item, selectedBroth === item.key, () => {
-          selectedBroth = item.key;
-          updateServeButton();
-          renderBroths();
-          renderPot();
-        })
-      );
-    });
-  }
-
-  function renderIngredients() {
-    ingredientsEl.innerHTML = "";
-    ingredients.forEach(item => {
-      ingredientsEl.appendChild(
-        createCard(item, selectedIngredient === item.key, () => {
-          selectedIngredient = item.key;
-          updateServeButton();
-          renderIngredients();
-        })
-      );
-    });
-  }
-
-  function updateServeButton() {
-    serveBtn.disabled = !(selectedBroth && selectedIngredient);
-  }
-
-  /* =========================
-     TEXT (đổi theo ngôn ngữ)
-  ========================= */
-
-  function renderTexts() {
-    document.documentElement.lang = lang;
-
-    // tiếng Nhật: "1日目", tiếng Việt: "Ngày 1"
-    $("day-stat").innerHTML = lang === "ja"
-      ? `📅 ${day}${t().day}&nbsp; | &nbsp;18:00`
-      : `📅 ${t().day} ${day}&nbsp; | &nbsp;18:00`;
-
-    $("patience-label").textContent = t().patience;
-    $("title-broth").textContent = t().titleBroth;
-    $("title-ingredient").textContent = t().titleIngredient;
-    serveBtn.textContent = t().serve;
-
-    $("bubble-text").textContent = t().order(
-      nameOf(broths, order.broth),
-      nameOf(ingredients, order.ingredient)
-    );
-
-    messageEl.textContent = t()[messageKey];
-
-    $("lang-ja").classList.toggle("active", lang === "ja");
-    $("lang-vi").classList.toggle("active", lang === "vi");
-
-    $("settings-title").textContent = t().settings;
-    $("lang-label").textContent = "🌐 " + t().language;
-    $("resume-btn").textContent = t().resume;
-    $("close-btn").textContent = t().closeShop;
-    $("closed-title").textContent = t().closedTitle;
-    $("closed-text").innerHTML = t().closedText(day, formatCoins(coins), stars);
-    $("reopen-btn").textContent = t().reopen;
-  }
-
-  function setLang(next) {
-    lang = next;
-    try { localStorage.setItem("hotpot-lang", lang); } catch (e) {}
-    updateUI();
-  }
-
-  $("lang-ja").addEventListener("click", () => setLang("ja"));
-  $("lang-vi").addEventListener("click", () => setLang("vi"));
-
-  /* =========================
-     SETTINGS / ĐÓNG CỬA
-  ========================= */
-
-  const settingsModal = $("settings-modal");
-  const closedModal = $("closed-modal");
-
-  $("settings-btn").addEventListener("click", () => {
-    settingsModal.classList.add("open");
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const v=t[el.dataset.i];if(typeof v!=='string')return;
+    el.hasAttribute('data-html')?el.innerHTML=v:el.textContent=v;
   });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));
+  document.documentElement.lang=lang;
+}
 
-  $("resume-btn").addEventListener("click", () => {
-    settingsModal.classList.remove("open");
-  });
+/* ===== LUỒNG GAME ===== */
+/* ===== ĐỒNG HỒ QUÁN: 11:00 -> 22:00 ===== */
+function clockStr(){
+  const m=11*60+Math.floor(clockR*660);
+  return '🕐 '+String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+}
+function clockTick(){
+  if(paused)return;
+  clockR=Math.min(1,(Date.now()-dayStart)/(DAY_SECONDS*1000));
+  $('sCust').textContent=clockStr();
+  if(clockR>=1)closeShop();
+}
+function closeShop(early){
+  closeKey=early===true?'closedEarly':'closed';
+  clearInterval(clockTimer);clockRunning=false;stopTimer();playing=false;setReady(false);
+  bub().classList.remove('show');cust().classList.add('walking','leaving');
+  $('msg').textContent=T()[closeKey];       // thông báo đóng cửa
+  later(endDay,1500);
+}
+function stopTimer(){clearInterval(timer);timer=null}
+function startTimer(sec){
+  stopTimer();dur=sec*1000;deadline=Date.now()+dur;tick();
+  timer=setInterval(tick,100);
+}
+function tick(){
+  if(paused)return;
+  const r=Math.max(0,(deadline-Date.now())/dur);
+  const f=$('timeFill');
+  f.style.width=(r*100)+'%';
+  f.style.background=`hsl(${Math.round(120*r)} 80% 45%)`;   // xanh (120) -> đỏ (0)
+  if(r<=0)leave();
+}
+function newCustomer(){
+  const cnt=Math.min(2+Math.floor(S.day/2),5);
+  const pool=[...ingredients.keys()].sort(()=>Math.random()-.5);
+  order={b:Math.floor(Math.random()*broths.length),f:new Set(pool.slice(0,cnt))};
+  selB=null;selF=new Set();setReady(false);
+  const c=cust(),bb=bub();
+  bb.classList.remove('show');
+  c.classList.remove('angry','walking');
+  // đặt khách ngoài cửa (không animation) rồi cho đi vào
+  c.style.transition='none';c.classList.add('leaving');c.offsetWidth;
+  c.style.transition='';c.classList.remove('leaving');c.classList.add('walking');
+  $('timeFill').style.width='100%';$('timeFill').style.background='hsl(120 80% 45%)';
+  paint();
+  later(()=>{
+    if(!clockRunning)return;
+    c.classList.remove('walking');
+    bb.classList.add('show');               // hiện khung order
+    setReady(true);
+    startTimer(Math.max(12,8+cnt*4-S.day)); // bắt đầu tính kiên nhẫn
+  },850);
+}
+function serve(){
+  if(!playing||!ready)return;
+  const t=T();
+  if(selB===null){$('msg').textContent=t.pick;return}
+  stopTimer();
+  const ok=selB===order.b&&selF.size===order.f.size&&[...selF].every(x=>order.f.has(x));
+  const amt=ok?100+order.f.size*20:50;
+  S.money=Math.max(0,S.money+(ok?amt:-amt));
+  if(ok)good++;
+  $('msg').textContent=(ok?t.ok:t.bad)+amt;
+  n++;save();
+  // làm xong: ẩn order, khách đi ra, rồi khách mới đi vào
+  setReady(false);bub().classList.remove('show');cust().classList.add('walking','leaving');
+  later(()=>{if(!clockRunning)return;newCustomer()},800);
+}
+/* Hết thời gian: khách giận bỏ về */
+function leave(){
+  stopTimer();playing=false;setReady(false);bub().classList.remove('show');
+  const t=T(),c=cust();
+  S.money=Math.max(0,S.money-50);n++;save();
+  $('msg').textContent=t.angry+50;paint();
+  c.classList.add('angry');
+  later(()=>c.classList.add('walking','leaving'),650);
+  later(()=>{if(!clockRunning)return;playing=true;newCustomer()},1250);
+}
+function endDay(){
+  stopTimer();playing=false;const t=T(),win=good>=GOAL;
+  $('dayTitle').textContent=(win?t.win:t.lose)+' '+S.day;
+  $('dayTxt').innerHTML=`${t[closeKey]}<br>${t.res}: ${good}/${GOAL}  •  💰 ${S.money}`;
+  $('nextBtn').textContent=win?t.next:t.retry;
+  $('nextBtn').onclick=()=>{if(win){S.day++;save()}closeModal('dayModal');beginDay()};
+  openModal('dayModal');paint();
+}
+function beginDay(){
+  n=0;good=0;playing=true;$('msg').textContent='';
+  clockR=0;dayStart=Date.now();clockRunning=true;
+  clearInterval(clockTimer);clockTimer=setInterval(clockTick,200);
+  clockTick();newCustomer();
+}
 
-  // bấm ra ngoài bảng cũng là chơi tiếp
-  settingsModal.addEventListener("click", (e) => {
-    if (e.target === settingsModal) settingsModal.classList.remove("open");
-  });
+/* ===== MÀN HÌNH BẮT ĐẦU / BẢNG ===== */
+const openModal=id=>$(id).classList.remove('hide');
+const closeModal=id=>$(id).classList.add('hide');
 
-  $("close-btn").addEventListener("click", () => {
-    settingsModal.classList.remove("open");
-    renderTexts();               // cập nhật số liệu trên màn hình đóng cửa
-    closedModal.classList.add("open");
-  });
+function startGame(){
+  $('startScreen').classList.add('hide');
+  beginDay();
+}
+$('playBtn').onclick=()=>{S={day:1,money:0};save();startGame()};   // ván mới
+$('continueBtn').onclick=startGame;                                // chơi tiếp từ lần lưu
+$('settingsBtn').onclick=$('gearBtn').onclick=()=>openModal('settingsModal');
+$('rulesBtn').onclick=()=>openModal('rulesModal');
+$('restartBtn').onclick=()=>openModal('confirmModal');
+$('soundBtn').onclick=e=>{muted=!muted;e.currentTarget.textContent=muted?'🔇':'🔊'};
+$('serveBtn').onclick=serve;
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeModal(b.dataset.close));
+document.querySelectorAll('.lang-btn').forEach(b=>b.onclick=()=>{lang=b.dataset.lang;localStorage.setItem('hotpot_lang',lang);paint()});
 
-  $("reopen-btn").addEventListener("click", () => {
-    coins = 10000;
-    stars = 0;
-    day = 1;
-    timeLeft = ORDER_TIME;
-    selectedBroth = null;
-    selectedIngredient = null;
-    messageKey = "start";
-    createNextOrder();
-    closedModal.classList.remove("open");
-    updateUI();
-  });
+/* ===== TẠM DỪNG ===== */
+function pauseGame(){
+  if(!clockRunning||paused)return;
+  paused=true;pauseStart=Date.now();
+  $('gameRoot').classList.add('paused');
+  openModal('pauseModal');
+}
+function resumeGame(){
+  if(!paused)return;
+  const d=Date.now()-pauseStart;       // bù thời gian đã dừng cho đồng hồ + thanh kiên nhẫn
+  dayStart+=d;deadline+=d;
+  paused=false;
+  $('gameRoot').classList.remove('paused');
+  closeModal('pauseModal');
+}
+$('pauseBtn').onclick=pauseGame;
+$('resumeBtn').onclick=resumeGame;
+$('closeEarlyBtn').onclick=()=>{resumeGame();closeShop(true)};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')paused?resumeGame():pauseGame()});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseGame()});
 
-  /* =========================
-     NEXT ORDER
-  ========================= */
+/* Bắt đầu lại từ đầu -> Ngày 1 */
+$('confirmYes').onclick=()=>{
+  S={day:1,money:0};save();
+  closeModal('confirmModal');closeModal('settingsModal');
+  startGame();
+};
 
-  function createNextOrder() {
-    order = {
-      broth: broths[Math.floor(Math.random() * broths.length)].key,
-      ingredient: ingredients[Math.floor(Math.random() * ingredients.length)].key
-    };
-  }
-
-  /* =========================
-     SERVE
-  ========================= */
-
-  serveBtn.addEventListener("click", () => {
-
-    let score = 0;
-    if (selectedBroth === order.broth) score += 50;
-    if (selectedIngredient === order.ingredient) score += 50;
-
-    if (score >= 100) {
-      coins += 1200;
-      stars = Math.min(5, stars + 1);
-      messageKey = "perfect";
-    } else if (score >= 50) {
-      coins += 600;
-      messageKey = "good";
-    } else {
-      coins += 150;
-      messageKey = "bad";
-    }
-
-    day++;
-    selectedBroth = null;
-    selectedIngredient = null;
-    createNextOrder();
-    timeLeft = ORDER_TIME;
-
-    updateUI();
-  });
-
-  /* =========================
-     UPDATE UI
-  ========================= */
-
-  function updateUI() {
-    renderTexts();
-
-    coinsEl.textContent = formatCoins(coins);
-    starsEl.textContent = stars;
-    renderPatience();
-
-    renderBroths();
-    renderIngredients();
-    renderPot();
-    updateServeButton();
-  }
-
-  /* =========================
-     KIÊN NHẪN: thanh đếm ngược xanh -> vàng -> đỏ
-  ========================= */
-
-  function renderPatience() {
-    const ratio = Math.max(0, Math.min(1, timeLeft / ORDER_TIME));
-    const fill = $("patience-fill");
-    fill.style.width = (ratio * 100) + "%";
-    // hue 120 = xanh lá, 60 = vàng, 0 = đỏ
-    fill.style.background = `hsl(${Math.round(ratio * 120)} 80% 45%)`;
-  }
-
-  function onTimeout() {
-    day++;
-    selectedBroth = null;
-    selectedIngredient = null;
-    messageKey = "timeout";
-    createNextOrder();
-    timeLeft = ORDER_TIME;
-    updateUI();
-  }
-
-  let lastTick = performance.now();
-  setInterval(() => {
-    const now = performance.now();
-    const dt = Math.min(now - lastTick, 250);   // tránh nhảy vọt khi quay lại từ tab khác
-    lastTick = now;
-
-    // tạm dừng khi đang mở Cài đặt hoặc quán đã đóng cửa
-    if (settingsModal.classList.contains("open") ||
-        closedModal.classList.contains("open")) return;
-
-    timeLeft -= dt;
-    if (timeLeft <= 0) {
-      onTimeout();
-    } else {
-      renderPatience();
-    }
-  }, 100);
-
-  updateUI();
-
-})();
+build();paint();
 </script>
-
 </body>
 </html>

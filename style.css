@@ -225,3 +225,108 @@ input[type=range]{width:100%;margin:0}
   border-radius:1.2cqw;
   text-shadow:0 1px 2px rgba(0,0,0,.6);
 }
+
+/* ===== MÀN HÌNH BẮT ĐẦU ===== */
+.start-screen{
+  position:fixed;inset:0;z-index:1000;
+  background:#2b211f url("img/title-bg.png") center / cover no-repeat;
+  transition:opacity .4s;
+}
+.start-screen.hide{opacity:0;pointer-events:none}
+
+.menu{
+  position:absolute;
+  left:7%;top:5%;
+  width:min(36vw,520px);
+  display:flex;flex-direction:column;align-items:center;
+  gap:clamp(8px,1.6vh,18px);
+}
+
+/* Logo */
+.logo{width:100%;text-align:center;margin-bottom:clamp(6px,2vh,24px)}
+.logo-main{
+  font-size:clamp(44px,8vw,120px);
+  font-weight:900;line-height:1.05;
+  color:#fff6e8;
+  -webkit-text-stroke:clamp(3px,.5vw,8px) #9b1f2a;
+  paint-order:stroke fill;
+  text-shadow:0 .5vw 0 #7a1620, 0 1vw 1.2vw rgba(60,10,10,.45);
+}
+.logo-sub{
+  display:inline-block;margin-top:1vh;
+  padding:1vh 2vw;
+  font-size:clamp(11px,1.5vw,22px);font-weight:800;line-height:1.4;
+  color:#5a3a2e;
+  background:#f3e0bf;
+  border:3px solid #b98a62;border-radius:12px;
+  box-shadow:0 4px 0 rgba(90,50,30,.35);
+}
+.logo-sub span{color:#d9363e}
+
+/* Nút */
+.btn{
+  width:100%;
+  display:flex;align-items:center;justify-content:center;gap:.6em;
+  font-weight:900;
+  border-radius:999px;
+  transition:transform .12s, filter .12s;
+}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.btn:active{transform:translateY(3px)}
+
+.btn-play{
+  padding:clamp(12px,2.4vh,26px) 1em;
+  font-size:clamp(20px,2.6vw,40px);
+  color:#fff;
+  background:linear-gradient(#ee5560,#cf2f3c);
+  border:4px solid #fff3e6;
+  outline:4px solid #a9242f;
+  box-shadow:0 .7vh 0 #8c1d27;
+  text-shadow:0 2px 0 rgba(120,20,30,.6);
+}
+.btn-play:active{box-shadow:0 .2vh 0 #8c1d27}
+.tri{
+  width:0;height:0;
+  border-left:.9em solid #fff;
+  border-top:.55em solid transparent;
+  border-bottom:.55em solid transparent;
+}
+
+.btn-sub{
+  width:84%;
+  padding:clamp(9px,1.8vh,20px) 1em;
+  font-size:clamp(16px,1.9vw,30px);
+  color:#5a3a2e;
+  background:linear-gradient(#fbeed6,#efd7b0);
+  border:3px solid #fff6e6;
+  outline:3px solid #b98a62;
+  box-shadow:0 .5vh 0 #a07650;
+}
+
+/* Icon góc phải trên */
+.top-icons{
+  position:absolute;top:2vh;right:2vw;
+  display:flex;gap:1vw;
+}
+.icon-btn{
+  width:clamp(38px,4.6vw,64px);height:clamp(38px,4.6vw,64px);
+  font-size:clamp(18px,2.2vw,30px);
+  color:#5a3a2e;
+  background:#f6e3c3;
+  border:3px solid #b98a62;border-radius:50%;
+  box-shadow:0 3px 0 #a07650;
+}
+
+/* Màn hình dọc (điện thoại): căn giữa phía dưới */
+@media (max-aspect-ratio:1/1){
+  .menu{
+    left:50%;top:auto;bottom:6%;
+    transform:translateX(-50%);
+    width:min(82vw,460px);
+  }
+  .logo-main{font-size:clamp(48px,17vw,110px)}
+  .logo-sub{font-size:clamp(12px,3.4vw,20px);padding:1vh 5vw}
+  .btn-play{font-size:clamp(22px,6vw,38px)}
+  .btn-sub{font-size:clamp(16px,4.4vw,28px)}
+  .icon-btn{width:44px;height:44px;font-size:20px}
+}
