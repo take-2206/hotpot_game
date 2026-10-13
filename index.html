@@ -160,13 +160,13 @@
         top: 31.5%;
         width: 28%;
         margin: 0;
-        padding: 0.8cqw 1.2cqw;
+        padding: 0.45cqw 0.8cqw;
         background: #fffaf2;
         border: 3px solid #704538;
         border-radius: 2.2cqw;
         text-align: center;
-        font-size: max(11px, 1.8cqw);
-        line-height: 1.35;
+        font-size: max(10px, 1.55cqw);
+        line-height: 1.2;
         font-weight: 800;
         box-shadow: 0 4px 0 rgba(70, 40, 30, 0.15);
       }
@@ -184,8 +184,9 @@
         transform: rotate(45deg);
       }
       .order {
-        margin-top: 0.5cqw;
-        font-size: max(9px, 1.4cqw);
+        margin-top: 0.2cqw;
+        font-size: max(9px, 1.25cqw);
+        line-height: 1.15;
         color: #6d4538;
       }
 
@@ -1541,7 +1542,66 @@
       .rev-table th { font-size: 11px; opacity: 0.8; }
       .rev-table .neg { color: #a9242f; }
       .rev-empty { text-align: center; font-weight: 700; opacity: 0.75; padding: 18px 0; }
-    </style>
+    
+      /* ===== ĐIỀU CHỈNH VỊ TRÍ KHUNG KHÁCH YÊU CẦU ===== */
+      .bubble {
+        top: 36.5% !important; /* đặt khung bên dưới thanh kiên nhẫn */
+        padding: 0.35cqw 0.65cqw;
+        font-size: max(10px, 1.45cqw);
+        line-height: 1.12;
+      }
+      .bubble .order {
+        margin-top: 0.2cqw;
+        font-size: max(9px, 1.25cqw);
+        line-height: 1.15;
+      }
+
+      /* ===== NHÂN VẬT KHÁCH ANIME ===== */
+      .customer {
+        width: 18cqw;
+        height: 24cqw;
+        text-align: center;
+      }
+      .customer-image {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom center;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        pointer-events: none;
+        filter: drop-shadow(0 0.25cqw 0.25cqw rgba(40, 20, 15, 0.22));
+      }
+      /* Ẩn nhân vật CSS cũ để chỉ hiển thị ảnh anime */
+      .customer > .head,
+      .customer > .body {
+        display: none;
+      }
+      .customer.walking .customer-image {
+        animation: customerAnimeBob 0.3s ease-in-out infinite;
+      }
+      @keyframes customerAnimeBob {
+        0%, 100% { translate: 0 0; }
+        50% { translate: 0 -0.9cqw; }
+      }
+
+
+      /* Thanh "Khách muốn": hạ chiều cao khung, giảm padding và khoảng cách chữ */
+      .bubble {
+        padding: 0.2cqw 0.7cqw !important;
+        line-height: 1.05 !important;
+        font-size: max(9px, 1.45cqw) !important;
+      }
+      .bubble .order {
+        margin-top: 0 !important;
+        font-size: max(8px, 1.15cqw) !important;
+        line-height: 1.05 !important;
+      }
+      /* Ưu tiên vị trí khung yêu cầu: ngay dưới thanh kiên nhẫn */
+      .game .bubble { top: 36.5% !important; }
+</style>
   </head>
   <body>
     <div class="game" id="gameRoot">
@@ -1565,11 +1625,20 @@
 
       <div class="scene">
         <div class="window"></div>
-        <div class="customer">
-          <div class="timebar"><div class="timefill" id="timeFill"></div></div>
-          <div class="head"><span></span></div>
-          <div class="body"></div>
-        </div>
+        
+
+<div class="customer">
+  <div class="timebar">
+    <div class="timefill" id="timeFill"></div>
+  </div>
+
+  <img class="customer-image" src="" alt="Khách hàng">
+  
+  <div class="head"><span></span></div>
+  <div class="body"></div>
+</div>
+
+
         <div class="bubble">
           <span data-i="want"></span>
           <div class="order" id="orderTxt"></div>
@@ -1783,7 +1852,7 @@
           img: "img/broth_sieu_cay.png",
           pot: "img/pot_sieu_cay.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
           emoji: "🍜",
-          name: { vi: "siêu cay", ja: "超辛い", en: "Super Spicy" },
+          name: { vi: "siêu cay", ja: "超辛口", en: "Super Spicy" },
         },
         {
           key: "ca_chua",
@@ -1916,7 +1985,7 @@
           m_pending:
             "⚠ Các món còn trong giỏ mà chưa bấm MUA sẽ không được mua.",
           m_trayLimit:
-            "Quầy chỉ bày tối đa 10 loại mỗi ngày (theo thứ tự trong chợ).",
+            "Quầy chỉ bày tối đa 10 loại mỗi ngày. ",
           m_keep: "Mua thêm",
           m_go: "Mở quán ▶",
           m_cartEmpty: "Giỏ hàng đang trống. Bấm vào giỏ hàng hoặc nút + để chọn.",
@@ -1924,9 +1993,9 @@
           m_intro:
             "Bạn có {m} xu. Bấm vào nguyên liệu hoặc nút + / − để chọn số lượng, rồi bấm HOÀN TẤT để xem tổng kết và trả tiền.",
           m_added: "đang chọn",
-          m_goMarket: "🛒 Đi chợ",
+          m_goMarket: " Đi chợ",
           m_moneyLabel: "Tiền hiện có",
-          m_revenueBtn: "📊 Doanh thu",
+          m_revenueBtn: " Doanh thu",
           m_revTitle: "Doanh thu theo tháng",
           m_month: "Tháng",
           m_revEmpty: "Chưa có dữ liệu trong tháng này.",
@@ -1999,7 +2068,7 @@
           m_bought: "今回の購入",
           m_stock: "食材の在庫",
           m_pending: "⚠ かごに入れただけで「買う」を押していない食材は購入されません。",
-          m_trayLimit: "お店に並べられるのは1日10種類までです（市場の順）。",
+          m_trayLimit: "お店に並べられるのは1日10種類までです。",
           m_keep: "もっと買う",
           m_go: "開店 ▶",
           m_cartEmpty: "かごは空です。食材をタップするか＋で選んでね。",
@@ -2008,9 +2077,9 @@
             "所持金は {m} コイン。食材をタップするか＋／−で数を選び、「会計」で合計を確認して支払います。",
           m_added: "選択中",
           // sau m_added: "選択中",
-          m_goMarket: "🛒 市場へ行く",
+          m_goMarket: " 市場へ行く",
           m_moneyLabel: "所持金",
-          m_revenueBtn: "📊 売上",
+          m_revenueBtn: " 売上",
           m_revTitle: "月ごとの売上",
           m_month: "か月目",
           m_revEmpty: "この月のデータはまだありません。",
@@ -2041,17 +2110,17 @@
           want: "Order:",
           broth: "BROTH",
           ingr: "INGREDIENTS",
-          patience: "😊 Patience",
+          patience: " Patience",
           serve: "SERVE",
           redo: "Redo",
           locked: "Broth already chosen! Press Redo to change it.",
           angry: "Customer left angry! -",
-          closed: "🔒 22:00 – We are closed!",
+          closed: "22:00 – We are closed!",
           pause: "Paused",
           resume: "Resume",
           closeEarly: "Close early",
-          closedEarly: "🔒 Closed early!",
-          noStock: "📦 Out of ingredients – we have to close!",
+          closedEarly: " Closed early!",
+          noStock: "Out of ingredients – we have to close!",
           outOfStock: "Out of stock!",
           ok: "Correct! +",
           bad: "Wrong! -",
@@ -2085,7 +2154,7 @@
           m_bought: "Bought now",
           m_stock: "Ingredient stock",
           m_pending: "⚠ Items in the cart that you didn't BUY will not be purchased.",
-          m_trayLimit: "The counter shows at most 10 kinds per day (in market order).",
+          m_trayLimit: "The counter shows at most 10 kinds per day .",
           m_keep: "Keep shopping",
           m_go: "Open shop ▶",
           m_cartEmpty: "The cart is empty. Tap an item or + to choose.",
@@ -2095,9 +2164,9 @@
           m_added: "selected",
 
         // sau m_added: "selected",
-        m_goMarket: "🛒 Go to market",
+        m_goMarket: " Go to market",
         m_moneyLabel: "Money",
-          m_revenueBtn: "📊 Revenue",
+          m_revenueBtn: "Revenue",
           m_revTitle: "Monthly revenue",
           m_month: "Month",
           m_revEmpty: "No data for this month yet.",
@@ -2444,8 +2513,16 @@
         selF = new Set();
         setReady(false);
         showRedo(false);
-        const c = cust(),
-          bb = bub();
+       
+const c = cust(),
+  bb = bub();
+
+// Random ảnh anime mỗi khi có khách mới
+const customerImg = c.querySelector("img.customer-image");
+if (customerImg) {
+  customerImg.src = randomCustomerImage();
+}
+
         bb.classList.remove("show");
         c.classList.remove("angry", "walking");
         // đặt khách ngoài cửa (không animation) rồi cho đi vào
@@ -2478,8 +2555,10 @@
           selF.size === order.f.size &&
           [...selF].every((x) => order.f.has(x));
         if (!ok) {
-          // SAI so với yêu cầu của khách -> khách tức giận bỏ về (trừ tiền, sang khách mới)
-          leave();
+          // Trả lời sai: chỉ giảm thanh kiên nhẫn, khách vẫn ở lại.
+          // Mỗi lần sai bị trừ 3 giây; hết giờ vẫn xử lý như bình thường.
+          if (deadline) deadline -= 3000;
+          tick();
           return;
         }
         stopTimer();
@@ -2716,6 +2795,23 @@
         if (!it) return;
         if (d > 0) {
           if (it.selectedQuantity >= MAX_QTY) return;
+
+          // Giới hạn tối đa 10 LOẠI nguyên liệu được bày trong quán.
+          // Nguyên liệu đã có trong kho không tính là loại mới.
+          if (it.selectedQuantity === 0 && it.purchasedQuantity <= 0) {
+            const kindsAfterAdd =
+              stockKinds() +
+              ITEMS.filter(
+                (item) =>
+                  item.selectedQuantity > 0 && item.purchasedQuantity <= 0,
+              ).length +
+              1;
+            if (kindsAfterAdd > ACTIVE) {
+              toast(T().m_trayLimit);
+              return;
+            }
+          }
+
           if (cartTotal() + it.price > S.money) {
             toast(T().m_notEnough); // không vượt quá khả năng chi trả
             return;
@@ -3034,6 +3130,13 @@ function startGame() {
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) pauseGame();
       });
+
+      
+function randomCustomerImage() {
+  const number = Math.floor(Math.random() * 4) + 1;
+  return `img/customers/customers_${String(number).padStart(2, "0")}.png`;
+}
+
 
       /* Bắt đầu lại từ đầu -> Ngày 1 (dữ liệu mới, tiền ban đầu, kho trống) */
       $("confirmYes").onclick = () => {
