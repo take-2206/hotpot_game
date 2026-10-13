@@ -32,8 +32,7 @@
         position: relative;
         overflow: hidden;
         container-type: inline-size; /* để dùng đơn vị cqw */
-        background: #d9a681 url("img/bg2.jpg") center / 100% 100%
-          no-repeat;
+        background: #d9a681 url("img/bg2.jpg") center / 100% 100% no-repeat;
       }
       .game > * {
         position: absolute;
@@ -59,19 +58,29 @@
       }
 
       /* ===== BẢNG ĐẦU NGÀY ===== */
-.intro-day { font-size: clamp(28px, 5vw, 44px) !important; }
-.intro-money {
-  width: 100%;
-  padding: 14px 10px;
-  text-align: center;
-  font-weight: 900;
-  line-height: 1.5;
-  background: #fbeed6;
-  border: 3px solid #d8b58d;
-  border-radius: 16px;
-}
-.intro-money small { display: block; font-size: 14px; font-weight: 800; opacity: 0.8; }
-.intro-money b { font-size: clamp(24px, 4vw, 34px); color: #9b1f2a; }
+      .intro-day {
+        font-size: clamp(28px, 5vw, 44px) !important;
+      }
+      .intro-money {
+        width: 100%;
+        padding: 14px 10px;
+        text-align: center;
+        font-weight: 900;
+        line-height: 1.5;
+        background: #fbeed6;
+        border: 3px solid #d8b58d;
+        border-radius: 16px;
+      }
+      .intro-money small {
+        display: block;
+        font-size: 14px;
+        font-weight: 800;
+        opacity: 0.8;
+      }
+      .intro-money b {
+        font-size: clamp(24px, 4vw, 34px);
+        color: #9b1f2a;
+      }
 
       /* ===== TOP BAR ===== */
       .top {
@@ -234,23 +243,71 @@
         pointer-events: auto;
       }
       /* 4 nước lẩu đặt trên 4 mặt bếp từ */
-      #broths .ingredient:nth-child(1) { left: 6.51%; top: 44.48%; }
-      #broths .ingredient:nth-child(2) { left: 27.99%; top: 44.48%; }
-      #broths .ingredient:nth-child(3) { left: 50.78%; top: 44.48%; }
-      #broths .ingredient:nth-child(4) { left: 72.27%; top: 44.48%; }
-      #broths .ingredient { width: 20.83%; height: 11.63%; }
+      #broths .ingredient:nth-child(1) {
+        left: 6.51%;
+        top: 44.48%;
+      }
+      #broths .ingredient:nth-child(2) {
+        left: 27.99%;
+        top: 44.48%;
+      }
+      #broths .ingredient:nth-child(3) {
+        left: 50.78%;
+        top: 44.48%;
+      }
+      #broths .ingredient:nth-child(4) {
+        left: 72.27%;
+        top: 44.48%;
+      }
+      #broths .ingredient {
+        width: 20.83%;
+        height: 11.63%;
+      }
       /* 10 nguyên liệu đặt vào 10 khay inox (2 hàng x 5) */
-      #ingredients .ingredient:nth-child(1) { left: 7.03%; top: 57.41%; }
-      #ingredients .ingredient:nth-child(2) { left: 23.44%; top: 57.41%; }
-      #ingredients .ingredient:nth-child(3) { left: 40.23%; top: 57.41%; }
-      #ingredients .ingredient:nth-child(4) { left: 56.77%; top: 57.41%; }
-      #ingredients .ingredient:nth-child(5) { left: 73.44%; top: 57.41%; }
-      #ingredients .ingredient:nth-child(6) { left: 5.99%; top: 66.13%; }
-      #ingredients .ingredient:nth-child(7) { left: 22.92%; top: 66.13%; }
-      #ingredients .ingredient:nth-child(8) { left: 40.36%; top: 66.13%; }
-      #ingredients .ingredient:nth-child(9) { left: 57.68%; top: 66.13%; }
-      #ingredients .ingredient:nth-child(10) { left: 75.39%; top: 66.13%; }
-      #ingredients .ingredient { width: 17.19%; height: 6.54%; }
+      #ingredients .ingredient:nth-child(1) {
+        left: 7.03%;
+        top: 57.41%;
+      }
+      #ingredients .ingredient:nth-child(2) {
+        left: 23.44%;
+        top: 57.41%;
+      }
+      #ingredients .ingredient:nth-child(3) {
+        left: 40.23%;
+        top: 57.41%;
+      }
+      #ingredients .ingredient:nth-child(4) {
+        left: 56.77%;
+        top: 57.41%;
+      }
+      #ingredients .ingredient:nth-child(5) {
+        left: 73.44%;
+        top: 57.41%;
+      }
+      #ingredients .ingredient:nth-child(6) {
+        left: 5.99%;
+        top: 66.13%;
+      }
+      #ingredients .ingredient:nth-child(7) {
+        left: 22.92%;
+        top: 66.13%;
+      }
+      #ingredients .ingredient:nth-child(8) {
+        left: 40.36%;
+        top: 66.13%;
+      }
+      #ingredients .ingredient:nth-child(9) {
+        left: 57.68%;
+        top: 66.13%;
+      }
+      #ingredients .ingredient:nth-child(10) {
+        left: 75.39%;
+        top: 66.13%;
+      }
+      #ingredients .ingredient {
+        width: 17.19%;
+        height: 6.54%;
+      }
       .cards {
         display: grid;
         gap: 0;
@@ -387,8 +444,14 @@
         animation: ingredientPop 0.18s ease-out;
       }
       @keyframes ingredientPop {
-        from { transform: scale(0.55); opacity: 0; }
-        to { transform: scale(1); opacity: 1; }
+        from {
+          transform: scale(0.55);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
       .stove-pot .steam {
         position: absolute;
@@ -401,19 +464,43 @@
         opacity: 0;
         animation: steam 2s ease-out infinite;
       }
-      .stove-pot .steam:nth-of-type(1) { left: 32%; }
-      .stove-pot .steam:nth-of-type(2) { left: 48%; animation-delay: 0.6s; }
-      .stove-pot .steam:nth-of-type(3) { left: 64%; animation-delay: 1.2s; }
+      .stove-pot .steam:nth-of-type(1) {
+        left: 32%;
+      }
+      .stove-pot .steam:nth-of-type(2) {
+        left: 48%;
+        animation-delay: 0.6s;
+      }
+      .stove-pot .steam:nth-of-type(3) {
+        left: 64%;
+        animation-delay: 1.2s;
+      }
       @keyframes steam {
-        0% { opacity: 0; transform: translateY(0) scaleX(1); }
-        30% { opacity: 0.7; }
-        100% { opacity: 0; transform: translateY(-5cqw) scaleX(2); }
+        0% {
+          opacity: 0;
+          transform: translateY(0) scaleX(1);
+        }
+        30% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 0;
+          transform: translateY(-5cqw) scaleX(2);
+        }
       }
       @keyframes potIn {
-        0% { transform: translate(-50%, 0) scale(0.3); opacity: 0; }
-        100% { transform: translate(-50%, 0) scale(1); opacity: 1; }
+        0% {
+          transform: translate(-50%, 0) scale(0.3);
+          opacity: 0;
+        }
+        100% {
+          transform: translate(-50%, 0) scale(1);
+          opacity: 1;
+        }
       }
-      .stove-pot { transform: translateX(-50%); }
+      .stove-pot {
+        transform: translateX(-50%);
+      }
 
       .heatbox {
         left: 6.5%;
@@ -1382,9 +1469,15 @@
         font-weight: 900;
       }
       @keyframes qtyBump {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.35); }
-        100% { transform: scale(1); }
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.35);
+        }
+        100% {
+          transform: scale(1);
+        }
       }
       .mq.bump {
         animation: qtyBump 0.18s;
@@ -1544,27 +1637,78 @@
         border-bottom: 2px solid #d8b58d;
         font-size: 15px;
       }
-      .rep-row b { white-space: nowrap; }
-      .rep-total { border-bottom: 0; font-size: 18px; font-weight: 900; color: #9b1f2a; }
-      .rep-total.neg b { color: #a9242f; }
+      .rep-row b {
+        white-space: nowrap;
+      }
+      .rep-total {
+        border-bottom: 0;
+        font-size: 18px;
+        font-weight: 900;
+        color: #9b1f2a;
+      }
+      .rep-total.neg b {
+        color: #a9242f;
+      }
 
       /* ===== DOANH THU THEO THÁNG ===== */
-      .rev-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; font-weight: 900; font-size: 17px; }
-      .rev-nav button {
-        width: 40px; height: 40px; padding: 0;
-        color: #5a3a2e; font-weight: 900;
-        background: linear-gradient(#fbeed6, #efd7b0);
-        border: 3px solid #b98a62; border-radius: 50%;
+      .rev-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        font-weight: 900;
+        font-size: 17px;
       }
-      .rev-nav button:disabled { opacity: 0.35; cursor: not-allowed; }
-      .rev-body { width: 100%; max-height: 44vh; overflow: auto; }
-      .rev-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
-      .rev-table th, .rev-table td { padding: 5px 3px; border-bottom: 2px solid #d8b58d; text-align: right; white-space: nowrap; }
-      .rev-table th:first-child, .rev-table td:first-child { text-align: left; }
-      .rev-table th { font-size: 11px; opacity: 0.8; }
-      .rev-table .neg { color: #a9242f; }
-      .rev-empty { text-align: center; font-weight: 700; opacity: 0.75; padding: 18px 0; }
-    
+      .rev-nav button {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        color: #5a3a2e;
+        font-weight: 900;
+        background: linear-gradient(#fbeed6, #efd7b0);
+        border: 3px solid #b98a62;
+        border-radius: 50%;
+      }
+      .rev-nav button:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .rev-body {
+        width: 100%;
+        max-height: 44vh;
+        overflow: auto;
+      }
+      .rev-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin-top: 8px;
+      }
+      .rev-table th,
+      .rev-table td {
+        padding: 5px 3px;
+        border-bottom: 2px solid #d8b58d;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .rev-table th:first-child,
+      .rev-table td:first-child {
+        text-align: left;
+      }
+      .rev-table th {
+        font-size: 11px;
+        opacity: 0.8;
+      }
+      .rev-table .neg {
+        color: #a9242f;
+      }
+      .rev-empty {
+        text-align: center;
+        font-weight: 700;
+        opacity: 0.75;
+        padding: 18px 0;
+      }
+
       /* ===== ĐIỀU CHỈNH VỊ TRÍ KHUNG KHÁCH YÊU CẦU ===== */
       .bubble {
         top: 36.5% !important; /* đặt khung bên dưới thanh kiên nhẫn */
@@ -1605,10 +1749,14 @@
         animation: customerAnimeBob 0.3s ease-in-out infinite;
       }
       @keyframes customerAnimeBob {
-        0%, 100% { translate: 0 0; }
-        50% { translate: 0 -0.9cqw; }
+        0%,
+        100% {
+          translate: 0 0;
+        }
+        50% {
+          translate: 0 -0.9cqw;
+        }
       }
-
 
       /* Thanh "Khách muốn": hạ chiều cao khung, giảm padding và khoảng cách chữ */
       .bubble {
@@ -1622,8 +1770,10 @@
         line-height: 1.05 !important;
       }
       /* Ưu tiên vị trí khung yêu cầu: ngay dưới thanh kiên nhẫn */
-      .game .bubble { top: 36.5% !important; }
-</style>
+      .game .bubble {
+        top: 36.5% !important;
+      }
+    </style>
   </head>
   <body>
     <div class="game" id="gameRoot">
@@ -1636,30 +1786,24 @@
           id="pauseBtn"
           aria-label="Pause"
         ></button>
-        <button
-          class="stat gear-btn"
-          id="gameGearBtn"
-          aria-label="Settings"
-        >
+        <button class="stat gear-btn" id="gameGearBtn" aria-label="Settings">
           <img src="img/settings.png" alt="" />
         </button>
       </div>
 
       <div class="scene">
         <div class="window"></div>
-        
 
-<div class="customer">
-  <div class="timebar">
-    <div class="timefill" id="timeFill"></div>
-  </div>
+        <div class="customer">
+          <div class="timebar">
+            <div class="timefill" id="timeFill"></div>
+          </div>
 
-  <img class="customer-image" src="" alt="Khách hàng">
-  
-  <div class="head"><span></span></div>
-  <div class="body"></div>
-</div>
+          <img class="customer-image" src="" alt="Khách hàng" />
 
+          <div class="head"><span></span></div>
+          <div class="body"></div>
+        </div>
 
         <div class="bubble">
           <span data-i="want"></span>
@@ -1678,7 +1822,10 @@
       <div class="kitchen">
         <div class="kitchen-inner">
           <div class="pot"></div>
-          <div class="stove-pot" id="stovePot"><i class="steam"></i><i class="steam"></i><i class="steam"></i><div class="pot-ingredients" id="potIngredients"></div></div>
+          <div class="stove-pot" id="stovePot">
+            <i class="steam"></i><i class="steam"></i><i class="steam"></i>
+            <div class="pot-ingredients" id="potIngredients"></div>
+          </div>
           <button class="redo" id="redoBtn" data-i="redo"></button>
           <button class="serve" id="serveBtn" data-i="serve" disabled></button>
           <div class="message" id="msg"></div>
@@ -1706,40 +1853,44 @@
         <div class="m-toast" id="mToast" role="status"></div>
       </div>
     </div>
-<!-- ===== BẢNG CỦA DAILY MARKET ===== -->
+    <!-- ===== BẢNG CỦA DAILY MARKET ===== -->
     <div class="modal hide" id="introModal">
-  <div class="panel">
-    <h2 class="intro-day" id="introDay"></h2>
-    <div class="intro-money" id="introMoney"></div>
-    <button class="btn btn-play" id="introGo">
-      <span data-i="m_goMarket"></span>
-    </button>
-    <button class="btn btn-sub" id="introRevenue">
-      <span data-i="m_revenueBtn"></span>
-    </button>
-  </div>
-</div>
-
-<div class="modal hide" id="revModal">
-  <div class="panel">
-    <h2 data-i="m_revTitle"></h2>
-    <div class="rev-nav">
-      <button id="revPrev" aria-label="Prev">◀</button>
-      <span id="revMonth"></span>
-      <button id="revNext" aria-label="Next">▶</button>
+      <div class="panel">
+        <h2 class="intro-day" id="introDay"></h2>
+        <div class="intro-money" id="introMoney"></div>
+        <button class="btn btn-play" id="introGo">
+          <span data-i="m_goMarket"></span>
+        </button>
+        <button class="btn btn-sub" id="introRevenue">
+          <span data-i="m_revenueBtn"></span>
+        </button>
+      </div>
     </div>
-    <div class="rev-body" id="revBody"></div>
-    <button class="btn btn-close" data-close="revModal">
-      <span data-i="close"></span>
-    </button>
-  </div>
-</div>
+
+    <div class="modal hide" id="revModal">
+      <div class="panel">
+        <h2 data-i="m_revTitle"></h2>
+        <div class="rev-nav">
+          <button id="revPrev" aria-label="Prev">◀</button>
+          <span id="revMonth"></span>
+          <button id="revNext" aria-label="Next">▶</button>
+        </div>
+        <div class="rev-body" id="revBody"></div>
+        <button class="btn btn-close" data-close="revModal">
+          <span data-i="close"></span>
+        </button>
+      </div>
+    </div>
 
     <!-- ===== MÀN HÌNH BẮT ĐẦU ===== -->
     <div class="start-screen" id="startScreen">
       <div class="top-icons">
         <button class="icon-btn" id="soundBtn" aria-label="Sound">🔊</button>
-        <button class="icon-btn gear-icon-btn" id="gearBtn" aria-label="Settings">
+        <button
+          class="icon-btn gear-icon-btn"
+          id="gearBtn"
+          aria-label="Settings"
+        >
           <img src="img/settings.png" alt="" />
         </button>
       </div>
@@ -1766,7 +1917,7 @@
           <button class="lang-btn" data-lang="en">English</button>
         </div>
         <button class="btn btn-sub" id="rulesBtn">
-           <span data-i="rules"></span>
+          <span data-i="rules"></span>
         </button>
         <button class="btn btn-sub btn-danger" id="restartBtn">
           <span data-i="restart"></span>
@@ -1874,7 +2025,7 @@
           img: "img/broth_sieu_cay.png",
           pot: "img/pot_sieu_cay.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
           emoji: "🍜",
-          name: { vi: "Tonkotsu", ja: "とんこつ", en: "Tonkotsu" },
+          name: { vi: "siêu cay", ja: "超辛口", en: "Super Spicy" },
         },
         {
           key: "ca_chua",
@@ -1888,7 +2039,7 @@
           img: "img/broth_collagen.png",
           pot: "img/pot_collagen.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
           emoji: "🥣",
-          name: { vi: "Thanh đạm", ja: "あっさり", en: "Clear" },
+          name: { vi: "Collagen", ja: "コラーゲン", en: "Collagen" },
         },
       ];
 
@@ -1905,22 +2056,109 @@
       const BROTH_PRICE = 50; // giá nước lẩu (mọi loại nước lẩu bằng nhau) khi bán cho khách
       const SELL_MARKUP = 1.5; // khách trả = giá nước lẩu + tổng (giá nguyên liệu × hệ số này)
       const orderPrice = (idxSet) =>
-        BROTH_PRICE + Math.round([...idxSet].reduce((s, i) => s + ITEMS[i].price, 0) * SELL_MARKUP);
+        BROTH_PRICE +
+        Math.round(
+          [...idxSet].reduce((s, i) => s + ITEMS[i].price, 0) * SELL_MARKUP,
+        );
       const CATALOG = [
-        { id: "beef", image: "img/beef.png", group: "meat", name: { vi: "Thịt bò", ja: "牛肉", en: "Beef" } },
-        { id: "chicken", image: "img/chicken.png", group: "meat", name: { vi: "Thịt gà", ja: "鶏肉", en: "Chicken" } },
-        { id: "fish", image: "img/fish.png", group: "seafood", name: { vi: "Cá", ja: "魚", en: "Fish" } },
-        { id: "shrimp", image: "img/shrimp.png", group: "seafood", name: { vi: "Tôm", ja: "エビ", en: "Shrimp" } },
-        { id: "squid", image: "img/squid.png", group: "seafood", name: { vi: "Mực", ja: "イカ", en: "Squid" } },
-        { id: "bok_choy", image: "img/bok_choy.png", group: "veg", name: { vi: "Cải thìa", ja: "チンゲン菜", en: "Bok choy" } },
-        { id: "lotus_root", image: "img/lotus.png", group: "veg", name: { vi: "Củ sen", ja: "れんこん", en: "Lotus root" } },
-        { id: "oyster_mushroom", image: "img/oyster_mushroom.png", group: "veg", name: { vi: "Nấm bào ngư", ja: "ヒラタケ", en: "Oyster mushrooms" } },
-        { id: "shiitake", image: "img/shitake.png", group: "veg", name: { vi: "Nấm hương", ja: "椎茸", en: "Shiitake" } },
-        { id: "tofu", image: "img/tofu.png", group: "veg", name: { vi: "Đậu phụ", ja: "豆腐", en: "Tofu" } },
-        { id: "fish_balls", image: "img/fish_balls.png", group: "seafood", name: { vi: "Viên cá", ja: "魚団子", en: "Fish balls" } },
-        { id: "ramen", image: "img/ramen.png", group: "veg", name: { vi: "Mì ramen", ja: "ラーメン", en: "Ramen noodles" } },
-        { id: "corn", image: "img/corn.png", group: "veg", name: { vi: "Ngô", ja: "とうもろこし", en: "Corn" } },
-        { id: "dumplings", image: "img/dumplings.png", group: "meat", name: { vi: "Há cảo", ja: "餃子", en: "Dumplings" } },
+        {
+          id: "beef",
+          image: "img/beef.png",
+          potImage: "img/chin/beef_cooked.png",
+          group: "meat",
+          name: { vi: "Thịt bò", ja: "牛肉", en: "Beef" },
+        },
+        {
+          id: "chicken",
+          image: "img/chicken.png",
+          potImage: "img/chin/chicken_cooked.png",
+          group: "meat",
+          name: { vi: "Thịt gà", ja: "鶏肉", en: "Chicken" },
+        },
+        {
+          id: "fish",
+          image: "img/fish.png",
+          potImage: "img/chin/fish_cooked.png",
+          group: "seafood",
+          name: { vi: "Cá", ja: "魚", en: "Fish" },
+        },
+        {
+          id: "shrimp",
+          image: "img/shrimp.png",
+          potImage: "img/chin/shrimp_cooked.png",
+          group: "seafood",
+          name: { vi: "Tôm", ja: "エビ", en: "Shrimp" },
+        },
+        {
+          id: "squid",
+          image: "img/squid.png",
+          potImage: "img/chin/squid_cooked.png",
+          group: "seafood",
+          name: { vi: "Mực", ja: "イカ", en: "Squid" },
+        },
+        {
+          id: "bok_choy",
+          image: "img/bok_choy.png",
+          potImage: "img/chin/bok_choy_cooked.png",
+          group: "veg",
+          name: { vi: "Cải thìa", ja: "チンゲン菜", en: "Bok choy" },
+        },
+        {
+          id: "lotus_root",
+          image: "img/lotus.png",
+          potImage: "img/chin/lotus_root_cooked.png",
+          group: "veg",
+          name: { vi: "Củ sen", ja: "れんこん", en: "Lotus root" },
+        },
+        {
+          id: "oyster_mushroom",
+          image: "img/oyster_mushroom.png",
+          potImage: "img/chin/oyster_mushroom_cooked.png",
+          group: "veg",
+          name: { vi: "Nấm bào ngư", ja: "ヒラタケ", en: "Oyster mushrooms" },
+        },
+        {
+          id: "shiitake",
+          image: "img/shitake.png",
+          potImage: "img/chin/shiitake_cooked.png",
+          group: "veg",
+          name: { vi: "Nấm hương", ja: "椎茸", en: "Shiitake" },
+        },
+        {
+          id: "tofu",
+          image: "img/tofu.png",
+          potImage: "img/chin/tofu_cooked.png",
+          group: "veg",
+          name: { vi: "Đậu phụ", ja: "豆腐", en: "Tofu" },
+        },
+        {
+          id: "fish_balls",
+          image: "img/fish_balls.png",
+          potImage: "img/chin/fish_balls_cooked.png",
+          group: "seafood",
+          name: { vi: "Viên cá", ja: "魚団子", en: "Fish balls" },
+        },
+        {
+          id: "ramen",
+          image: "img/ramen.png",
+          potImage: "img/chin/ramen_cooked.png",
+          group: "veg",
+          name: { vi: "Mì ramen", ja: "ラーメン", en: "Ramen noodles" },
+        },
+        {
+          id: "corn",
+          image: "img/corn.png",
+          potImage: "img/chin/corn_cooked.png",
+          group: "veg",
+          name: { vi: "Ngô", ja: "とうもろこし", en: "Corn" },
+        },
+        {
+          id: "dumplings",
+          image: "img/dumplings.png",
+          potImage: "img/chin/dumplings_cooked.png",
+          group: "meat",
+          name: { vi: "Há cảo", ja: "餃子", en: "Dumplings" },
+        },
       ];
       /* Mỗi nguyên liệu có đủ các trường: id, name, image, price (lấy từ GROUP_PRICE theo group),
          selectedQuantity (đang chọn, chưa trả tiền) và purchasedQuantity (trong kho, được lưu). */
@@ -2006,11 +2244,11 @@
           m_stock: "Kho nguyên liệu",
           m_pending:
             "⚠ Các món còn trong giỏ mà chưa bấm MUA sẽ không được mua.",
-          m_trayLimit:
-            "Quầy chỉ bày tối đa 10 loại mỗi ngày. ",
+          m_trayLimit: "Quầy chỉ bày tối đa 10 loại mỗi ngày. ",
           m_keep: "Mua thêm",
           m_go: "Mở quán ▶",
-          m_cartEmpty: "Giỏ hàng đang trống. Bấm vào giỏ hàng hoặc nút + để chọn.",
+          m_cartEmpty:
+            "Giỏ hàng đang trống. Bấm vào giỏ hàng hoặc nút + để chọn.",
           m_introTitle: "Chào mừng đến chợ!",
           m_intro:
             "Bạn có {m} xu. Bấm vào nguyên liệu hoặc nút + / − để chọn số lượng, rồi bấm HOÀN TẤT để xem tổng kết và trả tiền.",
@@ -2089,7 +2327,8 @@
           m_none: "今回は何も買い足していません。",
           m_bought: "今回の購入",
           m_stock: "食材の在庫",
-          m_pending: "⚠ かごに入れただけで「買う」を押していない食材は購入されません。",
+          m_pending:
+            "⚠ かごに入れただけで「買う」を押していない食材は購入されません。",
           m_trayLimit: "お店に並べられるのは1日10種類までです。",
           m_keep: "もっと買う",
           m_go: "開店 ▶",
@@ -2111,8 +2350,6 @@
           hCost: "仕入",
           hPen: "罰金",
           hNet: "利益",
-
-          
         },
         en: {
           start: "Start",
@@ -2175,7 +2412,8 @@
           m_none: "You are not buying anything more this time.",
           m_bought: "Bought now",
           m_stock: "Ingredient stock",
-          m_pending: "⚠ Items in the cart that you didn't BUY will not be purchased.",
+          m_pending:
+            "⚠ Items in the cart that you didn't BUY will not be purchased.",
           m_trayLimit: "The counter shows at most 10 kinds per day .",
           m_keep: "Keep shopping",
           m_go: "Open shop ▶",
@@ -2185,9 +2423,9 @@
             "You have {m} coins. Tap an item or use + / − to choose amounts, then press CHECKOUT to review the total and pay.",
           m_added: "selected",
 
-        // sau m_added: "selected",
-        m_goMarket: " Go to market",
-        m_moneyLabel: "Money",
+          // sau m_added: "selected",
+          m_goMarket: " Go to market",
+          m_moneyLabel: "Money",
           m_revenueBtn: "Revenue",
           m_revTitle: "Monthly revenue",
           m_month: "Month",
@@ -2207,7 +2445,7 @@
       const fmt = (v) => Number(v).toLocaleString(LOCALE[lang] || "en-US");
 
       /* ===== TRẠNG THÁI & LƯU DỮ LIỆU ===== */
-    const KEY = "hotpot_save";
+      const KEY = "hotpot_save";
       /* Dữ liệu game mới: tiền ban đầu CHỈ được cấp ở đây (khi tạo mới / bắt đầu lại). */
       const newSave = () => ({
         day: 1,
@@ -2310,7 +2548,10 @@
         [148, 385, 620],
       ]; // tâm bảng gỗ từng ô (cột) theo từng hàng trên ảnh chợ
       const RY = [455, 618, 778, 942, 1105]; // tâm bảng gỗ theo từng hàng
-      const slotOf = (i) => ({ x: RX[Math.floor(i / 3)][i % 3], y: RY[Math.floor(i / 3)] });
+      const slotOf = (i) => ({
+        x: RX[Math.floor(i / 3)][i % 3],
+        y: RY[Math.floor(i / 3)],
+      });
       function cropStyle(it) {
         const s = slotOf(ITEMS.indexOf(it)),
           size = 150;
@@ -2334,7 +2575,8 @@
       function armImg(img) {
         if (img.dataset.id === undefined || img.dataset.id === "") return;
         img.addEventListener("error", () => cropFallback(img));
-        if (img.complete && img.naturalWidth === 0 && img.getAttribute("src")) cropFallback(img);
+        if (img.complete && img.naturalWidth === 0 && img.getAttribute("src"))
+          cropFallback(img);
       }
 
       /* ===== DỰNG KHAY ===== */
@@ -2416,18 +2658,45 @@
         // Hiển thị từng nguyên liệu ngay trong tô khi người chơi bấm chọn.
         const layer = $("potIngredients");
         if (layer) {
-          layer.innerHTML = [...selF].map((idx, n) => {
-            const item = ITEMS[idx];
-            if (!item) return "";
-            const positions = [
-              [8, 8], [37, 0], [65, 10], [20, 38], [49, 35],
-              [0, 25], [72, 35], [33, 18], [57, 5], [12, 0]
-            ];
-            const [x, y] = positions[n % positions.length];
-            return `<img src="${item.image}" alt="${nm(item)}" title="${nm(item)}" style="left:${x}%;top:${y}%">`;
-          }).join("");
+          layer.innerHTML = [...selF]
+            .map((idx, n) => {
+              const item = ITEMS[idx];
+              if (!item) return "";
+              const positions = [
+                [8, 8],
+                [37, 0],
+                [65, 10],
+                [20, 38],
+                [49, 35],
+                [0, 25],
+                [72, 35],
+                [33, 18],
+                [57, 5],
+                [12, 0],
+              ];
+              const [x, y] = positions[n % positions.length];
+              return `<img src="${item.potImage || item.image}" alt="${nm(item)}" title="${nm(item)}" style="left:${x}%;top:${y}%">`;
+            })
+            .join("");
           layer.querySelectorAll("img").forEach((img) => {
-            img.addEventListener("error", () => img.remove());
+            img.addEventListener(
+              "error",
+              () => {
+                const item = ITEMS.find(
+                  (candidate) => candidate.potImage === img.getAttribute("src"),
+                );
+                if (!item) {
+                  img.remove();
+                  return;
+                }
+                img.addEventListener("error", () => img.remove(), {
+                  once: true,
+                });
+                img.removeAttribute("src");
+                img.src = item.image;
+              },
+              { once: true },
+            );
           });
         }
         sp.classList.add("show");
@@ -2552,15 +2821,15 @@
         selF = new Set();
         setReady(false);
         showRedo(false);
-       
-const c = cust(),
-  bb = bub();
 
-// Random ảnh anime mỗi khi có khách mới
-const customerImg = c.querySelector("img.customer-image");
-if (customerImg) {
-  customerImg.src = randomCustomerImage();
-}
+        const c = cust(),
+          bb = bub();
+
+        // Random ảnh anime mỗi khi có khách mới
+        const customerImg = c.querySelector("img.customer-image");
+        if (customerImg) {
+          customerImg.src = randomCustomerImage();
+        }
 
         bb.classList.remove("show");
         c.classList.remove("angry", "walking");
@@ -2912,7 +3181,9 @@ if (customerImg) {
             : `<div class="cart-empty">${t.m_cartEmpty}</div>`;
         html += `<div class="cart-total">${t.m_total}: ${fmt(total)} ${t.m_coin}<br>${t.m_left}: ${fmt(S.money - total)} ${t.m_coin}</div>`;
         if (stockTotal() > 0) {
-          html += `<h4 class="cart-sec">${t.m_stock}</h4>` + itemRows((it) => it.purchasedQuantity, false);
+          html +=
+            `<h4 class="cart-sec">${t.m_stock}</h4>` +
+            itemRows((it) => it.purchasedQuantity, false);
         }
         $("cartList").innerHTML = html;
         armThumbs($("cartList"));
@@ -2929,15 +3200,25 @@ if (customerImg) {
         const total = cartTotal();
         let html = "";
         if (cartCount() > 0) {
-          html += `<h4 class="cart-sec">${t.m_cart}</h4>` + itemRows((it) => it.selectedQuantity, true);
+          html +=
+            `<h4 class="cart-sec">${t.m_cart}</h4>` +
+            itemRows((it) => it.selectedQuantity, true);
           html += `<div class="cart-total">${t.m_total}: ${fmt(total)} ${t.m_coin}<br>${t.m_left}: ${fmt(S.money - total)} ${t.m_coin}</div>`;
         } else {
           html += `<div class="cart-empty">${t.m_none}<br>💰 ${fmt(S.money)} ${t.m_coin}</div>`;
         }
         if (stockTotal() > 0) {
-          html += `<h4 class="cart-sec">${t.m_stock}</h4>` + itemRows((it) => it.purchasedQuantity, false);
+          html +=
+            `<h4 class="cart-sec">${t.m_stock}</h4>` +
+            itemRows((it) => it.purchasedQuantity, false);
         }
-        if (stockKinds() + ITEMS.filter((it) => it.selectedQuantity > 0 && it.purchasedQuantity <= 0).length > ACTIVE)
+        if (
+          stockKinds() +
+            ITEMS.filter(
+              (it) => it.selectedQuantity > 0 && it.purchasedQuantity <= 0,
+            ).length >
+          ACTIVE
+        )
           html += `<div class="cart-empty">${t.m_trayLimit}</div>`;
         $("ckText").innerHTML = html;
         armThumbs($("ckText"));
@@ -2989,7 +3270,8 @@ if (customerImg) {
           b.hidden = cnt <= 0;
           b.textContent = cnt;
         });
-        $("mSum").innerHTML = `<span class="sl">${t.m_total}</span><b>${fmt(total)} ${t.m_coin}</b>`;
+        $("mSum").innerHTML =
+          `<span class="sl">${t.m_total}</span><b>${fmt(total)} ${t.m_coin}</b>`;
         $("mCheckout").textContent = t.m_checkout;
         $("mBack").setAttribute("aria-label", t.m_back);
       }
@@ -3027,7 +3309,7 @@ if (customerImg) {
       /* ===== MÀN HÌNH BẮT ĐẦU / BẢNG ===== */
       const openModal = (id) => $(id).classList.remove("hide");
       const closeModal = (id) => $(id).classList.add("hide");
-/* ===== DOANH THU THEO THÁNG (1 tháng = MONTH_DAYS ngày chơi) ===== */
+      /* ===== DOANH THU THEO THÁNG (1 tháng = MONTH_DAYS ngày chơi) ===== */
       const MONTH_DAYS = 30;
       let revMonth = 1;
       const monthOf = (d) => Math.floor((d - 1) / MONTH_DAYS) + 1;
@@ -3047,7 +3329,8 @@ if (customerImg) {
         const line = (label, val, cls = "") =>
           `<div class="rep-row ${cls}"><span>${label}</span><b>${val} ${t.m_coin}</b></div>`;
         if (!list.length) {
-          $("revBody").innerHTML = `<div class="rev-empty">${t.m_revEmpty}</div>`;
+          $("revBody").innerHTML =
+            `<div class="rev-empty">${t.m_revEmpty}</div>`;
           return;
         }
         const profit = sum("profit");
@@ -3080,23 +3363,23 @@ if (customerImg) {
         renderRevenue();
       };
 
-function showIntro() {
-  const t = T();
-  $("introDay").textContent =
-    lang === "ja" ? S.day + t.day : t.day + " " + S.day;
-  $("introMoney").innerHTML =
-    `<small>${t.m_moneyLabel}</small><b>💰 ${fmt(S.money)} ${t.m_coin}</b>`;
-  openModal("introModal");
-}
-$("introGo").onclick = () => {
-  closeModal("introModal");
-  openMarket(); // bấm Đi chợ mới vào chợ
-};
+      function showIntro() {
+        const t = T();
+        $("introDay").textContent =
+          lang === "ja" ? S.day + t.day : t.day + " " + S.day;
+        $("introMoney").innerHTML =
+          `<small>${t.m_moneyLabel}</small><b>💰 ${fmt(S.money)} ${t.m_coin}</b>`;
+        openModal("introModal");
+      }
+      $("introGo").onclick = () => {
+        closeModal("introModal");
+        openMarket(); // bấm Đi chợ mới vào chợ
+      };
 
-function startGame() {
-  $("startScreen").classList.add("hide");
-  showIntro();
-}
+      function startGame() {
+        $("startScreen").classList.add("hide");
+        showIntro();
+      }
       $("playBtn").onclick = () => {
         S = newSave(); // ván mới: cấp tiền ban đầu đúng 1 lần
         save();
@@ -3112,18 +3395,16 @@ function startGame() {
       };
       $("serveBtn").onclick = serve;
       $("redoBtn").onclick = redo;
-      document
-        .querySelectorAll("[data-close]")
-        .forEach(
-          (b) =>
-            (b.onclick = () => {
-              closeModal(b.dataset.close);
-              if (b.dataset.close === "settingsModal" && gearPaused) {
-                gearPaused = false;
-                resumeGame();
-              }
-            }),
-        );
+      document.querySelectorAll("[data-close]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            closeModal(b.dataset.close);
+            if (b.dataset.close === "settingsModal" && gearPaused) {
+              gearPaused = false;
+              resumeGame();
+            }
+          }),
+      );
       document.querySelectorAll(".lang-btn").forEach(
         (b) =>
           (b.onclick = () => {
@@ -3170,12 +3451,10 @@ function startGame() {
         if (document.hidden) pauseGame();
       });
 
-      
-function randomCustomerImage() {
-  const number = Math.floor(Math.random() * 4) + 1;
-  return `img/customers/customers_${String(number).padStart(2, "0")}.png`;
-}
-
+      function randomCustomerImage() {
+        const number = Math.floor(Math.random() * 6) + 1;
+        return `img/customers/customers_${String(number).padStart(2, "0")}.png`;
+      }
 
       /* Bắt đầu lại từ đầu -> Ngày 1 (dữ liệu mới, tiền ban đầu, kho trống) */
       $("confirmYes").onclick = () => {
@@ -3193,6 +3472,6 @@ function randomCustomerImage() {
       paint();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="supabase.js"></script>
+    <script src="supabase.js"></script>
   </body>
 </html>
