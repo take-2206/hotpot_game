@@ -368,6 +368,28 @@
         font-size: 13cqw;
         text-align: center;
       }
+      /* Nguyên liệu đã chọn sẽ hiện bên trong tô, chồng lên hình nước lẩu */
+      .pot-ingredients {
+        position: absolute;
+        left: 17%;
+        top: 24%;
+        width: 66%;
+        height: 48%;
+        z-index: 3;
+        pointer-events: none;
+      }
+      .pot-ingredients img {
+        position: absolute;
+        width: 29%;
+        height: 58%;
+        object-fit: contain;
+        filter: drop-shadow(0 0.18cqw 0.15cqw rgba(30, 15, 10, 0.35));
+        animation: ingredientPop 0.18s ease-out;
+      }
+      @keyframes ingredientPop {
+        from { transform: scale(0.55); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
       .stove-pot .steam {
         position: absolute;
         bottom: 70%;
@@ -1656,7 +1678,7 @@
       <div class="kitchen">
         <div class="kitchen-inner">
           <div class="pot"></div>
-          <div class="stove-pot" id="stovePot"><i class="steam"></i><i class="steam"></i><i class="steam"></i></div>
+          <div class="stove-pot" id="stovePot"><i class="steam"></i><i class="steam"></i><i class="steam"></i><div class="pot-ingredients" id="potIngredients"></div></div>
           <button class="redo" id="redoBtn" data-i="redo"></button>
           <button class="serve" id="serveBtn" data-i="serve" disabled></button>
           <div class="message" id="msg"></div>
@@ -1852,7 +1874,7 @@
           img: "img/broth_sieu_cay.png",
           pot: "img/pot_sieu_cay.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
           emoji: "🍜",
-          name: { vi: "siêu cay", ja: "超辛口", en: "Super Spicy" },
+          name: { vi: "Tonkotsu", ja: "とんこつ", en: "Tonkotsu" },
         },
         {
           key: "ca_chua",
@@ -1866,7 +1888,7 @@
           img: "img/broth_collagen.png",
           pot: "img/pot_collagen.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
           emoji: "🥣",
-          name: { vi: "collagen", ja: "コラーゲン", en: "Collagen" },
+          name: { vi: "Thanh đạm", ja: "あっさり", en: "Clear" },
         },
       ];
 
@@ -2390,6 +2412,23 @@
           sp.prepend(img);
           sp.classList.remove("show");
           sp.offsetWidth; // chạy lại animation khi đổi nước lẩu
+        }
+        // Hiển thị từng nguyên liệu ngay trong tô khi người chơi bấm chọn.
+        const layer = $("potIngredients");
+        if (layer) {
+          layer.innerHTML = [...selF].map((idx, n) => {
+            const item = ITEMS[idx];
+            if (!item) return "";
+            const positions = [
+              [8, 8], [37, 0], [65, 10], [20, 38], [49, 35],
+              [0, 25], [72, 35], [33, 18], [57, 5], [12, 0]
+            ];
+            const [x, y] = positions[n % positions.length];
+            return `<img src="${item.image}" alt="${nm(item)}" title="${nm(item)}" style="left:${x}%;top:${y}%">`;
+          }).join("");
+          layer.querySelectorAll("img").forEach((img) => {
+            img.addEventListener("error", () => img.remove());
+          });
         }
         sp.classList.add("show");
       }
