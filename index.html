@@ -58,6 +58,21 @@
         position: absolute;
       }
 
+      /* ===== BẢNG ĐẦU NGÀY ===== */
+.intro-day { font-size: clamp(28px, 5vw, 44px) !important; }
+.intro-money {
+  width: 100%;
+  padding: 14px 10px;
+  text-align: center;
+  font-weight: 900;
+  line-height: 1.5;
+  background: #fbeed6;
+  border: 3px solid #d8b58d;
+  border-radius: 16px;
+}
+.intro-money small { display: block; font-size: 14px; font-weight: 800; opacity: 0.8; }
+.intro-money b { font-size: clamp(24px, 4vw, 34px); color: #9b1f2a; }
+
       /* ===== TOP BAR ===== */
       .top {
         top: 0;
@@ -1496,6 +1511,36 @@
         font-weight: 700;
         opacity: 0.75;
       }
+
+      /* ===== BÁO CÁO CUỐI NGÀY ===== */
+      .rep-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 7px 2px;
+        border-bottom: 2px solid #d8b58d;
+        font-size: 15px;
+      }
+      .rep-row b { white-space: nowrap; }
+      .rep-total { border-bottom: 0; font-size: 18px; font-weight: 900; color: #9b1f2a; }
+      .rep-total.neg b { color: #a9242f; }
+
+      /* ===== DOANH THU THEO THÁNG ===== */
+      .rev-nav { display: flex; align-items: center; justify-content: space-between; width: 100%; font-weight: 900; font-size: 17px; }
+      .rev-nav button {
+        width: 40px; height: 40px; padding: 0;
+        color: #5a3a2e; font-weight: 900;
+        background: linear-gradient(#fbeed6, #efd7b0);
+        border: 3px solid #b98a62; border-radius: 50%;
+      }
+      .rev-nav button:disabled { opacity: 0.35; cursor: not-allowed; }
+      .rev-body { width: 100%; max-height: 44vh; overflow: auto; }
+      .rev-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+      .rev-table th, .rev-table td { padding: 5px 3px; border-bottom: 2px solid #d8b58d; text-align: right; white-space: nowrap; }
+      .rev-table th:first-child, .rev-table td:first-child { text-align: left; }
+      .rev-table th { font-size: 11px; opacity: 0.8; }
+      .rev-table .neg { color: #a9242f; }
+      .rev-empty { text-align: center; font-weight: 700; opacity: 0.75; padding: 18px 0; }
     </style>
   </head>
   <body>
@@ -1570,6 +1615,34 @@
         <div class="m-toast" id="mToast" role="status"></div>
       </div>
     </div>
+<!-- ===== BẢNG CỦA DAILY MARKET ===== -->
+    <div class="modal hide" id="introModal">
+  <div class="panel">
+    <h2 class="intro-day" id="introDay"></h2>
+    <div class="intro-money" id="introMoney"></div>
+    <button class="btn btn-play" id="introGo">
+      <span data-i="m_goMarket"></span>
+    </button>
+    <button class="btn btn-sub" id="introRevenue">
+      <span data-i="m_revenueBtn"></span>
+    </button>
+  </div>
+</div>
+
+<div class="modal hide" id="revModal">
+  <div class="panel">
+    <h2 data-i="m_revTitle"></h2>
+    <div class="rev-nav">
+      <button id="revPrev" aria-label="Prev">◀</button>
+      <span id="revMonth"></span>
+      <button id="revNext" aria-label="Next">▶</button>
+    </div>
+    <div class="rev-body" id="revBody"></div>
+    <button class="btn btn-close" data-close="revModal">
+      <span data-i="close"></span>
+    </button>
+  </div>
+</div>
 
     <!-- ===== MÀN HÌNH BẮT ĐẦU ===== -->
     <div class="start-screen" id="startScreen">
@@ -1653,7 +1726,7 @@
     <div class="modal hide" id="dayModal">
       <div class="panel">
         <h2 id="dayTitle"></h2>
-        <p class="rules-text" id="dayTxt"></p>
+        <div class="rules-text" id="dayTxt"></div>
         <button class="btn btn-play" id="nextBtn"></button>
       </div>
     </div>
@@ -1710,7 +1783,7 @@
           img: "img/broth_sieu_cay.png",
           pot: "img/pot_sieu_cay.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
           emoji: "🍜",
-          name: { vi: "Tonkotsu", ja: "とんこつ", en: "Tonkotsu" },
+          name: { vi: "siêu cay", ja: "超辛い", en: "Super Spicy" },
         },
         {
           key: "ca_chua",
@@ -1724,7 +1797,7 @@
           img: "img/broth_collagen.png",
           pot: "img/pot_collagen.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
           emoji: "🥣",
-          name: { vi: "Thanh đạm", ja: "あっさり", en: "Clear" },
+          name: { vi: "collagen", ja: "コラーゲン", en: "Collagen" },
         },
       ];
 
@@ -1749,7 +1822,7 @@
         { id: "shrimp", image: "img/shrimp.png", group: "seafood", name: { vi: "Tôm", ja: "エビ", en: "Shrimp" } },
         { id: "squid", image: "img/squid.png", group: "seafood", name: { vi: "Mực", ja: "イカ", en: "Squid" } },
         { id: "bok_choy", image: "img/bok_choy.png", group: "veg", name: { vi: "Cải thìa", ja: "チンゲン菜", en: "Bok choy" } },
-        { id: "lotus_root", image: "img/lotus_root.png", group: "veg", name: { vi: "Củ sen", ja: "れんこん", en: "Lotus root" } },
+        { id: "lotus_root", image: "img/lotus.png", group: "veg", name: { vi: "Củ sen", ja: "れんこん", en: "Lotus root" } },
         { id: "oyster_mushroom", image: "img/oyster_mushroom.png", group: "veg", name: { vi: "Nấm bào ngư", ja: "ヒラタケ", en: "Oyster mushrooms" } },
         { id: "shiitake", image: "img/shitake.png", group: "veg", name: { vi: "Nấm hương", ja: "椎茸", en: "Shiitake" } },
         { id: "tofu", image: "img/tofu.png", group: "veg", name: { vi: "Đậu phụ", ja: "豆腐", en: "Tofu" } },
@@ -1791,7 +1864,7 @@
           confirmText:
             "Toàn bộ tiến trình sẽ bị xóa và bạn sẽ quay lại Ngày 1. Bạn chắc chứ?",
           rulesText:
-            '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền.</li><li>Đến 22:00 quán tự đóng cửa. Phục vụ đúng ít nhất 8 khách để sang ngày tiếp theo.</li></ol>',
+            '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
           day: "Ngày",
           cust: "Khách",
           want: "Khách muốn:",
@@ -1814,7 +1887,12 @@
           pick: "Hãy chọn nước lẩu trước!",
           win: "Hoàn thành ngày",
           lose: "Chưa đạt ngày",
-          res: "Phục vụ đúng",
+          res: "Khách phục vụ đúng",
+          dayEnd: "kết thúc",
+          marketCost: "Chi phí đi chợ (sáng)",
+          revenue: "Doanh thu",
+          penalty: "Phạt khách bỏ về",
+          net: "Lợi nhuận",
           next: "Ngày tiếp theo ▶",
           retry: "Chơi lại ngày này ▶",
           /* Daily Market */
@@ -1846,6 +1924,18 @@
           m_intro:
             "Bạn có {m} xu. Bấm vào nguyên liệu hoặc nút + / − để chọn số lượng, rồi bấm HOÀN TẤT để xem tổng kết và trả tiền.",
           m_added: "đang chọn",
+          m_goMarket: "🛒 Đi chợ",
+          m_moneyLabel: "Tiền hiện có",
+          m_revenueBtn: "📊 Doanh thu",
+          m_revTitle: "Doanh thu theo tháng",
+          m_month: "Tháng",
+          m_revEmpty: "Chưa có dữ liệu trong tháng này.",
+          m_revTotal: "Tổng doanh thu",
+          hDay: "Ngày",
+          hRev: "Thu",
+          hCost: "Chi",
+          hPen: "Phạt",
+          hNet: "Lãi",
         },
         ja: {
           start: "はじめる",
@@ -1859,7 +1949,7 @@
           confirmText:
             "すべての進行状況が消えて、1日目に戻ります。よろしいですか？",
           rulesText:
-            "<ol><li>毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。</li><li>営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。</li><li>注文どおりのスープと具材を選びます。</li><li>お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。</li><li>「提供」を押すと、正解でお金がもらえ、間違いは減ります。</li><li>22:00になると自動で閉店。8人以上に正しく出せれば次の日へ。</li></ol>",
+            "<ol><li>毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。</li><li>営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。</li><li>注文どおりのスープと具材を選びます。</li><li>お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。</li><li>「提供」を押すと、正解でお金がもらえ、間違いは減ります。</li><li>22:00になると自動で閉店。その日の売上を確認して、次の日へ進みます。</li></ol>",
           day: "日目",
           cust: "客",
           want: "ご注文：",
@@ -1882,7 +1972,12 @@
           pick: "先にスープを選んでね！",
           win: "クリア：",
           lose: "失敗：",
-          res: "正解数",
+          res: "正しく提供した数",
+          dayEnd: "終了",
+          marketCost: "朝の仕入れ代",
+          revenue: "売上",
+          penalty: "怒って帰った罰金",
+          net: "利益",
           next: "次の日へ ▶",
           retry: "もう一度 ▶",
           /* Daily Market */
@@ -1912,6 +2007,21 @@
           m_intro:
             "所持金は {m} コイン。食材をタップするか＋／−で数を選び、「会計」で合計を確認して支払います。",
           m_added: "選択中",
+          // sau m_added: "選択中",
+          m_goMarket: "🛒 市場へ行く",
+          m_moneyLabel: "所持金",
+          m_revenueBtn: "📊 売上",
+          m_revTitle: "月ごとの売上",
+          m_month: "か月目",
+          m_revEmpty: "この月のデータはまだありません。",
+          m_revTotal: "売上合計",
+          hDay: "日",
+          hRev: "売上",
+          hCost: "仕入",
+          hPen: "罰金",
+          hNet: "利益",
+
+          
         },
         en: {
           start: "Start",
@@ -1925,7 +2035,7 @@
           confirmText:
             "All progress will be erased and you will return to Day 1. Are you sure?",
           rulesText:
-            "<ol><li>Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.</li><li>The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.</li><li>Pick the exact broth and ingredients they ask for.</li><li>Watch the patience bar: green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.</li><li>Press Serve: correct earns money, wrong loses money.</li><li>At 22:00 the shop closes automatically. Serve at least 8 correctly to reach the next day.</li></ol>",
+            "<ol><li>Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.</li><li>The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.</li><li>Pick the exact broth and ingredients they ask for.</li><li>Watch the patience bar: green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.</li><li>Press Serve: correct earns money, wrong loses money.</li><li>At 22:00 the shop closes automatically. You will see the day's revenue and then move on to the next day.</li></ol>",
           day: "Day",
           cust: "Guest",
           want: "Order:",
@@ -1948,7 +2058,12 @@
           pick: "Pick a broth first!",
           win: "Day cleared:",
           lose: "Day failed:",
-          res: "Correct",
+          res: "Correct orders",
+          dayEnd: "complete",
+          marketCost: "Market costs (morning)",
+          revenue: "Revenue",
+          penalty: "Angry-customer penalty",
+          net: "Profit",
           next: "Next day ▶",
           retry: "Retry day ▶",
           /* Daily Market */
@@ -1978,6 +2093,20 @@
           m_intro:
             "You have {m} coins. Tap an item or use + / − to choose amounts, then press CHECKOUT to review the total and pay.",
           m_added: "selected",
+
+        // sau m_added: "selected",
+        m_goMarket: "🛒 Go to market",
+        m_moneyLabel: "Money",
+          m_revenueBtn: "📊 Revenue",
+          m_revTitle: "Monthly revenue",
+          m_month: "Month",
+          m_revEmpty: "No data for this month yet.",
+          m_revTotal: "Total revenue",
+          hDay: "Day",
+          hRev: "Rev.",
+          hCost: "Cost",
+          hPen: "Pen.",
+          hNet: "Profit",
         },
       };
       let lang = localStorage.getItem("hotpot_lang") || "vi";
@@ -1987,13 +2116,14 @@
       const fmt = (v) => Number(v).toLocaleString(LOCALE[lang] || "en-US");
 
       /* ===== TRẠNG THÁI & LƯU DỮ LIỆU ===== */
-      const KEY = "hotpot_save";
+    const KEY = "hotpot_save";
       /* Dữ liệu game mới: tiền ban đầu CHỈ được cấp ở đây (khi tạo mới / bắt đầu lại). */
       const newSave = () => ({
         day: 1,
         money: STARTING_MONEY,
         inventory: {}, // { itemId: số lượng trong kho }
         introSeen: false, // đã xem hướng dẫn đi chợ lần đầu chưa
+        history: [], // báo cáo từng ngày: { day, revenue, cost, penalty, profit, served }
       });
       function loadSave() {
         let raw = null;
@@ -2016,9 +2146,23 @@
           raw.inventory[k] = Math.max(0, Math.floor(+raw.inventory[k]) || 0);
         }
         raw.introSeen = !!raw.introSeen;
+        raw.updatedAt = +raw.updatedAt || 0;
+        raw.history = (Array.isArray(raw.history) ? raw.history : [])
+          .map((r) => ({
+            day: Math.floor(+r.day) || 0,
+            revenue: Math.floor(+r.revenue) || 0,
+            cost: Math.floor(+r.cost) || 0,
+            penalty: Math.floor(+r.penalty) || 0,
+            profit: Math.floor(+r.profit) || 0,
+            served: Math.floor(+r.served) || 0,
+          }))
+          .filter((r) => r.day > 0); // MỚI: thời điểm lưu gần nhất (để so với cloud)
         return raw;
       }
       let S = loadSave();
+      let dayRevenue = 0, // doanh thu bán lẩu trong ngày
+        dayPenalty = 0; // tiền phạt khách bỏ về trong ngày
+      let dayMarketSpend = 0; // tiền đã chi lúc đi chợ buổi sáng của ngày
       let n = 0,
         good = 0,
         order = null,
@@ -2026,14 +2170,19 @@
         selF = new Set(),
         playing = false,
         muted = false;
-      const save = () => {
+      // MỚI: localOnly = true thì chỉ ghi localStorage, không đổi dấu thời gian, không đẩy lên cloud
+      const save = (localOnly) => {
+        if (!localOnly) {
+          S.updatedAt = Date.now();
+          if (window.cloudSave) cloudSave();
+        }
         try {
           localStorage.setItem(KEY, JSON.stringify(S));
         } catch (e) {
           console.error(e);
         }
       };
-      save(); // lưu ngay để lần tải sau không khởi tạo lại tiền
+      save(true); // MỚI: lưu ngay để lần tải sau không khởi tạo lại tiền
       let timer = null,
         deadline = 0,
         dur = 15000;
@@ -2197,7 +2346,7 @@
         });
         $("sDay").textContent =
           lang === "ja" ? S.day + t.day : t.day + " " + S.day;
-        $("sMoney").textContent = "💰 " + S.money;
+        $("sMoney").textContent = "💰 " + (dayRevenue - dayPenalty); // tiền kiếm được trong phiên chơi (bắt đầu từ 0)
         $("sCust").textContent = clockStr();
         if (order) {
           const f = [...order.f].map((i) => nm(ingredients[i])).join(", ");
@@ -2336,6 +2485,7 @@
         stopTimer();
         const amt = orderPrice(order.f); // nước lẩu + tổng giá các nguyên liệu
         S.money += amt;
+        dayRevenue += amt;
         good++;
         // phục vụ đúng: tiêu hao 1 phần mỗi nguyên liệu trong kho
         order.f.forEach((i) => {
@@ -2379,7 +2529,9 @@
         bub().classList.remove("show");
         const t = T(),
           c = cust();
-        S.money = Math.max(0, S.money - 50);
+        const lost = Math.min(S.money, 50);
+        S.money -= lost;
+        dayPenalty += lost;
         n++;
         save();
         $("msg").textContent = t.angry + 50;
@@ -2396,16 +2548,36 @@
         stopTimer();
         playing = false;
         const t = T(),
-          win = good >= GOAL;
-        $("dayTitle").textContent = (win ? t.win : t.lose) + " " + S.day;
+          day = S.day,
+          profit = dayRevenue - dayMarketSpend - dayPenalty,
+          dayLabel = lang === "ja" ? day + t.day : t.day + " " + day;
+        $("dayTitle").textContent = dayLabel + " " + t.dayEnd;
+        const sign = (v) => (v >= 0 ? "+" : "-") + fmt(Math.abs(v));
+        const row = (label, val, cls = "") =>
+          `<div class="rep-row ${cls}"><span>${label}</span><b>${val} ${t.m_coin}</b></div>`;
         $("dayTxt").innerHTML =
-          `${t[closeKey]}<br>${t.res}: ${good}/${GOAL}  •  💰 ${S.money}`;
-        $("nextBtn").textContent = win ? t.next : t.retry;
+          `<div style="text-align:center;margin-bottom:6px">${t[closeKey]}</div>` +
+          `<div class="rep-row"><span>${t.res}</span><b>${good}</b></div>` +
+          row(t.revenue, "+" + fmt(dayRevenue)) +
+          row(t.marketCost, "-" + fmt(dayMarketSpend)) +
+          row(t.penalty, "-" + fmt(dayPenalty)) +
+          row(t.net, sign(profit), "rep-total" + (profit < 0 ? " neg" : "")) +
+          `<div style="text-align:center;margin-top:10px">💰 ${t.m_moneyLabel}: <b>${fmt(S.money)}</b> ${t.m_coin}</div>`;
+        $("nextBtn").textContent = t.next;
+        // lưu báo cáo của ngày này (thay thế nếu trùng ngày)
+        S.history = (S.history || []).filter((r) => r.day !== day);
+        S.history.push({
+          day,
+          revenue: dayRevenue,
+          cost: dayMarketSpend,
+          penalty: dayPenalty,
+          profit,
+          served: good,
+        });
+        S.history = S.history.slice(-1000);
+        S.day++; // luôn sang ngày tiếp theo, không chơi lại ngày cũ
+        save();
         $("nextBtn").onclick = () => {
-          if (win) {
-            S.day++;
-            save();
-          }
           closeModal("dayModal");
           openMarket(); // mỗi ngày đều đi chợ trước khi mở quán
         };
@@ -2416,6 +2588,8 @@
         dayToken++;
         n = 0;
         good = 0;
+        dayRevenue = 0;
+        dayPenalty = 0;
         playing = true;
         $("msg").textContent = "";
         buildTrays(); // bày nguyên liệu trong kho lên quầy
@@ -2563,10 +2737,12 @@
          (tất cả hoặc không gì cả). Giỏ về 0 ngay nên không thể trừ tiền hai lần. */
       function commitPurchase() {
         const lines = ITEMS.filter((it) => it.selectedQuantity > 0);
+        dayMarketSpend = 0; // chưa chi gì cho ngày này
         if (!lines.length) return true; // không mua gì thêm, dùng kho hiện có
         const total = cartTotal();
         if (total > S.money) return false; // không đủ tiền: không trừ, không mua một phần
         S.money -= total;
+        dayMarketSpend = total; // chi phí đi chợ của ngày
         lines.forEach((it) => {
           it.purchasedQuantity = it.purchasedQuantity + it.selectedQuantity;
           it.selectedQuantity = 0;
@@ -2685,6 +2861,15 @@
 
       function openMarket() {
         abortDay();
+        dayRevenue = 0; // xóa số liệu phiên cũ (thanh trên không còn hiện số của ngày trước)
+        dayPenalty = 0;
+        dayMarketSpend = 0;
+        clockR = 0;
+        order = null;
+        selB = null;
+        selF = new Set();
+        $("msg").textContent = "";
+        paint();
         marketLock = false;
         ITEMS.forEach((it) => (it.selectedQuantity = 0));
         $("market").classList.remove("hide");
@@ -2707,11 +2892,76 @@
       /* ===== MÀN HÌNH BẮT ĐẦU / BẢNG ===== */
       const openModal = (id) => $(id).classList.remove("hide");
       const closeModal = (id) => $(id).classList.add("hide");
-
-      function startGame() {
-        $("startScreen").classList.add("hide");
-        openMarket(); // luôn đi chợ trước khi mở quán
+/* ===== DOANH THU THEO THÁNG (1 tháng = MONTH_DAYS ngày chơi) ===== */
+      const MONTH_DAYS = 30;
+      let revMonth = 1;
+      const monthOf = (d) => Math.floor((d - 1) / MONTH_DAYS) + 1;
+      function renderRevenue() {
+        const t = T();
+        const cur = monthOf(S.day);
+        revMonth = Math.min(Math.max(1, revMonth), cur);
+        const list = (S.history || [])
+          .filter((r) => monthOf(r.day) === revMonth)
+          .sort((a, b) => a.day - b.day);
+        $("revMonth").textContent =
+          lang === "ja" ? revMonth + t.m_month : t.m_month + " " + revMonth;
+        $("revPrev").disabled = revMonth <= 1;
+        $("revNext").disabled = revMonth >= cur;
+        const sum = (k) => list.reduce((s, r) => s + r[k], 0);
+        const sgn = (v) => (v >= 0 ? "+" : "-") + fmt(Math.abs(v));
+        const line = (label, val, cls = "") =>
+          `<div class="rep-row ${cls}"><span>${label}</span><b>${val} ${t.m_coin}</b></div>`;
+        if (!list.length) {
+          $("revBody").innerHTML = `<div class="rev-empty">${t.m_revEmpty}</div>`;
+          return;
+        }
+        const profit = sum("profit");
+        const rows = list
+          .map(
+            (r) =>
+              `<tr><td>${r.day}</td><td>+${fmt(r.revenue)}</td><td>-${fmt(r.cost)}</td>` +
+              `<td>-${fmt(r.penalty)}</td><td class="${r.profit < 0 ? "neg" : ""}">${sgn(r.profit)}</td></tr>`,
+          )
+          .join("");
+        $("revBody").innerHTML =
+          line(t.m_revTotal, "+" + fmt(sum("revenue"))) +
+          line(t.marketCost, "-" + fmt(sum("cost"))) +
+          line(t.penalty, "-" + fmt(sum("penalty"))) +
+          line(t.net, sgn(profit), "rep-total" + (profit < 0 ? " neg" : "")) +
+          `<table class="rev-table"><thead><tr><th>${t.hDay}</th><th>${t.hRev}</th><th>${t.hCost}</th><th>${t.hPen}</th><th>${t.hNet}</th></tr></thead><tbody>${rows}</tbody></table>`;
       }
+      $("introRevenue").onclick = () => {
+        const hist = S.history || [];
+        revMonth = hist.length ? monthOf(hist[hist.length - 1].day) : 1; // mở tháng có dữ liệu mới nhất
+        renderRevenue();
+        openModal("revModal");
+      };
+      $("revPrev").onclick = () => {
+        revMonth--;
+        renderRevenue();
+      };
+      $("revNext").onclick = () => {
+        revMonth++;
+        renderRevenue();
+      };
+
+function showIntro() {
+  const t = T();
+  $("introDay").textContent =
+    lang === "ja" ? S.day + t.day : t.day + " " + S.day;
+  $("introMoney").innerHTML =
+    `<small>${t.m_moneyLabel}</small><b>💰 ${fmt(S.money)} ${t.m_coin}</b>`;
+  openModal("introModal");
+}
+$("introGo").onclick = () => {
+  closeModal("introModal");
+  openMarket(); // bấm Đi chợ mới vào chợ
+};
+
+function startGame() {
+  $("startScreen").classList.add("hide");
+  showIntro();
+}
       $("playBtn").onclick = () => {
         S = newSave(); // ván mới: cấp tiền ban đầu đúng 1 lần
         save();
@@ -2800,5 +3050,7 @@
       buildMarket();
       paint();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="supabase.js"></script>
   </body>
 </html>
