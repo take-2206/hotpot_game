@@ -1257,7 +1257,7 @@
         position: relative;
         overflow: hidden;
         container-type: inline-size;
-        background: #d9a681 url("img/market_bg.jpg") center / 100% 100%
+        background: #d9a681 url("img/market_bg.png") center / 100% 100%
           no-repeat;
         user-select: none;
         -webkit-user-select: none;
@@ -1371,6 +1371,26 @@
         background: transparent;
         box-shadow: none;
         outline: none;
+      }
+      .bhit.locked,
+      .bhit.locked:focus,
+      .bhit.locked:active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+      .bhit.locked::before {
+        content: "🔒";
+        font-size: max(14px, 3.2cqw);
+        line-height: 1;
+        filter: drop-shadow(0 0.25cqw 0.3cqw rgba(0, 0, 0, 0.45));
+      }
+      .bhit.locked::after {
+        content: none;
       }
       .bstock {
         display: flex;
@@ -1960,7 +1980,7 @@
           <i class="tri"></i><span data-i="resume"></span>
         </button>
         <button class="btn btn-sub btn-danger" id="closeEarlyBtn">
-          🔒&nbsp; <span data-i="closeEarly"></span>
+          <span data-i="closeEarly"></span>
         </button>
       </div>
     </div>
@@ -1969,7 +1989,12 @@
       <div class="panel">
         <h2 id="dayTitle"></h2>
         <div class="rules-text" id="dayTxt"></div>
-        <button class="btn btn-play" id="nextBtn"></button>
+        <div class="two-btns">
+          <button class="btn btn-sub" id="dayRevenueBtn">
+            <span data-i="m_revenueBtn"></span>
+          </button>
+          <button class="btn btn-play" id="nextBtn"></button>
+        </div>
       </div>
     </div>
 
@@ -2160,6 +2185,23 @@
           name: { vi: "Há cảo", ja: "餃子", en: "Dumplings" },
         },
       ];
+      const STARTER_ITEM_COUNT = 5;
+      const UNLOCK_ORDER = [
+        "beef",
+        "chicken",
+        "fish",
+        "bok_choy",
+        "tofu",
+        "shrimp",
+        "squid",
+        "lotus_root",
+        "oyster_mushroom",
+        "shiitake",
+        "fish_balls",
+        "ramen",
+        "corn",
+        "dumplings",
+      ];
       /* Mỗi nguyên liệu có đủ các trường: id, name, image, price (lấy từ GROUP_PRICE theo group),
          selectedQuantity (đang chọn, chưa trả tiền) và purchasedQuantity (trong kho, được lưu). */
       const ITEMS = CATALOG.map((c) => {
@@ -2175,6 +2217,13 @@
       });
       const ingredients = ITEMS; // quầy nấu dùng chung danh mục với chợ
       const ACTIVE = 10; // số khay trên ảnh nền = số loại nguyên liệu bày ở quầy mỗi ngày
+      const unlockedItemCount = (day = S.day) =>
+        Math.min(
+          UNLOCK_ORDER.length,
+          STARTER_ITEM_COUNT + 2 * Math.floor((day - 1) / 2),
+        );
+      const getUnlockedItemIds = (day = S.day) =>
+        new Set(UNLOCK_ORDER.slice(0, unlockedItemCount(day)));
       const nm = (o) => o.name[lang] || o.name.en || o.name.vi;
       const DAY_SECONDS = 150; // 1 ngày chơi thật = 150 giây (2,5 phút); đổi 120–180 tùy ý
       const GOAL = 8; // số khách phục vụ đúng để qua ngày
@@ -2623,8 +2672,11 @@
       }
       /* Quầy nguyên liệu: dựng lại mỗi ngày theo kho (tối đa ACTIVE loại, theo thứ tự trong chợ) */
       function buildTrays() {
+        const unlocked = getUnlockedItemIds();
         dayItems = ITEMS.map((it, i) => i)
-          .filter((i) => ITEMS[i].purchasedQuantity > 0)
+          .filter(
+            (i) => unlocked.has(ITEMS[i].id) && ITEMS[i].purchasedQuantity > 0,
+          )
           .slice(0, ACTIVE);
         $("ingredients").innerHTML = dayItems
           .map((i) => card("f", i, ITEMS[i]))
@@ -3010,14 +3062,34 @@
       let mSlots = [];
       let toastTimer = null;
 
-      const cartTotal = () =>
-        ITEMS.reduce((s, it) => s + it.price * it.selectedQuantity, 0);
-      const cartCount = () =>
-        ITEMS.reduce((s, it) => s + it.selectedQuantity, 0);
-      const stockTotal = () =>
-        ITEMS.reduce((s, it) => s + it.purchasedQuantity, 0);
-      const stockKinds = () =>
-        ITEMS.filter((it) => it.purchasedQuantity > 0).length;
+      const cartTotal = () => {
+        const unlocked = getUnlockedItemIds();
+        return ITEMS.reduce(
+          (s, it) =>
+            unlocked.has(it.id) ? s + it.price * it.selectedQuantity : s,
+          0,
+        );
+      };
+      const cartCount = () => {
+        const unlocked = getUnlockedItemIds();
+        return ITEMS.reduce(
+          (s, it) => (unlocked.has(it.id) ? s + it.selectedQuantity : s),
+          0,
+        );
+      };
+      const stockTotal = () => {
+        const unlocked = getUnlockedItemIds();
+        return ITEMS.reduce(
+          (s, it) => (unlocked.has(it.id) ? s + it.purchasedQuantity : s),
+          0,
+        );
+      };
+      const stockKinds = () => {
+        const unlocked = getUnlockedItemIds();
+        return ITEMS.filter(
+          (it) => unlocked.has(it.id) && it.purchasedQuantity > 0,
+        ).length;
+      };
       const isMarketOpen = () => !$("market").classList.contains("hide");
 
       function place(el, cx, cy, w, h) {
@@ -3073,6 +3145,8 @@
           return {
             hit,
             stock,
+            tag,
+            card: cardEl,
             price: tag.querySelector("b"),
             coin: tag.querySelector("i"),
             name: cardEl.querySelector(".mname"),
@@ -3100,7 +3174,7 @@
       /* (+) / (−): chỉ đổi số lượng DỰ ĐỊNH mua, chưa trừ tiền */
       function changeQty(i, d) {
         const it = ITEMS[i];
-        if (!it) return;
+        if (!it || !getUnlockedItemIds().has(it.id)) return;
         if (d > 0) {
           if (it.selectedQuantity >= MAX_QTY) return;
 
@@ -3140,7 +3214,10 @@
       /* Thanh toán giỏ hàng khi bấm "Mở quán": trừ tiền + cộng kho trong MỘT bước đồng bộ
          (tất cả hoặc không gì cả). Giỏ về 0 ngay nên không thể trừ tiền hai lần. */
       function commitPurchase() {
-        const lines = ITEMS.filter((it) => it.selectedQuantity > 0);
+        const unlocked = getUnlockedItemIds();
+        const lines = ITEMS.filter(
+          (it) => unlocked.has(it.id) && it.selectedQuantity > 0,
+        );
         dayMarketSpend = 0; // chưa chi gì cho ngày này
         if (!lines.length) return true; // không mua gì thêm, dùng kho hiện có
         const total = cartTotal();
@@ -3156,7 +3233,10 @@
       }
 
       function itemRows(map, withPrice) {
-        const rows = ITEMS.filter((it) => map(it) > 0).map((it) => {
+        const unlocked = getUnlockedItemIds();
+        const rows = ITEMS.filter(
+          (it) => unlocked.has(it.id) && map(it) > 0,
+        ).map((it) => {
           const q = map(it);
           return (
             `<div class="cart-row"><img class="thumb" data-id="${it.id}" src="${it.image}" alt="">` +
@@ -3248,22 +3328,46 @@
         const t = T();
         const total = cartTotal(),
           cnt = cartCount();
+        const unlocked = getUnlockedItemIds();
         $("mMoney").textContent = fmt(S.money);
         ITEMS.forEach((it, i) => {
           const s = mSlots[i];
+          const isUnlocked = unlocked.has(it.id);
           s.name.textContent = nm(it);
           s.price.textContent = fmt(it.price);
           s.coin.textContent = t.m_coin;
           s.qty.textContent = it.selectedQuantity;
           s.hit.classList.toggle("has", it.selectedQuantity > 0);
-          s.hit.setAttribute("aria-label", nm(it) + " +1");
+          s.hit.classList.toggle("locked", !isUnlocked);
+          s.hit.disabled = !isUnlocked;
+          if (isUnlocked) {
+            s.hit.removeAttribute("data-lock-label");
+            s.hit.setAttribute("aria-label", nm(it) + " +1");
+          } else {
+            const unlockDay =
+              2 *
+                Math.ceil(
+                  (UNLOCK_ORDER.indexOf(it.id) - STARTER_ITEM_COUNT + 1) / 2,
+                ) +
+              1;
+            const lockLabel =
+              lang === "ja"
+                ? `${unlockDay}${t.day}`
+                : `${t.day} ${unlockDay}`;
+            s.hit.dataset.lockLabel = lockLabel;
+            s.hit.setAttribute("aria-label", lockLabel);
+          }
           const own = it.purchasedQuantity;
-          s.stock.hidden = own <= 0;
+          s.stock.hidden = !isUnlocked || own <= 0;
           s.stock.textContent = "📦 " + own;
-          s.minus.disabled = it.selectedQuantity <= 0;
+          s.tag.hidden = !isUnlocked;
+          s.card.hidden = !isUnlocked;
+          s.minus.disabled = !isUnlocked || it.selectedQuantity <= 0;
           s.plus.classList.toggle(
             "cant",
-            it.selectedQuantity >= MAX_QTY || total + it.price > S.money,
+            !isUnlocked ||
+              it.selectedQuantity >= MAX_QTY ||
+              total + it.price > S.money,
           );
         });
         [$("mBadgeTop"), $("mBadgeBottom")].forEach((b) => {
@@ -3312,6 +3416,7 @@
       /* ===== DOANH THU THEO THÁNG (1 tháng = MONTH_DAYS ngày chơi) ===== */
       const MONTH_DAYS = 30;
       let revMonth = 1;
+      let returnToDayModal = false;
       const monthOf = (d) => Math.floor((d - 1) / MONTH_DAYS) + 1;
       function renderRevenue() {
         const t = T();
@@ -3348,12 +3453,16 @@
           line(t.net, sgn(profit), "rep-total" + (profit < 0 ? " neg" : "")) +
           `<table class="rev-table"><thead><tr><th>${t.hDay}</th><th>${t.hRev}</th><th>${t.hCost}</th><th>${t.hPen}</th><th>${t.hNet}</th></tr></thead><tbody>${rows}</tbody></table>`;
       }
-      $("introRevenue").onclick = () => {
+      function openRevenue(fromDayModal = false) {
         const hist = S.history || [];
         revMonth = hist.length ? monthOf(hist[hist.length - 1].day) : 1; // mở tháng có dữ liệu mới nhất
         renderRevenue();
+        returnToDayModal = fromDayModal;
+        if (fromDayModal) closeModal("dayModal");
         openModal("revModal");
-      };
+      }
+      $("introRevenue").onclick = () => openRevenue();
+      $("dayRevenueBtn").onclick = () => openRevenue(true);
       $("revPrev").onclick = () => {
         revMonth--;
         renderRevenue();
@@ -3399,6 +3508,10 @@
         (b) =>
           (b.onclick = () => {
             closeModal(b.dataset.close);
+            if (b.dataset.close === "revModal" && returnToDayModal) {
+              returnToDayModal = false;
+              openModal("dayModal");
+            }
             if (b.dataset.close === "settingsModal" && gearPaused) {
               gearPaused = false;
               resumeGame();
