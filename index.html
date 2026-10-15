@@ -807,6 +807,16 @@
       .message:empty {
         display: none;
       }
+      .message {
+        opacity: 1;
+        transition: opacity 0.15s;
+      }
+      /* "Chính xác!" / khách giận: giữ nửa giây cho đọc rồi mờ dần trong lúc khách rời đi */
+      .message.fade {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.8s ease 0.5s;
+      }
 
       /* ===== THANH KIÊN NHẪN CỦA KHÁCH ===== */
       .timebar {
@@ -2447,34 +2457,36 @@
             '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
           day: "Ngày",
           cust: "Khách",
-          want: "cho tôi một phần lẩu",
+          want: "cho tôi một phần lẩu :",
           broth: "NƯỚC LẨU",
           ingr: "NGUYÊN LIỆU",
           patience: "Độ kiên nhẫn",
           serve: "PHỤC VỤ",
           redo: "Làm lại",
           locked: "Đã chọn nước lẩu rồi! Bấm Làm lại để đổi.",
+          ingLocked: "Muốn chọn nguyên liệu khác? Hãy bấm ‘Làm lại’ nhé!",
+          redoLost: "Mất 1 phần: ",
           angry: "Khách giận bỏ về! -",
           closed: "22:00 – Quán đã đóng cửa!",
-          pause: "Tạm nghỉ tay",
+          pause: "Tạm dừng",
           resume: "Tiếp tục",
           closeEarly: "Đóng cửa sớm",
           closedEarly: "Quán đã đóng cửa sớm!",
           noStock: "Hết nguyên liệu – quán phải đóng cửa!",
           outOfStock: "Hết nguyên liệu này rồi!",
-          ok: "Chính xác! +",
+          ok: "thanh toán +",
           bad: "Sai rồi! -",
           pick: "Hãy chọn nước lẩu trước!",
           win: "Hoàn thành ngày",
           lose: "Chưa đạt ngày",
           res: "Khách phục vụ đúng",
           dayEnd: "kết thúc",
-          marketCost: "Chi phí đi chợ (sáng)",
+          marketCost: "Chi phí đi chợ",
           revenue: "Doanh thu",
           penalty: "Phạt khách bỏ về",
           net: "Lợi nhuận",
-          next: "Ngày tiếp theo ▶",
-          retry: "Chơi lại ngày này ▶",
+          next: "Ngày tiếp theo ",
+          
           /* Daily Market */
           m_buy: "MUA",
           m_checkout: "HOÀN TẤT",
@@ -2497,7 +2509,7 @@
             "⚠ Các món còn trong giỏ mà chưa bấm MUA sẽ không được mua.",
           m_trayLimit: "Quầy chỉ bày tối đa 10 loại mỗi ngày. ",
           m_keep: "Mua thêm",
-          m_go: "Mở quán ▶",
+          m_go: "Mở quán ",
           m_cartEmpty:
             "Giỏ hàng đang trống. Bấm vào giỏ hàng hoặc nút + để chọn.",
           m_introTitle: "Chào mừng đến chợ!",
@@ -2544,9 +2556,11 @@
           serve: "提供",
           redo: "やり直す",
           locked: "スープは選択済み！変えるには「やり直す」を押してね。",
+          ingLocked: " 「やり直す」を押して、食材を選び直してください。",
+          redoLost: "1つ失った：",
           angry: "お客さんが怒って帰った！ -",
           closed: "22:00 – 閉店です！",
-          pause: "ちょっと休憩する",
+          pause: "一時停止",
           resume: "再開",
           closeEarly: "早めに閉店",
           closedEarly: " 早めに閉店しました！",
@@ -2587,7 +2601,7 @@
             "⚠ かごに入れただけで「買う」を押していない食材は購入されません。",
           m_trayLimit: "お店に並べられるのは1日10種類までです。",
           m_keep: "もっと買う",
-          m_go: "開店 ▶",
+          m_go: "開店 ",
           m_cartEmpty: "かごは空です。食材をタップするか＋で選んでね。",
           m_introTitle: "市場へようこそ！",
           m_intro:
@@ -2634,9 +2648,11 @@
           serve: "SERVE",
           redo: "Redo",
           locked: "Broth already chosen! Press Redo to change it.",
+          ingLocked: "AClick “Try Again” to choose your ingredients again.",
+          redoLost: "Lost 1 each: ",
           angry: "Customer left angry! -",
           closed: "22:00 – We are closed!",
-          pause: "Take a short break",
+          pause: "Paused",
           resume: "Resume",
           closeEarly: "Close early",
           closedEarly: " Closed early!",
@@ -2653,8 +2669,8 @@
           revenue: "Revenue",
           penalty: "Angry-customer penalty",
           net: "Profit",
-          next: "Next day ▶",
-          retry: "Retry day ▶",
+          next: "Next day ",
+          retry: "Retry day ",
           /* Daily Market */
           m_buy: "BUY",
           m_checkout: "CHECKOUT",
@@ -2677,7 +2693,7 @@
             "⚠ Items in the cart that you didn't BUY will not be purchased.",
           m_trayLimit: "The counter shows at most 10 kinds per day .",
           m_keep: "Keep shopping",
-          m_go: "Open shop ▶",
+          m_go: "Open shop ",
           m_cartEmpty: "The cart is empty. Tap an item or + to choose.",
           m_introTitle: "Welcome to the market!",
           m_intro:
@@ -2876,7 +2892,7 @@
           if (!b) return;
           if (selB !== null) {
             // đã chọn nước lẩu rồi thì khóa, muốn đổi phải bấm "Làm lại"
-            if (+b.dataset.b !== selB) $("msg").textContent = T().locked;
+            if (+b.dataset.b !== selB) showMsg(T().locked);
             return;
           }
           selB = +b.dataset.b;
@@ -2887,10 +2903,15 @@
           if (!b) return;
           const k = +b.dataset.f;
           if (!selF.has(k) && ITEMS[k].purchasedQuantity <= 0) {
-            $("msg").textContent = T().outOfStock; // hết hàng trong kho thì không chọn được
+            showMsg(T().outOfStock); // hết hàng trong kho thì không chọn được
             return;
           }
-          selF.has(k) ? selF.delete(k) : selF.add(k);
+          if (selF.has(k)) {
+            // đã chọn rồi thì khóa: muốn chọn lại phải bấm "Làm lại" (và mất nguyên liệu đã chọn)
+            showMsg(T().ingLocked);
+            return;
+          }
+          selF.add(k);
           paint();
         };
       }
@@ -3055,7 +3076,7 @@
         setReady(false);
         bub().classList.remove("show");
         cust().classList.add("walking", "leaving");
-        $("msg").textContent = T()[closeKey]; // thông báo đóng cửa
+        showMsg(T()[closeKey]); // thông báo đóng cửa
         const tok = dayToken;
         later(() => {
           if (tok === dayToken) endDay();
@@ -3128,11 +3149,21 @@
           startTimer(Math.max(12, 8 + cnt * 4 - S.day)); // bắt đầu tính kiên nhẫn
         }, 850);
       }
+      /* Thông báo dưới quầy. fade = true: hiện rồi mờ dần khi khách đã đi */
+      function showMsg(text, fade) {
+        const m = $("msg");
+        m.classList.remove("fade");
+        m.textContent = text;
+        if (fade && text) {
+          void m.offsetWidth; // khởi động lại hiệu ứng mờ
+          m.classList.add("fade");
+        }
+      }
       function serve() {
         if (!playing || !ready) return;
         const t = T();
         if (selB === null) {
-          $("msg").textContent = t.pick;
+          showMsg(t.pick);
           return;
         }
         const ok =
@@ -3155,7 +3186,7 @@
         order.f.forEach((i) => {
           ITEMS[i].purchasedQuantity = ITEMS[i].purchasedQuantity - 1;
         });
-        $("msg").textContent = t.ok + amt;
+        showMsg(t.ok + amt, true);
         n++;
         save();
         selB = null; // bưng tô đi: tô trên mâm biến mất, bỏ chọn các món
@@ -3175,9 +3206,18 @@
       }
       function redo() {
         if (!playing) return;
+        // Làm lại: mỗi nguyên liệu đã chọn bị mất 1 phần trong kho
+        const lostNames = [];
+        selF.forEach((i) => {
+          if (ITEMS[i].purchasedQuantity > 0) {
+            ITEMS[i].purchasedQuantity = ITEMS[i].purchasedQuantity - 1;
+            lostNames.push(nm(ITEMS[i]));
+          }
+        });
+        if (lostNames.length) save();
         selB = null; // mở khóa nước lẩu
         selF = new Set();
-        $("msg").textContent = "";
+        showMsg(lostNames.length ? T().redoLost + lostNames.join(", ") : "", true);
         showRedo(false);
         if (timer) setReady(true); // khách đang đợi thì cho phục vụ lại
         paint();
@@ -3198,7 +3238,7 @@
         dayPenalty += lost;
         n++;
         save();
-        $("msg").textContent = t.angry + 50;
+        showMsg(t.angry + lost, true); // hiện đúng số tiền bị phạt thực tế
         paint();
         c.classList.add("angry");
         later(() => c.classList.add("walking", "leaving"), 650);
@@ -3255,7 +3295,7 @@
         dayRevenue = 0;
         dayPenalty = 0;
         playing = true;
-        $("msg").textContent = "";
+        showMsg("");
         buildTrays(); // bày nguyên liệu trong kho lên quầy
         clockR = 0;
         dayStart = Date.now();
@@ -3676,7 +3716,7 @@
         order = null;
         selB = null;
         selF = new Set();
-        $("msg").textContent = "";
+        showMsg("");
         paint();
         marketLock = false;
         ITEMS.forEach((it) => (it.selectedQuantity = 0));
