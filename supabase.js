@@ -1,5 +1,5 @@
 /* supabase.js - lưu tiến trình + lịch sử chơi của 火鍋の店 lên Supabase.
- * Nạp SAU script chính của game (xem hướng dẫn trong chat).
+ * Nạp SAU script chính của game.
  * Cần: thư viện @supabase/supabase-js (UMD) nạp trước file này. */
 (function () {
   "use strict";
@@ -9,41 +9,27 @@
   const SUPABASE_ANON_KEY = "sb_publishable_sXTtq5dB5Kua5NjFuRsjGQ_vetbo9l2";
   /* ============================ */
 
+  /* Đặt true SAU KHI đã thêm 2 cột history + prices vào bảng game_saves (SQL trong chat).
+     Khi true: báo cáo doanh thu theo ngày và giá bán tự chỉnh cũng được lưu lên cloud. */
+  const CLOUD_EXTRA = false;
+
   const sb = window.supabase
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
   let cloudUser = null;
   let cloudTimer = null;
 
-  const hasProgress = () =>
-    S.day > 1 ||
-    S.money !== STARTING_MONEY ||
-    Object.keys(S.inventory || {}).length > 0;
-
-  /* ---- Nút "Tiếp tục" (tự tạo, đặt trên nút Cài đặt) ---- */
-  const contBtn = document.createElement("button");
-  contBtn.className = "btn btn-sub";
-  contBtn.id = "continueBtn";
-  contBtn.hidden = true;
-  contBtn.innerHTML = '<span data-i="continue"></span>';
-  contBtn.querySelector("span").textContent = T().continue;
-  $("settingsBtn").parentNode.insertBefore(contBtn, $("settingsBtn"));
-  contBtn.onclick = () => startGame(); // giữ nguyên tiến trình hiện tại
-
-  function updateContinueBtn() {
-    contBtn.hidden = !hasProgress();
-  }
-
-  /* Nút Bắt đầu: nếu đã có tiến trình thì hỏi trước khi xóa */
-  const origPlay = $("playBtn").onclick;
-  $("playBtn").onclick = () => {
-    if (hasProgress() && !confirm(T().confirmText)) return;
-    origPlay();
+  /* hasProgress() và refreshPlayLabel() do script chính của game định nghĩa:
+     chỉ có MỘT nút ở trang đầu, ghi "Bắt đầu" (chưa chơi) hoặc "Tiếp tục" (đã chơi).
+     Bấm nút khi đã có tiến trình sẽ chơi tiếp, KHÔNG xóa dữ liệu.
+     Chơi lại từ đầu: Cài đặt -> "Bắt đầu lại từ đầu". */
+  const updatePlayLabel = () => {
+    if (window.refreshPlayLabel) window.refreshPlayLabel();
   };
 
-  /* Mỗi lần màn hình bắt đầu hiện lại thì cập nhật nút Tiếp tục */
+  /* Mỗi lần màn hình bắt đầu hiện lại thì cập nhật nhãn nút */
   new MutationObserver(() => {
-    if (!$("startScreen").classList.contains("hide")) updateContinueBtn();
+    if (!$("startScreen").classList.contains("hide")) updatePlayLabel();
   }).observe($("startScreen"), { attributes: true, attributeFilter: ["class"] });
 
   /* ---- Lưu lên cloud (gộp nhiều lần lưu liên tiếp) ---- */
@@ -51,14 +37,19 @@
     if (!sb || !cloudUser) return;
     clearTimeout(cloudTimer);
     cloudTimer = setTimeout(async () => {
-      const { error } = await sb.from("game_saves").upsert({
+      const payload = {
         user_id: cloudUser.id,
         current_day: S.day,
         money: S.money,
         inventory: S.inventory,
         intro_seen: S.introSeen,
         updated_at: new Date(S.updatedAt || Date.now()).toISOString(),
-      });
+      };
+      if (CLOUD_EXTRA) {
+        payload.history = S.history || [];
+        payload.prices = S.prices || {};
+      }
+      const { error } = await sb.from("game_saves").upsert(payload);
       if (error) console.warn("cloud save failed", error);
     }, 500);
   };
@@ -89,7 +80,7 @@
   /* ---- Khởi tạo: đăng nhập ẩn danh + tải bản lưu ---- */
   async function cloudInit() {
     if (!sb) {
-      updateContinueBtn();
+      updatePlayLabel();
       return;
     }
     try {
@@ -112,13 +103,22 @@
 
       const idle = !$("startScreen").classList.contains("hide"); // chưa vào game
       if (row) {
-        const cloud = {
+        const cloud = Object.assign(newSave(), {
           day: row.current_day,
           money: row.money,
           inventory: row.inventory || {},
           introSeen: row.intro_seen,
           updatedAt: Date.parse(row.updated_at),
-        };
+        });
+        /* Cloud chưa lưu history/prices (trừ khi bật CLOUD_EXTRA) -> giữ bản local
+           để không mất báo cáo doanh thu và giá bán đã chỉnh. */
+        if (CLOUD_EXTRA) {
+          cloud.history = Array.isArray(row.history) ? row.history : [];
+          cloud.prices = row.prices && typeof row.prices === "object" ? row.prices : {};
+        } else {
+          cloud.history = S.history || [];
+          cloud.prices = S.prices || {};
+        }
         if (idle && (!S.updatedAt || cloud.updatedAt >= S.updatedAt)) {
           S = cloud; // bản cloud mới hơn
           localStorage.setItem(KEY, JSON.stringify(S));
@@ -131,10 +131,10 @@
     } catch (e) {
       console.warn("cloud init failed, dùng localStorage", e);
     }
-    updateContinueBtn();
+    updatePlayLabel();
     paint();
   }
 
-  updateContinueBtn();
+  updatePlayLabel();
   cloudInit();
 })();
