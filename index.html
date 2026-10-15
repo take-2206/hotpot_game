@@ -52,11 +52,14 @@
           env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
       }
       @media (hover: none) {
-        /* màn hình cảm ứng: bỏ hiệu ứng hover bị "dính" sau khi chạm */
-        .btn:hover,
+        /* màn hình cảm ứng: bỏ hiệu ứng hover bị "dính" sau khi chạm.
+           KHÔNG đụng transform của .serve / .redo vì chúng căn giữa bằng translate(-50%, -50%) */
+        .btn:hover {
+          transform: none;
+          filter: none;
+        }
         .serve:hover,
         .redo:hover {
-          transform: none;
           filter: none;
         }
       }
@@ -1916,6 +1919,7 @@
       }
       .mname {
         font-size: max(10px, 1.9cqw);
+        display: none; /* ẩn tên món (thịt bò, thịt heo...) trên nhãn ở màn hình chợ */
       }
       .qb {
         font-size: max(14px, 2.8cqw);
@@ -2443,7 +2447,7 @@
             '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
           day: "Ngày",
           cust: "Khách",
-          want: "Khách muốn:",
+          want: "cho tôi một phần lẩu",
           broth: "NƯỚC LẨU",
           ingr: "NGUYÊN LIỆU",
           patience: "Độ kiên nhẫn",
@@ -2452,7 +2456,7 @@
           locked: "Đã chọn nước lẩu rồi! Bấm Làm lại để đổi.",
           angry: "Khách giận bỏ về! -",
           closed: "22:00 – Quán đã đóng cửa!",
-          pause: "Tạm dừng",
+          pause: "Tạm nghỉ tay",
           resume: "Tiếp tục",
           closeEarly: "Đóng cửa sớm",
           closedEarly: "Quán đã đóng cửa sớm!",
@@ -2542,7 +2546,7 @@
           locked: "スープは選択済み！変えるには「やり直す」を押してね。",
           angry: "お客さんが怒って帰った！ -",
           closed: "22:00 – 閉店です！",
-          pause: "一時停止",
+          pause: "ちょっと休憩する",
           resume: "再開",
           closeEarly: "早めに閉店",
           closedEarly: " 早めに閉店しました！",
@@ -2632,7 +2636,7 @@
           locked: "Broth already chosen! Press Redo to change it.",
           angry: "Customer left angry! -",
           closed: "22:00 – We are closed!",
-          pause: "Paused",
+          pause: "Take a short break",
           resume: "Resume",
           closeEarly: "Close early",
           closedEarly: " Closed early!",
@@ -3358,7 +3362,7 @@
           place(tag, cx - 68, py - 24, 42, 44);
           tag.innerHTML = "<b></b><i></i>";
           const cardEl = mk({ c: "mcard" });
-          place(cardEl, cx, py + 11, 112, 58);
+          place(cardEl, cx, py + 11, 112, 38);
           cardEl.dataset.idx = i;
           cardEl.innerHTML =
             '<div class="mname"></div><div class="mctrl">' +
