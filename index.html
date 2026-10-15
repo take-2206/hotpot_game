@@ -53,12 +53,11 @@
       }
       @media (hover: none) {
         /* màn hình cảm ứng: bỏ hiệu ứng hover bị "dính" sau khi chạm */
-        .btn:hover,
-        .serve:hover,
-        .redo:hover {
+        .btn:hover {
           transform: none;
           filter: none;
         }
+        /* KHÔNG đặt transform:none cho .serve/.redo: chúng cần translate(-50%,-50%) để nằm đúng chỗ */
       }
       button,
       input {
@@ -1141,22 +1140,25 @@
       }
       .rules-arrow {
         flex: none;
-        width: 44px;
-        height: 44px;
+        width: 48px;
+        height: 48px;
         padding: 0;
-        font-size: 22px;
-        font-weight: 900;
-        line-height: 1;
-        color: #fff;
-        background: #ee5560;
-        border: 3px solid #a9242f;
-        border-radius: 50%;
-        box-shadow: 0 4px 0 #8c1d27;
+        background: transparent;
+        border: 0;
+        box-shadow: none;
+        display: grid;
+        place-items: center;
         transition: transform 0.1s, opacity 0.2s;
       }
+      .rules-arrow img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+        -webkit-user-drag: none;
+      }
       .rules-arrow:active {
-        transform: translateY(3px);
-        box-shadow: 0 1px 0 #8c1d27;
+        transform: scale(0.9);
       }
       .rules-arrow:disabled {
         opacity: 0.3;
@@ -2074,6 +2076,71 @@
   border: 2px solid #d9a96f;
   border-radius: 999px;
 }
+          /* ===== CHỈNH THÊM: nút Phục vụ ổn định trên điện thoại, thanh thông báo mờ dần, nhãn nước lẩu ===== */
+      .serve,
+      .redo {
+        white-space: nowrap;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+      @media (hover: none) {
+        .serve:hover:not(:disabled),
+        .redo:hover {
+          filter: none; /* không để hiệu ứng hover bị dính sau khi chạm */
+        }
+      }
+      .message {
+        opacity: 1;
+        transition: opacity 0.5s ease;
+        pointer-events: none;
+      }
+      .message.fade {
+        opacity: 0;
+      }
+      /* nhãn "Nước lẩu" sát 4 nước dùng hơn (trước đây top: 41.5%) */
+      .section-title:first-child {
+        top: 46.5%;
+      }
+          /* ===== BẢNG "NGÀY N" KHI MỞ QUÁN ===== */
+      .day-banner {
+        z-index: 2500;
+        background: rgba(30, 18, 14, 0.55);
+        transition: opacity 0.5s ease;
+      }
+      .day-banner-card {
+        min-width: min(70vw, 340px);
+        padding: clamp(18px, 4vh, 34px) clamp(24px, 6vw, 56px);
+        text-align: center;
+        background: #f6e3c3;
+        border: 4px solid #b98a62;
+        border-radius: 24px;
+        box-shadow:
+          0 8px 0 #a07650,
+          0 0 0 5px #fff6e6 inset;
+        animation: dayBannerPop 0.4s ease-out both;
+      }
+      .day-banner.hide .day-banner-card {
+        animation: none;
+      }
+      .day-banner-ico {
+        font-size: clamp(34px, 8vw, 54px);
+        line-height: 1.1;
+      }
+      .day-banner-txt {
+        font-weight: 900;
+        font-size: clamp(34px, 9vw, 60px);
+        color: #9b1f2a;
+        letter-spacing: 1px;
+        text-shadow: 0 2px 0 #fff6e6;
+      }
+      @keyframes dayBannerPop {
+        0% {
+          transform: scale(0.85);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
     </style>
   </head>
   <body>
@@ -2237,16 +2304,24 @@
           <span class="rules-count" id="rulesCount"></span>
         </div>
         <div class="rules-pager">
-          <button class="rules-arrow" id="rulesPrev" aria-label="Prev">◀</button>
+          <button class="rules-arrow" id="rulesPrev" aria-label="Prev"><img src="img/left.png" alt="" draggable="false" /></button>
           <div class="rules-viewport" id="rulesViewport">
             <div class="rules-track" id="rulesTrack"></div>
           </div>
-          <button class="rules-arrow" id="rulesNext" aria-label="Next">▶</button>
+          <button class="rules-arrow" id="rulesNext" aria-label="Next"><img src="img/right.png" alt="" draggable="false" /></button>
         </div>
         <div class="rules-dots" id="rulesDots"></div>
         <button class="btn btn-close" data-close="rulesModal">
           <span data-i="close"></span>
         </button>
+      </div>
+    </div>
+
+    <!-- Bảng "Ngày N" hiện 2 giây khi bấm Mở quán, rồi mờ đi và quán mở cửa -->
+    <div class="modal hide day-banner" id="dayBanner" aria-live="polite">
+      <div class="day-banner-card">
+        <div class="day-banner-ico">🏮</div>
+        <div class="day-banner-txt" id="dayBannerTxt"></div>
       </div>
     </div>
 
@@ -2558,7 +2633,7 @@
             '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
           day: "Ngày",
           cust: "Khách",
-          want: "Khách muốn:",
+          want: "order:",
           broth: "NƯỚC LẨU",
           ingr: "NGUYÊN LIỆU",
           patience: "Độ kiên nhẫn",
@@ -2567,25 +2642,25 @@
           locked: "Đã chọn nước lẩu rồi! Bấm Làm lại để đổi.",
           angry: "Khách giận bỏ về! -",
           closed: "22:00 – Quán đã đóng cửa!",
-          pause: "Nghỉ tay một chút",
+          pause: "Nghỉ tay ",
           resume: "Tiếp tục",
           closeEarly: "Đóng cửa sớm",
           closedEarly: "Quán đã đóng cửa sớm!",
           noStock: "Hết nguyên liệu – quán phải đóng cửa!",
           outOfStock: "Hết nguyên liệu này rồi!",
-          ok: "thanh toán +",
+          ok: "Thanh toán +",
           bad: "Sai rồi! -",
           pick: "Hãy chọn nước lẩu trước!",
           win: "Hoàn thành ngày",
           lose: "Chưa đạt ngày",
-          res: "Khách phục vụ đúng",
+          res: " phục vụ đúng",
           dayEnd: "kết thúc",
-          marketCost: "Chi phí đi chợ (sáng)",
+          marketCost: "Chi phí đi chợ",
           revenue: "Doanh thu",
           penalty: "Phạt khách bỏ về",
           net: "Lợi nhuận",
-          next: "Ngày tiếp theo ▶",
-          retry: "Chơi lại ngày này ▶",
+          next: "Ngày tiếp theo ",
+          retry: "Chơi lại ngày này ",
           /* Daily Market */
           m_buy: "MUA",
           m_checkout: "HOÀN TẤT",
@@ -2608,7 +2683,7 @@
             "⚠ Các món còn trong giỏ mà chưa bấm MUA sẽ không được mua.",
           m_trayLimit: "Quầy chỉ bày tối đa 10 loại mỗi ngày. ",
           m_keep: "Mua thêm",
-          m_go: "Mở quán ▶",
+          m_go: "Mở quán ",
           m_cartEmpty:
             "Giỏ hàng đang trống. Bấm vào giỏ hàng hoặc nút + để chọn.",
           m_introTitle: "Chào mừng đến chợ!",
@@ -2657,7 +2732,7 @@
           locked: "スープは選択済み！変えるには「やり直す」を押してね。",
           angry: "お客さんが怒って帰った！ -",
           closed: "22:00 – 閉店です！",
-          pause: "ちょっと休憩しよう！",
+          pause: "一時停止",
           resume: "再開",
           closeEarly: "早めに閉店",
           closedEarly: " 早めに閉店しました！",
@@ -2674,8 +2749,8 @@
           revenue: "売上",
           penalty: "怒って帰った罰金",
           net: "利益",
-          next: "次の日へ ▶",
-          retry: "もう一度 ▶",
+          next: "次の日へ ",
+          retry: "もう一度 ",
           /* Daily Market */
           m_buy: "買う",
           m_checkout: "会計",
@@ -2747,13 +2822,13 @@
           locked: "Broth already chosen! Press Redo to change it.",
           angry: "Customer left angry! -",
           closed: "22:00 – We are closed!",
-          pause: "Take a break.",
+          pause: "Paused",
           resume: "Resume",
           closeEarly: "Close early",
           closedEarly: " Closed early!",
           noStock: "Out of ingredients – we have to close!",
           outOfStock: "Out of stock!",
-          ok: "Total +",
+          ok: "Total+",
           bad: "Wrong! -",
           pick: "Pick a broth first!",
           win: "Day cleared:",
@@ -2830,6 +2905,7 @@
         inventory: {}, // { itemId: số lượng trong kho }
         prices: {}, // { itemId: giá bán do người chơi chỉnh }
         introSeen: false, // đã xem hướng dẫn đi chợ lần đầu chưa
+        rulesSeen: false, // đã tự động hiện Luật chơi lần đầu truy cập chưa
         history: [], // báo cáo từng ngày: { day, revenue, cost, penalty, profit, served }
       });
       function loadSave() {
@@ -2859,6 +2935,11 @@
           else delete raw.prices[k];
         }
         raw.introSeen = !!raw.introSeen;
+        if (typeof raw.rulesSeen !== "boolean")
+          raw.rulesSeen =
+            raw.introSeen ||
+            raw.day > 1 ||
+            (Array.isArray(raw.history) && raw.history.length > 0);
         raw.updatedAt = +raw.updatedAt || 0;
         raw.history = (Array.isArray(raw.history) ? raw.history : [])
           .map((r) => ({
@@ -3389,6 +3470,8 @@
         $("gameRoot").classList.remove("paused");
         closeModal("pauseModal");
         closeModal("dayModal");
+        clearTimeout(bannerTimer);
+        $("dayBanner").classList.add("hide");
       }
 
       /* =====================================================================
@@ -3604,7 +3687,7 @@
         const t = T();
         const unlocked = getUnlockedItemIds();
         let html =
-          `<div class="cart-row"><span class="cn"> ${t.m_priceBroth}</span>` +
+          `<div class="cart-row"><span class="cn">🍲 ${t.m_priceBroth}</span>` +
           `<span class="cs">${fmt(BROTH_PRICE)} ${t.m_coin}</span></div>`;
         html += ITEMS.filter((it) => unlocked.has(it.id))
           .map((it) => {
@@ -3699,6 +3782,20 @@
         armThumbs($("ckText"));
         openModal("ckModal");
       }
+      /* Bấm "Mở quán": hiện bảng "Ngày N" 2 giây, sau đó mờ đi và quán mở cửa */
+      let bannerTimer = null;
+      function showDayBanner(done) {
+        const el = $("dayBanner"),
+          t = T();
+        $("dayBannerTxt").textContent =
+          lang === "ja" ? S.day + t.day : t.day + " " + S.day;
+        el.classList.remove("hide");
+        clearTimeout(bannerTimer);
+        bannerTimer = setTimeout(() => {
+          el.classList.add("hide"); // mờ dần
+          done(); // và mở quán
+        }, 1000);
+      }
       function finishShopping() {
         if (marketLock) return;
         marketLock = true;
@@ -3712,7 +3809,7 @@
           S.introSeen = true;
           save();
           $("market").classList.add("hide");
-          beginDay();
+          showDayBanner(beginDay);
         } finally {
           marketLock = false;
         }
@@ -3868,7 +3965,13 @@
       }
 
       const openModal = (id) => $(id).classList.remove("hide");
-      const closeModal = (id) => $(id).classList.add("hide");
+      const closeModal = (id) => {
+        $(id).classList.add("hide");
+        if (id === "rulesModal" && !S.rulesSeen) {
+          S.rulesSeen = true; // đã xem luật lần đầu -> lưu theo tài khoản/cloud
+          save();
+        }
+      };
       /* ===== DOANH THU THEO THÁNG (1 tháng = MONTH_DAYS ngày chơi) ===== */
       const MONTH_DAYS = 30;
       let revMonth = 1;
@@ -3956,7 +4059,7 @@
       }
       window.refreshPlayLabel = refreshPlayLabel; // supabase.js gọi lại sau khi nạp dữ liệu cloud
       $("playBtn").onclick = () => {
-        if (!hasProgress()) S = newSave(); // ván mới: cấp tiền ban đầu đúng 1 lần
+        if (!hasProgress()) S = Object.assign(newSave(), { rulesSeen: S.rulesSeen }); // ván mới: cấp tiền ban đầu đúng 1 lần
         save();
         startGame();
       };
@@ -4057,16 +4160,42 @@
       $("confirmYes").onclick = () => {
         gearPaused = false;
         resumeGame(); // nếu đang tạm dừng vì mở cài đặt trong game
-        S = newSave();
+        S = Object.assign(newSave(), { rulesSeen: true }); // bắt đầu lại: không hiện lại luật tự động
         save();
         closeModal("confirmModal");
         closeModal("settingsModal");
         startGame();
       };
 
+      /* Thanh thông báo (Đúng! +xxx, khách giận...): tự mờ dần rồi biến mất sau ~2 giây */
+      (() => {
+        const el = $("msg");
+        let t1 = null,
+          t2 = null;
+        new MutationObserver(() => {
+          clearTimeout(t1);
+          clearTimeout(t2);
+          el.classList.remove("fade");
+          if (!el.textContent) return;
+          t1 = setTimeout(() => {
+            el.classList.add("fade");
+            t2 = setTimeout(() => {
+              el.textContent = "";
+              el.classList.remove("fade");
+            }, 600);
+          }, 1800);
+        }).observe(el, { childList: true, characterData: true, subtree: true });
+      })();
+
       build();
       buildMarket();
       paint();
+      if (!S.rulesSeen) {
+        // lần đầu truy cập: tự hiện Luật chơi
+        rulesPage = 0;
+        goRules(0);
+        openModal("rulesModal");
+      }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
     <script src="supabase.js"></script>

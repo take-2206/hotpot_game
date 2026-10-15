@@ -108,6 +108,8 @@
           money: row.money,
           inventory: row.inventory || {},
           introSeen: row.intro_seen,
+          // tài khoản đã có bản lưu trên cloud = đã qua lần truy cập đầu -> không hiện lại Luật chơi
+          rulesSeen: true,
           updatedAt: Date.parse(row.updated_at),
         });
         /* Cloud chưa lưu history/prices (trừ khi bật CLOUD_EXTRA) -> giữ bản local
