@@ -1251,6 +1251,83 @@
       .panel .btn-sub {
         width: 100%;
       }
+      .panel.note-panel {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        padding: 0;
+        display: block;
+        overflow: hidden;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+      .note-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        pointer-events: none;
+      }
+      .note-content {
+        position: absolute;
+        inset: 0;
+        overflow-y: auto;
+        padding: clamp(64px, 9vh, 96px) clamp(24px, 8vw, 100px) 32px;
+        color: #5a3a2e;
+      }
+      .note-content h2 {
+        margin: 0 0 18px;
+        text-align: center;
+        font-size: clamp(22px, 3vw, 34px);
+        color: #9b1f2a;
+      }
+      .note-recipe {
+        padding: 12px 0;
+        border-bottom: 2px dashed rgba(185, 138, 98, 0.65);
+      }
+      .note-recipe h3 {
+        margin: 0 0 8px;
+        font-size: clamp(18px, 2.4vw, 27px);
+        color: #9b1f2a;
+      }
+      .note-recipe .note-language {
+        display: none;
+        margin: 8px 0;
+        padding: 8px 12px;
+        border-left: 4px solid #b98a62;
+        border-radius: 8px;
+        background: rgba(255, 248, 230, 0.78);
+        font-size: clamp(13px, 1.55vw, 18px);
+        line-height: 1.4;
+      }
+      html[lang="vi"] .note-recipe [data-language="vi"],
+      html[lang="ja"] .note-recipe [data-language="ja"],
+      html[lang="en"] .note-recipe [data-language="en"] {
+        display: block;
+      }
+      .note-recipe strong {
+        display: block;
+        margin-bottom: 3px;
+        color: #8a4b32;
+      }
+      .note-panel .note-close {
+        position: absolute;
+        z-index: 1;
+        top: max(12px, env(safe-area-inset-top));
+        right: max(12px, env(safe-area-inset-right));
+        padding: 8px 18px;
+        font-size: clamp(14px, 1.6vw, 20px);
+      }
+      @media (max-width: 600px) {
+        .note-content {
+          padding: 62px 13vw 24px;
+        }
+      }
       .btn-danger {
         color: #9b1f2a;
       }
@@ -2145,6 +2222,12 @@
         font-size: max(13px, 2.3cqw) !important;
         line-height: 1.25 !important;
       }
+      .bubble .queue-note {
+        display: block;
+        margin-top: 0.35cqw;
+        color: #8a2f1c;
+        font-size: max(10px, 1.5cqw);
+      }
 
       /* ===== CHỮ DỄ ĐỌC HƠN (ghi đè cỡ chữ nhỏ ở các phần khác) ===== */
       .stat {
@@ -2644,6 +2727,14 @@
         >
           <img src="img/settings.png" alt="" />
         </button>
+        <button
+          class="icon-btn note-icon-btn"
+          id="noteBtn"
+          aria-label="Recipe notes"
+          title="Recipe notes"
+        >
+          <span aria-hidden="true">📝</span>
+        </button>
       </div>
       <div class="menu">
         <div class="logo">
@@ -2655,6 +2746,50 @@
         <button class="btn btn-sub" id="settingsBtn">
           <span class="gear-ico"><img src="img/settings.png" alt="" /></span
           >&nbsp; <span data-i="settings"></span>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal hide" id="noteModal">
+      <div class="panel note-panel">
+        <img class="note-image" src="img/note.png" alt="" />
+        <div class="note-content">
+          <h2 data-i="noteRecipes"></h2>
+          <article class="note-recipe">
+            <h3 class="note-language" data-language="vi">01. Bí kíp lẩu cà chua</h3>
+            <h3 class="note-language" data-language="ja">01. トマト鍋のコツ</h3>
+            <h3 class="note-language" data-language="en">01. Tomato Hot Pot Tips</h3>
+            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Xào cà chua trước khi cho nước dùng để tạo vị ngọt tự nhiên và màu đỏ đẹp. Thêm chút đường để cân bằng vị chua.</p>
+            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>トマトを先に炒めると、甘みと旨みが引き立ちます。少量の砂糖で酸味を整えましょう。</p>
+            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Sauté the tomatoes first to bring out their natural sweetness. Add a little sugar to balance the acidity.</p>
+          </article>
+          <article class="note-recipe">
+            <h3 class="note-language" data-language="vi">02. Bí kíp lẩu siêu cay</h3>
+            <h3 class="note-language" data-language="ja">02. 激辛鍋のコツ</h3>
+            <h3 class="note-language" data-language="en">02. Extra-Spicy Hot Pot Tips</h3>
+            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Phi ớt và tỏi với dầu ở lửa nhỏ để dậy mùi thơm. Không đun quá lâu ở lửa lớn vì nước lẩu dễ bị đắng.</p>
+            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>唐辛子とニンニクを弱火で炒めて香りを引き出します。強火で煮込みすぎると苦味が出るので注意しましょう。</p>
+            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Gently fry the chilies and garlic to release their aroma. Avoid prolonged high heat to prevent bitterness.</p>
+          </article>
+          <article class="note-recipe">
+            <h3 class="note-language" data-language="vi">03. Bí kíp lẩu cay</h3>
+            <h3 class="note-language" data-language="ja">03. ピリ辛鍋のコツ</h3>
+            <h3 class="note-language" data-language="en">03. Spicy Hot Pot Tips</h3>
+            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Kết hợp vị cay với nước dùng ngọt thanh. Cho rau vào gần cuối để giữ độ giòn và giúp nước lẩu không bị nồng.</p>
+            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>辛さとあっさりしただしの旨みを組み合わせます。野菜は仕上げに加えると食感が残ります。</p>
+            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Balance the heat with a light, savory broth. Add vegetables near the end to preserve their texture.</p>
+          </article>
+          <article class="note-recipe">
+            <h3 class="note-language" data-language="vi">04. Bí kíp lẩu Collagen</h3>
+            <h3 class="note-language" data-language="ja">04. コラーゲン鍋のコツ</h3>
+            <h3 class="note-language" data-language="en">04. Collagen Hot Pot Tips</h3>
+            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Ninh nước dùng ở lửa nhỏ để vị ngọt từ thịt và rau hòa quyện. Thêm nấm và hành lá để tăng hương thơm.</p>
+            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>弱火でじっくり煮込み、肉や野菜の旨みを引き出します。きのことネギを加えると香りが豊かになります。</p>
+            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Simmer the broth gently to develop its flavor. Add mushrooms and green onions for extra aroma.</p>
+          </article>
+        </div>
+        <button class="btn btn-close note-close" data-close="noteModal">
+          <span data-i="close"></span>
         </button>
       </div>
     </div>
@@ -3050,6 +3185,7 @@
           continue: "Chơi tiếp",
           settings: "Cài đặt",
           rules: "Luật chơi",
+          noteRecipes: "Công thức nước lẩu",
           restart: "Bắt đầu lại từ đầu",
           close: "Đóng",
           yes: "Đồng ý",
@@ -3156,6 +3292,7 @@
           continue: "つづきから",
           settings: "設定",
           rules: "あそびかた",
+          noteRecipes: "スープのレシピメモ",
           restart: "最初からやり直す",
           close: "閉じる",
           yes: "はい",
@@ -3262,6 +3399,7 @@
           continue: "Continue",
           settings: "Settings",
           rules: "How to play",
+          noteRecipes: "Broth recipe notes",
           restart: "Restart from the beginning",
           close: "Close",
           yes: "Yes",
@@ -3707,6 +3845,8 @@
         if (order) {
           const f = [...order.f].map((i) => nm(ingredients[i])).join(", ");
           $("orderTxt").innerHTML = `${nm(broths[order.b])}<br>${f}`;
+        } else {
+          $("orderTxt").textContent = "";
         }
         document.querySelectorAll("[data-i]").forEach((el) => {
           const v = t[el.dataset.i];
@@ -3757,6 +3897,7 @@
         showRedo(false);
         playing = false;
         setReady(false);
+        order = null;
         bub().classList.remove("show");
         cust().classList.add("walking", "leaving");
         $("msg").textContent = T()[closeKey]; // thông báo đóng cửa
@@ -3958,11 +4099,13 @@
         save();
         selB = null;
         selF = new Set();
+        order = null;
         paint();
         bub().classList.remove("show");
         cust().classList.add("walking", "leaving");
         later(() => {
           if (!clockRunning) return;
+          playing = true;
           newCustomer();
         }, 800);
       }
@@ -3980,6 +4123,10 @@
           b: Math.floor(Math.random() * broths.length),
           f: new Set(pool.slice(0, cnt)),
         };
+        presentGuest({ order, image: randomCustomerImage() });
+      }
+      function presentGuest(guest) {
+        order = guest.order;
         selB = null;
         selF = new Set();
         setReady(false);
@@ -3987,12 +4134,10 @@
 
         const c = cust(),
           bb = bub();
-
-        // Random ảnh anime mỗi khi có khách mới
         const customerImg = c.querySelector("img.customer-image");
-        if (customerImg) {
-          customerImg.src = randomCustomerImage();
-        }
+        if (customerImg) customerImg.src = guest.image;
+        const token = dayToken;
+        const patience = Math.max(12, 8 + order.f.size * 4 - S.day);
 
         bb.classList.remove("show");
         c.classList.remove("angry", "walking");
@@ -4007,11 +4152,11 @@
         $("timeFill").style.background = "hsl(120 80% 45%)";
         paint();
         later(() => {
-          if (!clockRunning) return;
+          if (!clockRunning || token !== dayToken) return;
           c.classList.remove("walking");
           bb.classList.add("show"); // hiện khung order
           setReady(true);
-          startTimer(Math.max(12, 8 + cnt * 4 - S.day)); // bắt đầu tính kiên nhẫn
+          startTimer(patience); // bắt đầu tính kiên nhẫn cho khách đang được phục vụ
         }, 850);
       }
       function serve() {
@@ -4070,6 +4215,7 @@
         n++;
         save();
         $("msg").textContent = t.angry + yen(lost);
+        order = null;
         paint();
         c.classList.add("angry");
         later(() => c.classList.add("walking", "leaving"), 650);
@@ -4128,6 +4274,7 @@
         drawer = newDrawer(); // mỗi ngày két có khoảng ¥10.000 gồm nhiều loại tiền
         n = 0;
         good = 0;
+        order = null;
         dayRevenue = 0;
         dayPenalty = 0;
         playing = true;
@@ -4148,6 +4295,7 @@
         clockRunning = false;
         stopTimer();
         playing = false;
+        order = null;
         paused = false;
         setReady(false);
         $("gameRoot").classList.remove("paused");
@@ -4802,6 +4950,7 @@
         save();
         startGame();
       };
+      $("noteBtn").onclick = () => openModal("noteModal");
       $("settingsBtn").onclick = $("gearBtn").onclick = () =>
         openModal("settingsModal");
       $("rulesBtn").onclick = () => {
