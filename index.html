@@ -469,21 +469,25 @@
         text-align: center;
       }
       /* Nguyên liệu đã chọn sẽ hiện bên trong tô, chồng lên hình nước lẩu */
-      .pot-ingredients {
+      .stove-pot .pot-ingredients {
         position: absolute;
-        left: 17%;
-        top: 24%;
-        width: 66%;
-        height: 48%;
+        /* vùng mặt nước lèo trong tô (theo % của .stove-pot) */
+        left: 24%;
+        top: 36%;
+        width: 54%;
+        height: 36%;
         z-index: 3;
         pointer-events: none;
+        clip-path: ellipse(52% 54% at 50% 50%); /* món nào lòi khỏi mặt nước thì bị cắt, không tràn ra ngoài tô */
       }
-      .pot-ingredient {
+      /* Ghi đè ".stove-pot img {width:100%;height:100%}". Vị trí + cỡ từng món do JS đặt theo số món. */
+      .stove-pot .pot-ingredient {
         position: absolute;
-        width: 29%;
-        height: 58%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        translate: -50% -50%; /* tâm món nằm đúng điểm cx,cy (không đụng transform của animation) */
         object-fit: contain;
-        filter: drop-shadow(0 0.18cqw 0.15cqw rgba(30, 15, 10, 0.35));
+        filter: drop-shadow(0 0.15cqw 0.1cqw rgba(30, 15, 10, 0.35));
         animation: ingredientPop 0.18s ease-out;
       }
       @keyframes ingredientPop {
@@ -2296,6 +2300,218 @@
           transform: scale(1);
         }
       }
+
+      /* ===== 2 NÚT "XÓA LỰA CHỌN" + "XÁC NHẬN TIỀN THỐI" CHUNG 1 HÀNG ===== */
+      .pay-actions {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+      }
+      .payment-panel .pay-actions .btn {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+        white-space: normal;
+        line-height: 1.15;
+        text-align: center;
+        font-size: clamp(13px, 3.4vw, 17px);
+        padding: 10px 6px;
+        border-width: 2px;
+        outline-width: 2px;
+      }
+
+      /* ===== KÉT TIỀN ===== */
+      .drawer-bar {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 4px 8px;
+        padding: 8px 10px;
+        font-weight: 800;
+        background: #fbeed6;
+        border: 2px solid #b98a62;
+        border-radius: 12px;
+      }
+      .drawer-bar b {
+        color: #9b1f2a;
+        font-size: 1.15em;
+      }
+      .drawer-delta {
+        font-weight: 900;
+        font-size: 0.95em;
+      }
+      .dl-plus {
+        color: #2f7d3a;
+      }
+      .dl-minus {
+        color: #cf2f3c;
+      }
+      .payment-denominations button {
+        min-height: 72px;
+      }
+      .payment-denominations button small {
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1;
+        color: #80644e;
+      }
+
+      /* ===== THU TIỀN: GIAO DIỆN ĐƠN GIẢN (tổng tiền / khách đưa / tiền thối / khay tiền) ===== */
+      .payment-panel .payment-total,
+      .pay-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 800;
+        border-radius: 16px;
+      }
+      .payment-panel .payment-total {
+        justify-content: space-between;
+        background: #fdf0dc;
+        border: 2px solid #f0cfa0;
+      }
+      .payment-panel .payment-total strong {
+        display: inline;
+        font-size: 1.5em;
+        color: #9b1f2a;
+      }
+      .pay-recv {
+        background: #eef3f8;
+        border: 2px solid #c9d8e8;
+      }
+      .pay-chg {
+        background: #fde3e0;
+        border: 2px solid #f3b9b4;
+      }
+      .pay-ico {
+        font-size: 1.6em;
+        line-height: 1;
+      }
+      .pay-lbl {
+        flex: 1;
+      }
+      .pay-val {
+        font-size: 1.3em;
+        font-weight: 900;
+        color: #5a3a2e;
+        white-space: nowrap;
+      }
+      .pay-chg .pay-val strong {
+        color: #cf2f3c;
+      }
+      .pay-chg .pay-val strong.ok {
+        color: #2f7d3a;
+      }
+      .pay-sep {
+        margin: 0 4px;
+        opacity: 0.5;
+      }
+
+      .cash-tray {
+        width: 100%;
+        padding: 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        background: linear-gradient(#7a5240, #5a3a2e);
+        border: 3px solid #4a2c25;
+        border-radius: 14px;
+        box-shadow:
+          inset 0 2px 4px rgba(255, 235, 205, 0.2),
+          0 3px 0 #392522;
+      }
+      .tray-bills {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .tray-coins {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 5px;
+      }
+      .slot {
+        position: relative;
+        min-width: 0;
+        padding: 14px 2px 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 2px;
+        background: linear-gradient(#4a3329, #3b2820);
+        border: 2px solid #2b1a14;
+        border-radius: 8px;
+        box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.45);
+      }
+      .slot:active:not(:disabled) {
+        filter: brightness(1.2);
+      }
+      .slot:disabled {
+        opacity: 0.4;
+        filter: grayscale(0.6);
+        cursor: not-allowed;
+      }
+      .slot-tag {
+        position: absolute;
+        top: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 0 5px;
+        font-size: 9px;
+        font-weight: 900;
+        line-height: 1.4;
+        white-space: nowrap;
+        color: #5a3a2e;
+        background: #f6e8d2;
+        border-radius: 4px;
+      }
+      .slot img {
+        width: 80%;
+        max-height: 34px;
+        object-fit: contain;
+        pointer-events: none;
+      }
+      .slot.is-bill img {
+        width: 94%;
+        max-height: 38px;
+      }
+      .slot .dn-count {
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1;
+        color: #f6e8d2;
+      }
+      .slot .dn-sel {
+        position: absolute;
+        top: -6px;
+        right: -4px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-style: normal;
+        font-size: 11px;
+        font-weight: 900;
+        color: #fff;
+        background: #cf2f3c;
+        border: 2px solid #fff3e6;
+        border-radius: 999px;
+        pointer-events: none;
+      }
+      .drawer-bar {
+        padding: 4px 8px;
+        font-size: 12px;
+        background: transparent;
+        border: 0;
+      }
     </style>
   </head>
   <body>
@@ -2532,25 +2748,28 @@
           <strong id="paymentTotal"></strong>
         </div>
         <div class="payment-options" id="cashPayment" hidden>
-          <div class="cash-register">
-            <div class="cash-compartment">
-              <span class="cash-slot-title" data-i="payCashOffer"></span>
-              <div class="cash-received">
-                <div id="cashTenderPieces"></div>
-              </div>
-              <strong id="cashTender"></strong>
-            </div>
-            <div class="cash-compartment">
-              <span class="cash-slot-title" data-i="payChange"></span>
-              <strong id="changeDue"></strong>
-              <div class="cash-change-tray" id="changeTray" aria-live="polite"></div>
-              <span class="cash-slot-title" data-i="payChangeSelected"></span>
-              <strong id="changeSelected"></strong>
-            </div>
+          <div class="pay-row pay-recv">
+            <span class="pay-ico">💴</span>
+            <span class="pay-lbl" data-i="payCashOffer"></span>
+            <strong class="pay-val" id="cashTender"></strong>
           </div>
-          <div class="payment-denominations" id="paymentDenominations"></div>
-          <button class="btn btn-sub" id="clearChangeBtn" data-i="payClear"></button>
-          <button class="btn btn-play" id="cashConfirmBtn" data-i="payConfirm" disabled></button>
+          <div class="pay-row pay-chg">
+            <span class="pay-ico">🪙</span>
+            <span class="pay-lbl" data-i="payChange"></span>
+            <span class="pay-val">
+              <strong id="changeSelected"></strong><span class="pay-sep">/</span><span id="changeDue"></span>
+            </span>
+          </div>
+          <div class="cash-tray" id="paymentDenominations"></div>
+          <div class="drawer-bar">
+            <span data-i="drawerLabel"></span>
+            <b id="drawerTotal"></b>
+            <span class="drawer-delta" id="drawerDelta"></span>
+          </div>
+          <div class="pay-actions">
+            <button class="btn btn-sub" id="clearChangeBtn" data-i="payClear"></button>
+            <button class="btn btn-play" id="cashConfirmBtn" data-i="payConfirm" disabled></button>
+          </div>
         </div>
         <div class="payment-options" id="qrPayment" hidden>
           <img class="payment-qr" src="img/qr.png" alt="Mã QR thanh toán" />
@@ -2652,9 +2871,9 @@
       /* GIÁ THEO NHÓM: cùng nhóm thì cùng giá (đơn vị: yên). Muốn đổi giá chỉ sửa 3 số này.
          Nhóm của từng món đặt ở trường group trong CATALOG. */
       const GROUP_PRICE = { meat: 600, seafood: 600, veg: 300 }; // giá MUA nguyên liệu ở chợ
-      const BROTH_PRICE = 1000; // giá nước lẩu (mọi loại nước lẩu bằng nhau) khi bán cho khách
+      const BROTH_PRICE = 200; // giá nước lẩu 
       /* Giá BÁN cho khách theo nhóm; muốn món nào giá riêng thì thêm trường sellPrice vào món đó trong CATALOG */
-      const SELL_PRICE = { meat: 1000, seafood: 1000, veg: 500 };
+      const SELL_PRICE = { meat: 800, seafood: 800, veg: 600 };
       const SELL_MIN = 100,
         SELL_MAX = 99900,
         SELL_STEP = 100;
@@ -2721,14 +2940,14 @@
           image: "img/enoki.png",
           potImage: "img/chin/Enoki_cooked.png",
           group: "veg",
-          name: { vi: "Nấm kim châm", ja: "エノキ", en: "enoki mushrooms" },
+          name: { vi: "Nấm kim châm", ja: "エノキ", en: "enoki " },
         },
         {
           id: "shitake",
           image: "img/shitake.png",
           potImage: "img/chin/shitake_cooked.png",
           group: "veg",
-          name: { vi: "Nấm hương", ja: "椎茸", en: "Shiitake" },
+          name: { vi: "Nấm hương", ja: "椎茸", en: "Shitake" },
         },
         {
           id: "tofu",
@@ -2853,7 +3072,8 @@
           payTitle: "Thu tiền",
           payTotal: "Tổng hóa đơn",
           payCashOffer: "Khách đưa:",
-          payChange: "Két tiền thối",
+          payChange: "Tiền thối",
+          drawerLabel: "Trong két:",
           payChangeSelected: "Đã ghép:",
           payEmpty: "Két đang trống",
           payClear: "Xóa lựa chọn",
@@ -2956,7 +3176,8 @@
           payTitle: "お会計",
           payTotal: "お会計金額",
           payCashOffer: "お客さんのお支払い:",
-          payChange: "おつり用のレジ",
+          payChange: "お釣り",
+          drawerLabel: "レジの中身:",
           payChangeSelected: "選んだ金額:",
           payEmpty: "まだお金はありません",
           payClear: "選び直す",
@@ -3059,7 +3280,8 @@
           payTitle: "Take payment",
           payTotal: "Order total",
           payCashOffer: "Customer pays:",
-          payChange: "Cash drawer",
+          payChange: "Change",
+          drawerLabel: "In drawer:",
           payChangeSelected: "Change selected:",
           payEmpty: "Drawer is empty",
           payClear: "Clear selection",
@@ -3395,42 +3617,35 @@
         // Hiển thị từng nguyên liệu ngay trong tô khi người chơi bấm chọn.
         const layer = $("potIngredients");
         if (layer) {
-          layer.innerHTML = [...selF]
-            .map((idx, n) => {
+          // Chỉ dùng ảnh *_cooked (potImage), xếp theo thứ tự bấm chọn
+          // Xếp món thành 1 VÒNG quanh mặt nước lèo, chia đều theo số món (giữa tô để trống thấy nước lèo)
+          const RING_W = { 1: 34, 2: 28, 3: 25, 4: 23, 5: 21 }; // cỡ món (% chiều rộng vùng nước)
+          const RING_START = { 2: 180, 3: -90, 4: -45, 5: -90 }; // góc bắt đầu (độ), -90 = đỉnh
+          const picked = [...selF].filter((idx) => ITEMS[idx] && ITEMS[idx].potImage);
+          const cnt = Math.min(5, picked.length);
+          const rx = cnt === 2 ? 26 : 34; // bán kính ngang vòng (%)
+          const ry = 21; // bán kính dọc vòng (%)
+          layer.innerHTML = picked
+            .map((idx, k) => {
               const item = ITEMS[idx];
-              if (!item) return "";
-              const positions = [
-                [8, 8],
-                [37, 0],
-                [65, 10],
-                [20, 38],
-                [49, 35],
-                [0, 25],
-                [72, 35],
-                [33, 18],
-                [57, 5],
-                [12, 0],
-              ];
-              const [x, y] = positions[n % positions.length];
-              return `<img class="pot-ingredient" src="${item.potImage || item.image}" alt="${nm(item)}" title="${T().alreadySelected}" style="left:${x}%;top:${y}%">`;
+              let cx = 50,
+                cy = 50;
+              if (picked.length > 1) {
+                const ang =
+                  ((RING_START[cnt] ?? -90) + (360 / picked.length) * k) *
+                  (Math.PI / 180);
+                cx = 50 + rx * Math.cos(ang);
+                cy = 50 + ry * Math.sin(ang);
+              }
+              return `<img class="pot-ingredient" src="${item.potImage}" alt="${nm(item)}" style="left:${cx.toFixed(1)}%;top:${cy.toFixed(1)}%;width:${RING_W[cnt] || 21}%">`;
             })
             .join("");
           layer.querySelectorAll("img").forEach((img) => {
             img.addEventListener(
               "error",
               () => {
-                const item = ITEMS.find(
-                  (candidate) => candidate.potImage === img.getAttribute("src"),
-                );
-                if (!item) {
-                  img.remove();
-                  return;
-                }
-                img.addEventListener("error", () => img.remove(), {
-                  once: true,
-                });
-                img.removeAttribute("src");
-                img.src = item.image;
+                console.warn("Thiếu ảnh cooked:", img.getAttribute("src"));
+                img.remove();
               },
               { once: true },
             );
@@ -3575,6 +3790,38 @@
             return count ? [{ ...denomination, count }] : [];
           });
       };
+      /* ===== KÉT TIỀN: mỗi ngày bắt đầu với khoảng ¥10.000 gồm nhiều loại tiền ===== */
+      let drawer = {};
+      const drawerTotal = () =>
+        CASH_DENOMINATIONS.reduce(
+          (sum, d) => sum + d.value * (drawer[d.value] || 0),
+          0,
+        );
+      function newDrawer() {
+        const base = { 1: 10, 5: 10, 10: 10, 50: 10, 100: 15, 500: 6, 1000: 3, 2000: 1 };
+        const spread = { 1: 2, 5: 2, 10: 2, 50: 2, 100: 2, 500: 1, 1000: 1, 2000: 0 };
+        const d = {};
+        CASH_DENOMINATIONS.forEach(({ value }) => {
+          const b = base[value] || 0;
+          const sp = spread[value] || 0;
+          d[value] = b
+            ? Math.max(1, b + Math.floor(Math.random() * (2 * sp + 1)) - sp)
+            : 0;
+        });
+        return d;
+      }
+      drawer = newDrawer();
+      /* Có ghép được đúng số tiền thối từ các tờ/xu đang có trong két không? */
+      function canMakeChange(due, counts) {
+        const ok = new Array(due + 1).fill(false);
+        ok[0] = true;
+        CASH_DENOMINATIONS.forEach(({ value }) => {
+          let c = Math.min(counts[value] || 0, Math.floor(due / value));
+          while (c-- > 0)
+            for (let a = due; a >= value; a--) if (ok[a - value]) ok[a] = true;
+        });
+        return ok[due];
+      }
       const cashPiecesMarkup = (pieces, emptyLabel) =>
         pieces.length
           ? `<div class="cash-money-pieces">${pieces
@@ -3595,45 +3842,63 @@
         );
         $("paymentTotal").textContent = yen(amount);
         $("cashTender").textContent = yen(tender);
-        $("cashTenderPieces").innerHTML = cashPiecesMarkup(
-          cashPieces(tender),
-          t.payEmpty,
-        );
         $("changeDue").textContent = yen(changeDue);
         $("changeSelected").textContent = yen(changeSelected);
-        $("changeTray").innerHTML = cashPiecesMarkup(
-          CASH_DENOMINATIONS.flatMap((denomination, index) => {
-            const count = changeSelections.filter(
-              (selectedIndex) => selectedIndex === index,
-            ).length;
-            return count ? [{ ...denomination, count }] : [];
-          }),
-          t.payEmpty,
-        );
-        const denominationButtons = $("paymentDenominations");
-        if (!denominationButtons.childElementCount) {
-          denominationButtons.innerHTML = CASH_DENOMINATIONS.map(
-            ({ value, image, bill }, index) =>
-              `<button type="button" data-denom="${value}" data-denom-index="${index}" aria-label="¥${value}"><img${bill ? ' class="cash-bill"' : ""} src="${image}" alt=""><span>¥${value}</span></button>`,
-          ).join("");
+        $("changeSelected").classList.toggle("ok", changeSelected === changeDue);
+        const tray = $("paymentDenominations");
+        if (!tray.childElementCount) {
+          // khay tiền: hàng trên 4 loại tiền giấy, hàng dưới 6 loại xu (giống két thật)
+          const slot = (index) => {
+            const { value, image, bill } = CASH_DENOMINATIONS[index];
+            return `<button type="button" class="slot${bill ? " is-bill" : ""}" data-denom="${value}" data-denom-index="${index}" aria-label="¥${value}"><span class="slot-tag">¥${value}</span><img src="${image}" alt=""><small class="dn-count"></small><i class="dn-sel" hidden></i></button>`;
+          };
+          tray.innerHTML =
+            `<div class="tray-bills">${[9, 8, 7, 6].map(slot).join("")}</div>` +
+            `<div class="tray-coins">${[5, 4, 3, 2, 1, 0].map(slot).join("")}</div>`;
         }
         document.querySelectorAll("[data-denom]").forEach((button) => {
+          const index = Number(button.dataset.denomIndex);
+          const picked = changeSelections.filter((x) => x === index).length;
+          const left = (drawer[button.dataset.denom] || 0) - picked;
+          button.querySelector(".dn-count").textContent = "×" + Math.max(0, left);
+          const sel = button.querySelector(".dn-sel");
+          sel.textContent = picked || "";
+          sel.hidden = !picked;
           button.disabled =
             method !== "cash" ||
+            left <= 0 ||
             changeSelected + Number(button.dataset.denom) > changeDue;
         });
+        $("drawerTotal").textContent = yen(drawerTotal() - changeSelected);
+        $("drawerDelta").innerHTML =
+          method === "cash"
+            ? `<span class="dl-plus">+${yen(tender)}</span> <span class="dl-minus">−${yen(changeSelected)}</span>`
+            : "";
         $("cashConfirmBtn").disabled =
           method !== "cash" || changeSelected !== changeDue;
         $("cashPayment").hidden = method !== "cash";
         $("qrPayment").hidden = method !== "qr";
       }
       function beginPayment(amount) {
-        const method = Math.random() < 0.5 ? "cash" : "qr";
-        const bill = amount;
         const overpayments = [100, 500, 1000, 5000];
         const overpayment =
           overpayments[Math.floor(Math.random() * overpayments.length)];
-        const tender = bill + overpayment;
+        const tender = amount + overpayment;
+        let method = Math.random() < 0.5 ? "cash" : "qr";
+        if (method === "cash") {
+          // két (đã cộng tiền khách đưa) có ghép được đúng tiền thối không? Không thì chuyển sang QR.
+          const test = { ...drawer };
+          cashPieces(tender).forEach((p) => {
+            test[p.value] = (test[p.value] || 0) + p.count;
+          });
+          if (!canMakeChange(overpayment, test)) method = "qr";
+        }
+        if (method === "cash") {
+          // nhận tiền mặt của khách: két +tender
+          cashPieces(tender).forEach((p) => {
+            drawer[p.value] = (drawer[p.value] || 0) + p.count;
+          });
+        }
         pendingPayment = { amount, method, tender };
         changeSelections = [];
         $("paymentFeedback").textContent = "";
@@ -3651,6 +3916,13 @@
         if (method === "cash" && changeSelected !== tender - amount) {
           $("paymentFeedback").textContent = T().payChangeError;
           return;
+        }
+        if (method === "cash") {
+          // thối tiền cho khách: két -tiền thối
+          changeSelections.forEach((i) => {
+            const v = CASH_DENOMINATIONS[i].value;
+            drawer[v] = Math.max(0, (drawer[v] || 0) - 1);
+          });
         }
         pendingPayment = null;
         changeSelections = [];
@@ -3830,6 +4102,7 @@
       }
       function beginDay() {
         dayToken++;
+        drawer = newDrawer(); // mỗi ngày két có khoảng ¥10.000 gồm nhiều loại tiền
         n = 0;
         good = 0;
         dayRevenue = 0;
@@ -4546,6 +4819,10 @@
         );
         if (selected + CASH_DENOMINATIONS[denomination].value > changeDue)
           return;
+        const leftInDrawer =
+          (drawer[CASH_DENOMINATIONS[denomination].value] || 0) -
+          changeSelections.filter((x) => x === denomination).length;
+        if (leftInDrawer <= 0) return;
         changeSelections.push(denomination);
         $("paymentFeedback").textContent = "";
         renderPayment();
