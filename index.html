@@ -2940,14 +2940,14 @@
           image: "img/enoki.png",
           potImage: "img/chin/Enoki_cooked.png",
           group: "veg",
-          name: { vi: "Nấm kim châm", ja: "エノキ", en: "enoki " },
+          name: { vi: "Nấm kim châm", ja: "エノキ", en: "enoki mushrooms" },
         },
         {
           id: "shitake",
           image: "img/shitake.png",
           potImage: "img/chin/shitake_cooked.png",
           group: "veg",
-          name: { vi: "Nấm hương", ja: "椎茸", en: "Shitake" },
+          name: { vi: "Nấm hương", ja: "椎茸", en: "Shiitake" },
         },
         {
           id: "tofu",
@@ -3791,6 +3791,7 @@
           });
       };
       /* ===== KÉT TIỀN: mỗi ngày bắt đầu với khoảng ¥10.000 gồm nhiều loại tiền ===== */
+      const CASH_RATE = 0.8; // tỉ lệ khách trả tiền mặt (còn lại là QR); đổi 0–1 tùy ý
       let drawer = {};
       const drawerTotal = () =>
         CASH_DENOMINATIONS.reduce(
@@ -3884,7 +3885,7 @@
         const overpayment =
           overpayments[Math.floor(Math.random() * overpayments.length)];
         const tender = amount + overpayment;
-        let method = Math.random() < 0.5 ? "cash" : "qr";
+        let method = Math.random() < CASH_RATE ? "cash" : "qr";
         if (method === "cash") {
           // két (đã cộng tiền khách đưa) có ghép được đúng tiền thối không? Không thì chuyển sang QR.
           const test = { ...drawer };
