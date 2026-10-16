@@ -2267,30 +2267,41 @@
         transition: opacity 0.5s ease;
       }
       .day-banner-card {
-        min-width: min(70vw, 340px);
-        padding: clamp(18px, 4vh, 34px) clamp(24px, 6vw, 56px);
+        /* khung gỗ hoa anh đào (img/notice_frame.png, tỉ lệ 900x460); chữ nằm giữa phần giấy kem */
+        width: min(88vw, 520px);
+        aspect-ratio: 900 / 460;
+        container-type: inline-size;
+        padding: 14% 8% 9%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1cqw;
         text-align: center;
-        background: #f6e3c3;
-        border: 4px solid #b98a62;
-        border-radius: 24px;
-        box-shadow:
-          0 8px 0 #a07650,
-          0 0 0 5px #fff6e6 inset;
+        background: url("img/notice_frame.png") center / 100% 100% no-repeat;
+        filter: drop-shadow(0 1.6cqw 1.6cqw rgba(30, 15, 10, 0.4));
         animation: dayBannerPop 0.4s ease-out both;
       }
       .day-banner.hide .day-banner-card {
         animation: none;
       }
       .day-banner-ico {
-        font-size: clamp(34px, 8vw, 54px);
-        line-height: 1.1;
+        font-size: 9cqw;
+        line-height: 1;
       }
       .day-banner-txt {
         font-weight: 900;
-        font-size: clamp(34px, 9vw, 60px);
-        color: #9b1f2a;
-        letter-spacing: 1px;
-        text-shadow: 0 2px 0 #fff6e6;
+        font-size: 17cqw;
+        line-height: 1.05;
+        color: #d83a4a;
+        letter-spacing: 0.4cqw;
+        -webkit-text-stroke: 0.5cqw #8c1d27;
+        paint-order: stroke fill;
+        text-shadow:
+          0 0.5cqw 0 #8c1d27,
+          0 1cqw 0 #6e1620,
+          0 1.8cqw 1.6cqw rgba(110, 22, 32, 0.45),
+          0 0 2.4cqw rgba(255, 255, 255, 0.9);
       }
       @keyframes dayBannerPop {
         0% {
@@ -2695,7 +2706,6 @@
     <!-- Bảng "Ngày N" hiện 2 giây khi bấm Mở quán, rồi mờ đi và quán mở cửa -->
     <div class="modal hide day-banner" id="dayBanner" aria-live="polite">
       <div class="day-banner-card">
-        <div class="day-banner-ico">🏮</div>
         <div class="day-banner-txt" id="dayBannerTxt"></div>
       </div>
     </div>
@@ -2940,14 +2950,14 @@
           image: "img/enoki.png",
           potImage: "img/chin/Enoki_cooked.png",
           group: "veg",
-          name: { vi: "Nấm kim châm", ja: "エノキ", en: "enoki mushrooms" },
+          name: { vi: "Nấm kim châm", ja: "エノキ", en: "enoki" },
         },
         {
           id: "shitake",
           image: "img/shitake.png",
           potImage: "img/chin/shitake_cooked.png",
           group: "veg",
-          name: { vi: "Nấm hương", ja: "椎茸", en: "Shiitake" },
+          name: { vi: "Nấm hương", ja: "椎茸", en: "Shitake" },
         },
         {
           id: "tofu",
@@ -2968,7 +2978,7 @@
           image: "img/ramen.png",
           potImage: "img/chin/ramen_cooked.png",
           group: "veg",
-          name: { vi: "Mì ramen", ja: "ラーメン", en: "Ramen noodles" },
+          name: { vi: "Mì", ja: "ラーメン", en: "Ramen" },
         },
         {
           id: "corn",
@@ -3030,6 +3040,7 @@
         new Set(UNLOCK_ORDER.slice(0, unlockedItemCount(day)));
       const nm = (o) => o.name[lang] || o.name.en || o.name.vi;
       const DAY_SECONDS = 150; // 1 ngày chơi thật = 150 giây (2,5 phút); đổi 120–180 tùy ý
+      const RENT_PER_DAY = 2000; // tiền thuê mặt bằng trừ cuối mỗi ngày (¥)
       const GOAL = 8; // số khách phục vụ đúng để qua ngày
 
       /* ===== NGÔN NGỮ ===== */
@@ -3066,8 +3077,8 @@
           closedEarly: "Quán đã đóng cửa sớm!",
           noStock: "Hết nguyên liệu – quán phải đóng cửa!",
           outOfStock: "Hết nguyên liệu này rồi!",
-          ok: "Thanh toán +",
-          bad: "Sai rồi! -",
+          ok: "+",
+          bad: "Khách bỏ về! -",
           pick: "Hãy chọn nước lẩu trước!",
           payTitle: "Thu tiền",
           payTotal: "Tổng hóa đơn",
@@ -3088,6 +3099,7 @@
           marketCost: "Chi phí đi chợ",
           revenue: "Doanh thu",
           penalty: "Phạt khách bỏ về",
+          rent: "Tiền thuê mặt bằng",
           net: "Lợi nhuận",
           next: "Ngày tiếp theo ",
           retry: "Chơi lại ngày này ",
@@ -3098,8 +3110,8 @@
           m_cart: "Giỏ hàng",
           m_total: "Tổng",
           m_left: "Còn lại",
-          m_coin: "¥",
-          m_notEnough: "Không đủ tiền yên!",
+          m_coin: "",
+          m_notEnough: "Không đủ tiền!",
           m_emptySel: "Hãy chọn số lượng nguyên liệu trước!",
           m_buyOk: "Mua thành công! -",
           m_needBuy:
@@ -3136,6 +3148,7 @@
           hRev: "Thu",
           hCost: "Chi",
           hPen: "Phạt",
+          hRent: "Thuê",
           hNet: "Lãi",
         },
         ja: {
@@ -3170,7 +3183,7 @@
           closedEarly: " 早めに閉店しました！",
           noStock: "食材がなくなりました。閉店です！",
           outOfStock: "この食材は在庫切れです！",
-          ok: "会計： +",
+          ok: "",
           bad: "ちがう！ -",
           pick: "先にスープを選んでね！",
           payTitle: "お会計",
@@ -3192,6 +3205,7 @@
           marketCost: "朝の仕入れ代",
           revenue: "売上",
           penalty: "怒って帰った罰金",
+          rent: "店舗の家賃",
           net: "利益",
           next: "次の日へ ",
           retry: "もう一度 ",
@@ -3240,6 +3254,7 @@
           hRev: "売上",
           hCost: "仕入",
           hPen: "罰金",
+          hRent: "家賃",
           hNet: "利益",
         },
         en: {
@@ -3274,7 +3289,7 @@
           closedEarly: " Closed early!",
           noStock: "Out of ingredients – we have to close!",
           outOfStock: "Out of stock!",
-          ok: "Total+",
+          ok: "+",
           bad: "Wrong! -",
           pick: "Pick a broth first!",
           payTitle: "Take payment",
@@ -3296,6 +3311,7 @@
           marketCost: "Market costs (morning)",
           revenue: "Revenue",
           penalty: "Angry-customer penalty",
+          rent: "Shop rent",
           net: "Profit",
           next: "Next day ▶",
           retry: "Retry day ▶",
@@ -3345,6 +3361,7 @@
           hRev: "Rev.",
           hCost: "Cost",
           hPen: "Pen.",
+          hRent: "Rent",
           hNet: "Profit",
         },
       };
@@ -3435,6 +3452,7 @@
             revenue: Math.floor(+r.revenue) || 0,
             cost: Math.floor(+r.cost) || 0,
             penalty: Math.floor(+r.penalty) || 0,
+            rent: Math.floor(+r.rent) || 0,
             profit: Math.floor(+r.profit) || 0,
             served: Math.floor(+r.served) || 0,
           }))
@@ -4064,9 +4082,11 @@
       function endDay() {
         stopTimer();
         playing = false;
+        const rent = Math.min(S.money, RENT_PER_DAY); // trả tiền thuê mặt bằng cuối ngày
+        S.money -= rent;
         const t = T(),
           day = S.day,
-          profit = dayRevenue - dayMarketSpend - dayPenalty,
+          profit = dayRevenue - dayMarketSpend - dayPenalty - rent,
           dayLabel = lang === "ja" ? day + t.day : t.day + " " + day;
         $("dayTitle").textContent = dayLabel + " " + t.dayEnd;
         const sign = (v) => (v >= 0 ? "+" : "-") + fmt(Math.abs(v));
@@ -4078,6 +4098,7 @@
           row(t.revenue, "+" + fmt(dayRevenue)) +
           row(t.marketCost, "-" + fmt(dayMarketSpend)) +
           row(t.penalty, "-" + fmt(dayPenalty)) +
+          row(t.rent, "-" + fmt(rent)) +
           row(t.net, sign(profit), "rep-total" + (profit < 0 ? " neg" : "")) +
           `<div style="text-align:center;margin-top:10px">💰 ${t.m_moneyLabel}: <b>${fmt(S.money)}</b> ${t.m_coin}</div>`;
         $("nextBtn").textContent = t.next;
@@ -4088,6 +4109,7 @@
           revenue: dayRevenue,
           cost: dayMarketSpend,
           penalty: dayPenalty,
+          rent,
           profit,
           served: good,
         });
@@ -4703,7 +4725,7 @@
           lang === "ja" ? revMonth + t.m_month : t.m_month + " " + revMonth;
         $("revPrev").disabled = revMonth <= 1;
         $("revNext").disabled = revMonth >= cur;
-        const sum = (k) => list.reduce((s, r) => s + r[k], 0);
+        const sum = (k) => list.reduce((s, r) => s + (r[k] || 0), 0);
         const sgn = (v) => (v >= 0 ? "+" : "-") + fmt(Math.abs(v));
         const line = (label, val, cls = "") =>
           `<div class="rep-row ${cls}"><span>${label}</span><b>${val} ${t.m_coin}</b></div>`;
@@ -4717,15 +4739,16 @@
           .map(
             (r) =>
               `<tr><td>${r.day}</td><td>+${fmt(r.revenue)} ${t.m_coin}</td><td>-${fmt(r.cost)} ${t.m_coin}</td>` +
-              `<td>-${fmt(r.penalty)} ${t.m_coin}</td><td class="${r.profit < 0 ? "neg" : ""}">${sgn(r.profit)} ${t.m_coin}</td></tr>`,
+              `<td>-${fmt(r.penalty)} ${t.m_coin}</td><td>-${fmt(r.rent || 0)} ${t.m_coin}</td><td class="${r.profit < 0 ? "neg" : ""}">${sgn(r.profit)} ${t.m_coin}</td></tr>`,
           )
           .join("");
         $("revBody").innerHTML =
           line(t.m_revTotal, "+" + fmt(sum("revenue"))) +
           line(t.marketCost, "-" + fmt(sum("cost"))) +
           line(t.penalty, "-" + fmt(sum("penalty"))) +
+          line(t.rent, "-" + fmt(sum("rent"))) +
           line(t.net, sgn(profit), "rep-total" + (profit < 0 ? " neg" : "")) +
-          `<table class="rev-table"><thead><tr><th>${t.hDay}</th><th>${t.hRev}</th><th>${t.hCost}</th><th>${t.hPen}</th><th>${t.hNet}</th></tr></thead><tbody>${rows}</tbody></table>`;
+          `<table class="rev-table"><thead><tr><th>${t.hDay}</th><th>${t.hRev}</th><th>${t.hCost}</th><th>${t.hPen}</th><th>${t.hRent}</th><th>${t.hNet}</th></tr></thead><tbody>${rows}</tbody></table>`;
       }
       function openRevenue(fromDayModal = false) {
         const hist = S.history || [];
