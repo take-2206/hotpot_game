@@ -25,11 +25,17 @@
       /* ===== TỐI ƯU ĐIỆN THOẠI ===== */
       :root {
         /* chiều cao dùng được: trừ tai thỏ / thanh điều hướng, dùng dvh để khớp thanh địa chỉ trình duyệt */
-        --usable-h: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+        --usable-h: calc(
+          100vh - env(safe-area-inset-top, 0px) -
+            env(safe-area-inset-bottom, 0px)
+        );
       }
       @supports (height: 100dvh) {
         :root {
-          --usable-h: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+          --usable-h: calc(
+            100dvh - env(safe-area-inset-top, 0px) -
+              env(safe-area-inset-bottom, 0px)
+          );
         }
       }
       html,
@@ -309,23 +315,23 @@
       /* 10 nguyên liệu đặt vào 10 khay inox (2 hàng x 5) */
       #ingredients .ingredient:nth-child(1) {
         left: 7.03%;
-        top:63%;
+        top: 63%;
       }
       #ingredients .ingredient:nth-child(2) {
         left: 23.44%;
-        top:63%;
+        top: 63%;
       }
       #ingredients .ingredient:nth-child(3) {
         left: 40.23%;
-        top:63%;
+        top: 63%;
       }
       #ingredients .ingredient:nth-child(4) {
         left: 56.77%;
-        top:63%;
+        top: 63%;
       }
       #ingredients .ingredient:nth-child(5) {
         left: 73.44%;
-        top:63%;
+        top: 63%;
       }
       #ingredients .ingredient:nth-child(6) {
         left: 5.99%;
@@ -379,7 +385,7 @@
       .ingredient:hover {
         transform: translateY(-2px);
       }
-    
+
       .cards .food-image {
         width: 10.6cqw;
         height: 10.6cqw;
@@ -604,6 +610,188 @@
         border-radius: 1.2cqw;
         text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
       }
+      .payment-panel {
+        gap: 12px;
+      }
+      .payment-total,
+      .payment-cash-info,
+      .payment-change {
+        width: 100%;
+        padding: 10px;
+        text-align: center;
+        font-weight: 800;
+        background: #fbeed6;
+        border: 2px solid #b98a62;
+        border-radius: 12px;
+      }
+      .payment-total strong {
+        display: block;
+        color: #9b1f2a;
+        font-size: 1.4em;
+      }
+      .payment-rate {
+        color: #5a3a2e;
+        font-size: 0.8em;
+      }
+      .payment-cash-info strong,
+      .payment-change strong {
+        color: #9b1f2a;
+      }
+      .payment-options {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .payment-options[hidden] {
+        display: none;
+      }
+      .cash-register {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(145deg, #80553e, #4e302b);
+        border: 3px solid #b98a62;
+        border-radius: 16px;
+        box-shadow:
+          inset 0 2px 5px rgba(255, 235, 205, 0.22),
+          0 4px 0 #392522;
+      }
+      .cash-compartment {
+        padding: 10px;
+        background: linear-gradient(#f5e4c8, #e7c99f);
+        border: 2px solid #b98a62;
+        border-radius: 10px;
+        box-shadow: inset 0 2px 4px rgba(72, 42, 28, 0.16);
+      }
+      .cash-compartment + .cash-compartment {
+        margin-top: 10px;
+      }
+      .cash-slot-title {
+        display: block;
+        margin-bottom: 8px;
+        text-align: center;
+        font-size: 0.9em;
+        font-weight: 900;
+        color: #5a3a2e;
+      }
+      .cash-received {
+        min-height: 64px;
+        display: grid;
+        place-items: center;
+      }
+      .cash-money-pieces {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+      .cash-money-piece {
+        position: relative;
+        width: 52px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+      }
+      .cash-money-piece img {
+        width: 38px;
+        height: 38px;
+        object-fit: contain;
+        filter: drop-shadow(0 3px 2px rgba(45, 26, 18, 0.28));
+      }
+      .cash-money-piece img.cash-bill {
+        width: 50px;
+        height: 34px;
+      }
+      .cash-money-piece span {
+        position: absolute;
+        right: -2px;
+        bottom: -2px;
+        padding: 1px 4px;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 900;
+        background: #704538;
+        border: 1px solid #fbeed6;
+        border-radius: 999px;
+      }
+      .cash-change-tray {
+        min-height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+        background: rgba(95, 64, 44, 0.12);
+        border: 1px dashed #b98a62;
+        border-radius: 8px;
+      }
+      .cash-empty {
+        color: #80644e;
+        font-size: 0.85em;
+        font-weight: 700;
+      }
+      .payment-denominations {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 6px;
+        width: 100%;
+      }
+      .payment-denominations button {
+        min-width: 0;
+        min-height: 62px;
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        color: #5a3a2e;
+        font-weight: 900;
+        background: linear-gradient(#fbeed6, #efd7b0);
+        border: 2px solid #b98a62;
+        border-radius: 9px;
+      }
+      .payment-denominations button img {
+        width: 38px;
+        height: 34px;
+        object-fit: contain;
+      }
+      .payment-denominations button img.cash-bill {
+        width: 54px;
+        height: 34px;
+      }
+      .payment-denominations button span {
+        font-size: 0.75em;
+        line-height: 1;
+      }
+      .payment-denominations button:disabled,
+      .payment-options .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .payment-qr {
+        width: 104px;
+        height: 104px;
+        padding: 8px;
+        background: #fff;
+        box-shadow: 0 0 0 2px #b98a62;
+        object-fit: contain;
+      }
+      .payment-hint,
+      .payment-feedback {
+        width: 100%;
+        margin: 0;
+        text-align: center;
+        font-weight: 800;
+      }
+      .payment-feedback {
+        min-height: 1.4em;
+        color: #9b1f2a;
+      }
+      .payment-panel .btn {
+        width: 100%;
+      }
 
       /* ===== NÚT DỪNG ===== */
       .game.paused * {
@@ -692,8 +880,7 @@
       .ingredient:hover .food-fallback {
         transform: scale(1.08);
       }
-      
-  
+
       .ingredient {
         position: relative;
       }
@@ -893,7 +1080,7 @@
         position: fixed;
         inset: 0;
         z-index: 1000;
-        background: #2b211f url("img/title-bg.jpg") center / cover no-repeat;
+        background: #2b211f url("img/title-bg.png") center / cover no-repeat;
         transition: opacity 0.4s;
       }
       .start-screen.hide {
@@ -912,35 +1099,13 @@
       }
       .logo {
         width: 100%;
-        text-align: center;
         margin-bottom: clamp(6px, 2vh, 24px);
       }
-      .logo-main {
-        font-size: clamp(44px, 8vw, 120px);
-        font-weight: 900;
-        line-height: 1.05;
-        color: #fff6e8;
-        -webkit-text-stroke: clamp(3px, 0.5vw, 8px) #9b1f2a;
-        paint-order: stroke fill;
-        text-shadow:
-          0 0.5vw 0 #7a1620,
-          0 1vw 1.2vw rgba(60, 10, 10, 0.45);
-      }
-      .logo-sub {
-        display: inline-block;
-        margin-top: 1vh;
-        padding: 1vh 2vw;
-        font-size: clamp(11px, 1.5vw, 22px);
-        font-weight: 800;
-        line-height: 1.4;
-        color: #5a3a2e;
-        background: #f3e0bf;
-        border: 3px solid #b98a62;
-        border-radius: 12px;
-        box-shadow: 0 4px 0 rgba(90, 50, 30, 0.35);
-      }
-      .logo-sub span {
-        color: #d9363e;
+      .logo img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 2 / 1;
+        object-fit: cover;
       }
       .btn {
         width: 100%;
@@ -1012,13 +1177,6 @@
           bottom: 6%;
           transform: translateX(-50%);
           width: min(82vw, 460px);
-        }
-        .logo-main {
-          font-size: clamp(48px, 17vw, 110px);
-        }
-        .logo-sub {
-          font-size: clamp(12px, 3.4vw, 20px);
-          padding: 1vh 5vw;
         }
         .btn-play {
           font-size: clamp(22px, 6vw, 38px);
@@ -1148,7 +1306,9 @@
         box-shadow: none;
         display: grid;
         place-items: center;
-        transition: transform 0.1s, opacity 0.2s;
+        transition:
+          transform 0.1s,
+          opacity 0.2s;
       }
       .rules-arrow img {
         width: 100%;
@@ -2047,36 +2207,35 @@
         font-size: 12px;
       }
 
-
       /* Nút "Ngày tiếp theo" nhỏ gọn */
-#dayModal #nextBtn {
-  width: auto;
-  min-width: 55%;
-  padding: 8px 1.6em;
-  font-size: clamp(14px, 1.3vw, 18px);
-  border-width: 2px;
-  outline-width: 2px;
-  box-shadow: 0 4px 0 #8c1d27;
-}
+      #dayModal #nextBtn {
+        width: auto;
+        min-width: 55%;
+        padding: 8px 1.6em;
+        font-size: clamp(14px, 1.3vw, 18px);
+        border-width: 2px;
+        outline-width: 2px;
+        box-shadow: 0 4px 0 #8c1d27;
+      }
 
-/* Ô nguyên liệu bị khóa: ổ khóa + ngày mở khóa */
+      /* Ô nguyên liệu bị khóa: ổ khóa + ngày mở khóa */
 
-.mgame .bhit.locked::before {
-  font-size: max(24px, 6.5cqw);
-}
-.mgame .bhit.locked::after {
-  content: attr(data-lock-label) !important;
-  padding: 0.4cqw 1.8cqw;
-  font-size: max(10px, 2.3cqw);
-  font-weight: 900;
-  line-height: 1.3;
-  white-space: nowrap;
-  color: #ffd17d;
-  background: rgba(66, 38, 26, 0.92);
-  border: 2px solid #d9a96f;
-  border-radius: 999px;
-}
-          /* ===== CHỈNH THÊM: nút Phục vụ ổn định trên điện thoại, thanh thông báo mờ dần, nhãn nước lẩu ===== */
+      .mgame .bhit.locked::before {
+        font-size: max(24px, 6.5cqw);
+      }
+      .mgame .bhit.locked::after {
+        content: attr(data-lock-label) !important;
+        padding: 0.4cqw 1.8cqw;
+        font-size: max(10px, 2.3cqw);
+        font-weight: 900;
+        line-height: 1.3;
+        white-space: nowrap;
+        color: #ffd17d;
+        background: rgba(66, 38, 26, 0.92);
+        border: 2px solid #d9a96f;
+        border-radius: 999px;
+      }
+      /* ===== CHỈNH THÊM: nút Phục vụ ổn định trên điện thoại, thanh thông báo mờ dần, nhãn nước lẩu ===== */
       .serve,
       .redo {
         white-space: nowrap;
@@ -2101,7 +2260,7 @@
       .section-title:first-child {
         top: 46.5%;
       }
-          /* ===== BẢNG "NGÀY N" KHI MỞ QUÁN ===== */
+      /* ===== BẢNG "NGÀY N" KHI MỞ QUÁN ===== */
       .day-banner {
         z-index: 2500;
         background: rgba(30, 18, 14, 0.55);
@@ -2265,7 +2424,7 @@
       </div>
       <div class="menu">
         <div class="logo">
-          <div class="logo-main">火鍋の店</div>
+          <img src="img/logo.png" alt="Hot-Pot Game" />
         </div>
         <button class="btn btn-play" id="playBtn">
           <i class="tri"></i><span id="playLbl"></span>
@@ -2304,11 +2463,15 @@
           <span class="rules-count" id="rulesCount"></span>
         </div>
         <div class="rules-pager">
-          <button class="rules-arrow" id="rulesPrev" aria-label="Prev"><img src="img/left.png" alt="" draggable="false" /></button>
+          <button class="rules-arrow" id="rulesPrev" aria-label="Prev">
+            <img src="img/left.png" alt="" draggable="false" />
+          </button>
           <div class="rules-viewport" id="rulesViewport">
             <div class="rules-track" id="rulesTrack"></div>
           </div>
-          <button class="rules-arrow" id="rulesNext" aria-label="Next"><img src="img/right.png" alt="" draggable="false" /></button>
+          <button class="rules-arrow" id="rulesNext" aria-label="Next">
+            <img src="img/right.png" alt="" draggable="false" />
+          </button>
         </div>
         <div class="rules-dots" id="rulesDots"></div>
         <button class="btn btn-close" data-close="rulesModal">
@@ -2362,6 +2525,44 @@
           </button>
           <button class="btn btn-play" id="nextBtn"></button>
         </div>
+      </div>
+    </div>
+
+    <div class="modal hide" id="paymentModal">
+      <div class="panel payment-panel">
+        <h2 data-i="payTitle"></h2>
+        <div class="payment-total">
+          <span data-i="payTotal"></span>
+          <strong id="paymentTotal"></strong>
+          <small class="payment-rate" data-i="payRate"></small>
+        </div>
+        <div class="payment-options" id="cashPayment" hidden>
+          <div class="cash-register">
+            <div class="cash-compartment">
+              <span class="cash-slot-title" data-i="payCashOffer"></span>
+              <div class="cash-received">
+                <div id="cashTenderPieces"></div>
+              </div>
+              <strong id="cashTender"></strong>
+            </div>
+            <div class="cash-compartment">
+              <span class="cash-slot-title" data-i="payChange"></span>
+              <strong id="changeDue"></strong>
+              <div class="cash-change-tray" id="changeTray" aria-live="polite"></div>
+              <span class="cash-slot-title" data-i="payChangeSelected"></span>
+              <strong id="changeSelected"></strong>
+            </div>
+          </div>
+          <div class="payment-denominations" id="paymentDenominations"></div>
+          <button class="btn btn-sub" id="clearChangeBtn" data-i="payClear"></button>
+          <button class="btn btn-play" id="cashConfirmBtn" data-i="payConfirm" disabled></button>
+        </div>
+        <div class="payment-options" id="qrPayment" hidden>
+          <img class="payment-qr" src="img/qr.png" alt="Mã QR thanh toán" />
+          <p class="payment-hint" data-i="payQrHint"></p>
+          <button class="btn btn-play" id="qrConfirmBtn" data-i="payQrConfirm"></button>
+        </div>
+        <p class="payment-feedback" id="paymentFeedback" role="status"></p>
       </div>
     </div>
 
@@ -2620,7 +2821,7 @@
       const I18N = {
         vi: {
           start: "Bắt đầu",
-          continue: "Tiếp tục",
+          continue: "Chơi tiếp",
           settings: "Cài đặt",
           rules: "Luật chơi",
           restart: "Bắt đầu lại từ đầu",
@@ -2630,7 +2831,7 @@
           confirmText:
             "Toàn bộ tiến trình sẽ bị xóa và bạn sẽ quay lại Ngày 1. Bạn chắc chứ?",
           rulesText:
-            '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
+            '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền. Sau đó thu tiền ngẫu nhiên bằng tiền mặt (ghép đúng tiền thối) hoặc quét QR.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
           day: "Ngày",
           cust: "Khách",
           want: "order:",
@@ -2651,6 +2852,18 @@
           ok: "Thanh toán +",
           bad: "Sai rồi! -",
           pick: "Hãy chọn nước lẩu trước!",
+          payTitle: "Thu tiền",
+          payTotal: "Tổng hóa đơn",
+          payRate: "Quy đổi: 1 xu = ¥100",
+          payCashOffer: "Khách đưa:",
+          payChange: "Két tiền thối",
+          payChangeSelected: "Đã ghép:",
+          payEmpty: "Két đang trống",
+          payClear: "Xóa lựa chọn",
+          payConfirm: "Xác nhận tiền thối",
+          payQrHint: "Quét mã QR của khách rồi xác nhận đã nhận tiền.",
+          payQrConfirm: "Đã quét QR – nhận tiền",
+          payChangeError: "Hãy ghép đúng số tiền thối để hoàn tất.",
           win: "Hoàn thành ngày",
           lose: "Chưa đạt ngày",
           res: " phục vụ đúng",
@@ -2720,7 +2933,7 @@
           confirmText:
             "すべての進行状況が消えて、1日目に戻ります。よろしいですか？",
           rulesText:
-            "<ol><li>毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。</li><li>営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。</li><li>注文どおりのスープと具材を選びます。</li><li>お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。</li><li>「提供」を押すと、正解でお金がもらえ、間違いは減ります。</li><li>22:00になると自動で閉店。その日の売上を確認して、次の日へ進みます。</li></ol>",
+            "<ol><li>毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。</li><li>営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。</li><li>注文どおりのスープと具材を選びます。</li><li>お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。</li><li>「提供」を押すと、正解で会計に進みます。現金（お釣りを正しく選ぶ）またはQR決済がランダムに選ばれます。</li><li>22:00になると自動で閉店。その日の売上を確認して、次の日へ進みます。</li></ol>",
           day: "日目",
           cust: "客",
           want: "ご注文：",
@@ -2741,6 +2954,18 @@
           ok: "会計： +",
           bad: "ちがう！ -",
           pick: "先にスープを選んでね！",
+          payTitle: "お会計",
+          payTotal: "お会計金額",
+          payRate: "換算: 1コイン = ¥100",
+          payCashOffer: "お客さんのお支払い:",
+          payChange: "おつり用のレジ",
+          payChangeSelected: "選んだ金額:",
+          payEmpty: "まだお金はありません",
+          payClear: "選び直す",
+          payConfirm: "お釣りを渡す",
+          payQrHint: "QRコードをスキャンして、入金を確認してください。",
+          payQrConfirm: "スキャン完了・入金確認",
+          payChangeError: "お釣りの金額を正しく選んでください。",
           win: "クリア：",
           lose: "失敗：",
           res: "正しく提供した数",
@@ -2810,7 +3035,7 @@
           confirmText:
             "All progress will be erased and you will return to Day 1. Are you sure?",
           rulesText:
-            "<ol><li>Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.</li><li>The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.</li><li>Pick the exact broth and ingredients they ask for.</li><li>Watch the patience bar: green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.</li><li>Press Serve: correct earns money, wrong loses money.</li><li>At 22:00 the shop closes automatically. You will see the day's revenue and then move on to the next day.</li></ol>",
+            "<ol><li>Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.</li><li>The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.</li><li>Pick the exact broth and ingredients they ask for.</li><li>Watch the patience bar: green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.</li><li>Press Serve: correct advances to payment. Payment randomly uses cash (make the exact change) or QR.</li><li>At 22:00 the shop closes automatically. You will see the day's revenue and then move on to the next day.</li></ol>",
           day: "Day",
           cust: "Guest",
           want: "Order:",
@@ -2831,6 +3056,18 @@
           ok: "Total+",
           bad: "Wrong! -",
           pick: "Pick a broth first!",
+          payTitle: "Take payment",
+          payTotal: "Order total",
+          payRate: "Rate: 1 game coin = ¥100",
+          payCashOffer: "Customer pays:",
+          payChange: "Cash drawer",
+          payChangeSelected: "Change selected:",
+          payEmpty: "Drawer is empty",
+          payClear: "Clear selection",
+          payConfirm: "Give exact change",
+          payQrHint: "Scan the customer's QR code, then confirm the payment.",
+          payQrConfirm: "QR scanned — confirm payment",
+          payChangeError: "Select the exact change amount to complete payment.",
           win: "Day cleared:",
           lose: "Day failed:",
           res: "Correct orders",
@@ -2989,6 +3226,8 @@
       let paused = false,
         pauseStart = 0,
         closeKey = "closed";
+      let pendingPayment = null,
+        changeSelections = [];
       let dayItems = []; // chỉ số trong ITEMS đang bày trên quầy trong ngày
       // setTimeout nhưng tự chờ khi đang tạm dừng
       function setReady(v) {
@@ -3210,6 +3449,7 @@
           .forEach((b) =>
             b.classList.toggle("active", b.dataset.lang === lang),
           );
+        renderPayment();
         document.documentElement.lang = lang;
         renderMarket();
         if (typeof renderRules === "function") renderRules();
@@ -3273,6 +3513,133 @@
         f.style.background = `hsl(${Math.round(120 * r)} 80% 45%)`; // xanh (120) -> đỏ (0)
         if (r <= 0) leave();
       }
+      const CASH_DENOMINATIONS = [
+        { value: 1, image: "img/coin/xu_1_yen.png" },
+        { value: 5, image: "img/coin/xu_5_yen.png" },
+        { value: 10, image: "img/coin/xu_10_yen.png" },
+        { value: 50, image: "img/coin/xu_50_yen.png" },
+        { value: 100, image: "img/coin/xu_100_yen.png" },
+        { value: 100, image: "img/coin/tien_100_yen.png", bill: true },
+        { value: 500, image: "img/coin/xu_500_yen.png" },
+        { value: 500, image: "img/coin/tien_500_yen.png", bill: true },
+        { value: 1000, image: "img/coin/tien_1000_yen.png", bill: true },
+        { value: 2000, image: "img/coin/tien_2000_yen.png", bill: true },
+        { value: 5000, image: "img/coin/tien_5000_yen.png", bill: true },
+        { value: 10000, image: "img/coin/tien_10000_yen.png", bill: true },
+      ];
+      const cashPieces = (amount) => {
+        let remaining = amount;
+        return CASH_DENOMINATIONS.filter(
+          ({ value, bill }) => !bill || value >= 1000,
+        )
+          .reverse()
+          .flatMap((denomination) => {
+            const count = Math.floor(remaining / denomination.value);
+            remaining -= count * denomination.value;
+            return count ? [{ ...denomination, count }] : [];
+          });
+      };
+      const cashPiecesMarkup = (pieces, emptyLabel) =>
+        pieces.length
+          ? `<div class="cash-money-pieces">${pieces
+              .map(
+                ({ image, value, bill, count }) =>
+                  `<div class="cash-money-piece"><img${bill ? ' class="cash-bill"' : ""} src="${image}" alt="¥${value}"><span>×${count}</span></div>`,
+              )
+              .join("")}</div>`
+          : `<span class="cash-empty">${emptyLabel}</span>`;
+      const yen = (value) => `¥${fmt(value)}`;
+      function renderPayment() {
+        if (!pendingPayment) return;
+        const t = T();
+        const { amount, method, tender } = pendingPayment;
+        const changeDue = tender - amount * 100;
+        const changeSelected = changeSelections.reduce(
+          (sum, index) => sum + CASH_DENOMINATIONS[index].value,
+          0,
+        );
+        $("paymentTotal").textContent = yen(amount * 100);
+        $("cashTender").textContent = yen(tender);
+        $("cashTenderPieces").innerHTML = cashPiecesMarkup(
+          cashPieces(tender),
+          t.payEmpty,
+        );
+        $("changeDue").textContent = yen(changeDue);
+        $("changeSelected").textContent = yen(changeSelected);
+        $("changeTray").innerHTML = cashPiecesMarkup(
+          CASH_DENOMINATIONS.flatMap((denomination, index) => {
+            const count = changeSelections.filter(
+              (selectedIndex) => selectedIndex === index,
+            ).length;
+            return count ? [{ ...denomination, count }] : [];
+          }),
+          t.payEmpty,
+        );
+        const denominationButtons = $("paymentDenominations");
+        if (!denominationButtons.childElementCount) {
+          denominationButtons.innerHTML = CASH_DENOMINATIONS.map(
+            ({ value, image, bill }, index) =>
+              `<button type="button" data-denom="${value}" data-denom-index="${index}" aria-label="¥${value}"><img${bill ? ' class="cash-bill"' : ""} src="${image}" alt=""><span>¥${value}</span></button>`,
+          ).join("");
+        }
+        document.querySelectorAll("[data-denom]").forEach((button) => {
+          button.disabled =
+            method !== "cash" ||
+            changeSelected + Number(button.dataset.denom) > changeDue;
+        });
+        $("cashConfirmBtn").disabled =
+          method !== "cash" || changeSelected !== changeDue;
+        $("cashPayment").hidden = method !== "cash";
+        $("qrPayment").hidden = method !== "qr";
+      }
+      function beginPayment(amount) {
+        const method = Math.random() < 0.5 ? "cash" : "qr";
+        const bill = amount * 100;
+        const overpayments = [100, 500, 1000, 5000];
+        const overpayment =
+          overpayments[Math.floor(Math.random() * overpayments.length)];
+        const tender = bill + overpayment;
+        pendingPayment = { amount, method, tender };
+        changeSelections = [];
+        $("paymentFeedback").textContent = "";
+        pauseGame(false);
+        renderPayment();
+        openModal("paymentModal");
+      }
+      function finishPayment() {
+        if (!pendingPayment) return;
+        const { amount, method, tender } = pendingPayment;
+        const changeSelected = changeSelections.reduce(
+          (sum, index) => sum + CASH_DENOMINATIONS[index].value,
+          0,
+        );
+        if (method === "cash" && changeSelected !== tender - amount * 100) {
+          $("paymentFeedback").textContent = T().payChangeError;
+          return;
+        }
+        pendingPayment = null;
+        changeSelections = [];
+        closeModal("paymentModal");
+        resumeGame();
+        S.money += amount;
+        dayRevenue += amount;
+        good++;
+        order.f.forEach((i) => {
+          ITEMS[i].purchasedQuantity = ITEMS[i].purchasedQuantity - 1;
+        });
+        $("msg").textContent = T().ok + amount;
+        n++;
+        save();
+        selB = null;
+        selF = new Set();
+        paint();
+        bub().classList.remove("show");
+        cust().classList.add("walking", "leaving");
+        later(() => {
+          if (!clockRunning) return;
+          newCustomer();
+        }, 800);
+      }
       function newCustomer() {
         // chỉ gọi món từ những nguyên liệu còn trong kho; hết sạch thì đóng cửa
         const pool = dayItems
@@ -3335,33 +3702,18 @@
         if (!ok) {
           // Trả lời sai: chỉ giảm thanh kiên nhẫn, khách vẫn ở lại.
           // Mỗi lần sai bị trừ 3 giây; hết giờ vẫn xử lý như bình thường.
+          const customer = cust();
+          customer.classList.remove("angry");
+          customer.offsetWidth;
+          customer.classList.add("angry");
           if (deadline) deadline -= 3000;
           tick();
           return;
         }
         stopTimer();
         const amt = orderPrice(order.f); // nước lẩu + tổng giá các nguyên liệu
-        S.money += amt;
-        dayRevenue += amt;
-        good++;
-        // phục vụ đúng: tiêu hao 1 phần mỗi nguyên liệu trong kho
-        order.f.forEach((i) => {
-          ITEMS[i].purchasedQuantity = ITEMS[i].purchasedQuantity - 1;
-        });
-        $("msg").textContent = t.ok + amt;
-        n++;
-        save();
-        selB = null; // bưng tô đi: tô trên mâm biến mất, bỏ chọn các món
-        selF = new Set();
-        paint();
-        // làm xong: ẩn order, khách đi ra, rồi khách mới đi vào
         setReady(false);
-        bub().classList.remove("show");
-        cust().classList.add("walking", "leaving");
-        later(() => {
-          if (!clockRunning) return;
-          newCustomer();
-        }, 800);
+        beginPayment(amt);
       }
       function showRedo(v) {
         $("redoBtn").classList.toggle("hot", v);
@@ -3845,9 +4197,7 @@
                 1,
             );
             const lockLabel =
-              lang === "ja"
-                ? `${unlockDay}${t.day}`
-                : `${t.day} ${unlockDay}`;
+              lang === "ja" ? `${unlockDay}${t.day}` : `${t.day} ${unlockDay}`;
             s.hit.dataset.lockLabel = lockLabel;
             s.hit.setAttribute("aria-label", lockLabel);
           }
@@ -3911,28 +4261,79 @@
       const RULE_ICONS = ["🛒", "🏮", "🍲", "⏳", "🔔", "🌙"];
       const RULE_STEPS = {
         vi: [
-          ["Đi chợ", "Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho."],
-          ["Mở quán", "Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu."],
-          ["Chọn món", "Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu."],
-          ["Độ kiên nhẫn", "Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền."],
-          ["Phục vụ", "Bấm \"Phục vụ\": đúng được tiền, sai bị mất tiền."],
-          ["Đóng cửa", "Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo."],
+          [
+            "Đi chợ",
+            "Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.",
+          ],
+          [
+            "Mở quán",
+            "Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.",
+          ],
+          [
+            "Chọn món",
+            "Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.",
+          ],
+          [
+            "Độ kiên nhẫn",
+            "Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.",
+          ],
+          [
+            "Phục vụ & thu tiền",
+            'Phục vụ đúng rồi thu tiền: ghép tiền thối khi khách trả tiền mặt hoặc xác nhận đã quét QR.',
+          ],
+          [
+            "Đóng cửa",
+            "Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.",
+          ],
         ],
         ja: [
-          ["市場へ", "毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。"],
-          ["開店", "営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。"],
+          [
+            "市場へ",
+            "毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。",
+          ],
+          [
+            "開店",
+            "営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。",
+          ],
           ["注文を選ぶ", "注文どおりのスープと具材を選びます。"],
-          ["我慢ゲージ", "お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。"],
-          ["提供", "「提供」を押すと、正解でお金がもらえ、間違いは減ります。"],
-          ["閉店", "22:00になると自動で閉店。その日の売上を確認して、次の日へ進みます。"],
+          [
+            "我慢ゲージ",
+            "お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。",
+          ],
+          [
+            "提供・会計",
+            "正しく提供したら会計へ。現金なら正しいお釣りを選び、QRなら支払いを確認します。",
+          ],
+          [
+            "閉店",
+            "22:00になると自動で閉店。その日の売上を確認して、次の日へ進みます。",
+          ],
         ],
         en: [
-          ["Go shopping", "Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock."],
-          ["Open the shop", "The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot."],
-          ["Pick the order", "Pick the exact broth and ingredients they ask for."],
-          ["Watch patience", "Green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money."],
-          ["Serve", "Press Serve: correct earns money, wrong loses money."],
-          ["Closing time", "At 22:00 the shop closes automatically. You will see the day's revenue and then move on to the next day."],
+          [
+            "Go shopping",
+            "Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.",
+          ],
+          [
+            "Open the shop",
+            "The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.",
+          ],
+          [
+            "Pick the order",
+            "Pick the exact broth and ingredients they ask for.",
+          ],
+          [
+            "Watch patience",
+            "Green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.",
+          ],
+          [
+            "Serve & collect",
+            "After a correct order, collect payment by either giving exact change for cash or confirming a QR payment.",
+          ],
+          [
+            "Closing time",
+            "At 22:00 the shop closes automatically. You will see the day's revenue and then move on to the next day.",
+          ],
         ],
       };
       let rulesPage = 0;
@@ -3945,11 +4346,16 @@
           )
           .join("");
         $("rulesDots").innerHTML = steps
-          .map((_, i) => `<button class="rules-dot" data-p="${i}" aria-label="${i + 1}"></button>`)
+          .map(
+            (_, i) =>
+              `<button class="rules-dot" data-p="${i}" aria-label="${i + 1}"></button>`,
+          )
           .join("");
-        $("rulesDots").querySelectorAll(".rules-dot").forEach((d) => {
-          d.onclick = () => goRules(+d.dataset.p);
-        });
+        $("rulesDots")
+          .querySelectorAll(".rules-dot")
+          .forEach((d) => {
+            d.onclick = () => goRules(+d.dataset.p);
+          });
         goRules(rulesPage);
       }
       function goRules(n) {
@@ -4059,7 +4465,8 @@
       }
       window.refreshPlayLabel = refreshPlayLabel; // supabase.js gọi lại sau khi nạp dữ liệu cloud
       $("playBtn").onclick = () => {
-        if (!hasProgress()) S = Object.assign(newSave(), { rulesSeen: S.rulesSeen }); // ván mới: cấp tiền ban đầu đúng 1 lần
+        if (!hasProgress())
+          S = Object.assign(newSave(), { rulesSeen: S.rulesSeen }); // ván mới: cấp tiền ban đầu đúng 1 lần
         save();
         startGame();
       };
@@ -4075,7 +4482,9 @@
       (() => {
         let x0 = null;
         const vp = $("rulesViewport");
-        vp.addEventListener("touchstart", (e) => (x0 = e.touches[0].clientX), { passive: true });
+        vp.addEventListener("touchstart", (e) => (x0 = e.touches[0].clientX), {
+          passive: true,
+        });
         vp.addEventListener("touchend", (e) => {
           if (x0 === null) return;
           const dx = e.changedTouches[0].clientX - x0;
@@ -4090,6 +4499,29 @@
       })();
       $("restartBtn").onclick = () => openModal("confirmModal");
       $("serveBtn").onclick = serve;
+      $("paymentDenominations").addEventListener("click", (event) => {
+        const button = event.target.closest("button[data-denom-index]");
+        if (!button || !pendingPayment || pendingPayment.method !== "cash")
+          return;
+        const denomination = Number(button.dataset.denomIndex);
+        const changeDue = pendingPayment.tender - pendingPayment.amount * 100;
+        const selected = changeSelections.reduce(
+          (sum, index) => sum + CASH_DENOMINATIONS[index].value,
+          0,
+        );
+        if (selected + CASH_DENOMINATIONS[denomination].value > changeDue)
+          return;
+        changeSelections.push(denomination);
+        $("paymentFeedback").textContent = "";
+        renderPayment();
+      });
+      $("clearChangeBtn").onclick = () => {
+        changeSelections = [];
+        $("paymentFeedback").textContent = "";
+        renderPayment();
+      };
+      $("cashConfirmBtn").onclick = finishPayment;
+      $("qrConfirmBtn").onclick = finishPayment;
       $("redoBtn").onclick = redo;
       document.querySelectorAll("[data-close]").forEach(
         (b) =>
@@ -4145,7 +4577,11 @@
         closeShop(true);
       };
       document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") paused ? resumeGame() : pauseGame();
+        if (
+          e.key === "Escape" &&
+          $("paymentModal").classList.contains("hide")
+        )
+          paused ? resumeGame() : pauseGame();
       });
       document.addEventListener("visibilitychange", () => {
         if (document.hidden) pauseGame();
