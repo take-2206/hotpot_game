@@ -478,7 +478,7 @@
         z-index: 3;
         pointer-events: none;
       }
-      .pot-ingredients img {
+      .pot-ingredient {
         position: absolute;
         width: 29%;
         height: 58%;
@@ -628,10 +628,6 @@
         display: block;
         color: #9b1f2a;
         font-size: 1.4em;
-      }
-      .payment-rate {
-        color: #5a3a2e;
-        font-size: 0.8em;
       }
       .payment-cash-info strong,
       .payment-change strong {
@@ -2534,7 +2530,6 @@
         <div class="payment-total">
           <span data-i="payTotal"></span>
           <strong id="paymentTotal"></strong>
-          <small class="payment-rate" data-i="payRate"></small>
         </div>
         <div class="payment-options" id="cashPayment" hidden>
           <div class="cash-register">
@@ -2648,20 +2643,21 @@
 
       /* ===== DANH MỤC NGUYÊN LIỆU DÙNG CHUNG (chợ + quầy nấu) =====
          - Thứ tự mảng = thứ tự ô hàng trên ảnh market_bg.jpg (trái→phải, trên→dưới).
-         - GIÁ chỉnh tại đây (đơn vị: xu). Không cần sửa chỗ nào khác.
+         - GIÁ chỉnh tại đây (đơn vị: yên). Không cần sửa chỗ nào khác.
          - image: ảnh PNG có sẵn trong img/. Nếu thiếu file thì tự cắt ảnh giỏ hàng
            từ market_bg.jpg để thay thế (không dùng emoji). */
-      const STARTING_MONEY = 10000; // chỉ cấp 1 lần khi tạo dữ liệu game mới
+      const STARTING_MONEY = 10000; // vốn khởi nghiệp: ¥10.000
       const BUY_STEP = 5; // mỗi lần bấm (+) / (−) / giỏ hàng = 5 cái
       const MAX_QTY = 99; // tối đa mỗi loại trong 1 lần chọn
-      /* GIÁ THEO NHÓM: cùng nhóm thì cùng giá (đơn vị: xu). Muốn đổi giá chỉ sửa 3 số này.
+      /* GIÁ THEO NHÓM: cùng nhóm thì cùng giá (đơn vị: yên). Muốn đổi giá chỉ sửa 3 số này.
          Nhóm của từng món đặt ở trường group trong CATALOG. */
-      const GROUP_PRICE = { meat: 6, seafood: 6, veg: 3 }; // giá MUA nguyên liệu ở chợ
-      const BROTH_PRICE = 10; // giá nước lẩu (mọi loại nước lẩu bằng nhau) khi bán cho khách
+      const GROUP_PRICE = { meat: 600, seafood: 600, veg: 300 }; // giá MUA nguyên liệu ở chợ
+      const BROTH_PRICE = 1000; // giá nước lẩu (mọi loại nước lẩu bằng nhau) khi bán cho khách
       /* Giá BÁN cho khách theo nhóm; muốn món nào giá riêng thì thêm trường sellPrice vào món đó trong CATALOG */
-      const SELL_PRICE = { meat: 10, seafood: 10, veg: 5 };
-      const SELL_MIN = 1,
-        SELL_MAX = 999;
+      const SELL_PRICE = { meat: 1000, seafood: 1000, veg: 500 };
+      const SELL_MIN = 100,
+        SELL_MAX = 99900,
+        SELL_STEP = 100;
       const sellOf = (it) =>
         S.prices && S.prices[it.id] != null
           ? S.prices[it.id] // giá người chơi tự chỉnh (được lưu)
@@ -2840,6 +2836,8 @@
           patience: "Độ kiên nhẫn",
           serve: "PHỤC VỤ",
           redo: "Làm lại",
+          addIngredient: "Thêm nguyên liệu",
+          alreadySelected: "Đã chọn",
           locked: "Đã chọn nước lẩu rồi! Bấm Làm lại để đổi.",
           angry: "Khách giận bỏ về! -",
           closed: "22:00 – Quán đã đóng cửa!",
@@ -2854,7 +2852,6 @@
           pick: "Hãy chọn nước lẩu trước!",
           payTitle: "Thu tiền",
           payTotal: "Tổng hóa đơn",
-          payRate: "Quy đổi: 1 xu = ¥100",
           payCashOffer: "Khách đưa:",
           payChange: "Két tiền thối",
           payChangeSelected: "Đã ghép:",
@@ -2881,8 +2878,8 @@
           m_cart: "Giỏ hàng",
           m_total: "Tổng",
           m_left: "Còn lại",
-          m_coin: "xu",
-          m_notEnough: "Không đủ tiền!",
+          m_coin: "¥",
+          m_notEnough: "Không đủ tiền yên!",
           m_emptySel: "Hãy chọn số lượng nguyên liệu trước!",
           m_buyOk: "Mua thành công! -",
           m_needBuy:
@@ -2901,7 +2898,7 @@
             "Giỏ hàng đang trống. Bấm vào giỏ hàng hoặc nút + để chọn.",
           m_introTitle: "Chào mừng đến chợ!",
           m_intro:
-            "Bạn có {m} xu. Bấm vào nguyên liệu hoặc nút + / − để chọn số lượng, rồi bấm HOÀN TẤT để xem tổng kết và trả tiền.",
+            "Bạn có ¥{m}. Bấm vào nguyên liệu hoặc nút + / − để chọn số lượng, rồi bấm HOÀN TẤT để xem tổng kết và trả tiền.",
           m_added: "đang chọn",
           m_goMarket: " Đi chợ",
           m_moneyLabel: "Tiền hiện có",
@@ -2942,6 +2939,8 @@
           patience: "お客さんの我慢",
           serve: "提供",
           redo: "やり直す",
+          addIngredient: "食材を追加",
+          alreadySelected: "選択済み",
           locked: "スープは選択済み！変えるには「やり直す」を押してね。",
           angry: "お客さんが怒って帰った！ -",
           closed: "22:00 – 閉店です！",
@@ -2956,7 +2955,6 @@
           pick: "先にスープを選んでね！",
           payTitle: "お会計",
           payTotal: "お会計金額",
-          payRate: "換算: 1コイン = ¥100",
           payCashOffer: "お客さんのお支払い:",
           payChange: "おつり用のレジ",
           payChangeSelected: "選んだ金額:",
@@ -2983,7 +2981,7 @@
           m_cart: "かご",
           m_total: "合計",
           m_left: "残り",
-          m_coin: "コイン",
+          m_coin: "円",
           m_notEnough: "お金が足りません！",
           m_emptySel: "先に食材の数を選んでね！",
           m_buyOk: "購入しました！ -",
@@ -3002,7 +3000,7 @@
           m_cartEmpty: "かごは空です。食材をタップするか＋で選んでね。",
           m_introTitle: "市場へようこそ！",
           m_intro:
-            "所持金は {m} コイン。食材をタップするか＋／−で数を選び、「会計」で合計を確認して支払います。",
+            "所持金は {m}円。食材をタップするか＋／−で数を選び、「会計」で合計を確認して支払います。",
           m_added: "選択中",
           // sau m_added: "選択中",
           m_goMarket: " 市場へ行く",
@@ -3044,6 +3042,8 @@
           patience: " Patience",
           serve: "SERVE",
           redo: "Redo",
+          addIngredient: "Add ingredient",
+          alreadySelected: "Already selected",
           locked: "Broth already chosen! Press Redo to change it.",
           angry: "Customer left angry! -",
           closed: "22:00 – We are closed!",
@@ -3058,7 +3058,6 @@
           pick: "Pick a broth first!",
           payTitle: "Take payment",
           payTotal: "Order total",
-          payRate: "Rate: 1 game coin = ¥100",
           payCashOffer: "Customer pays:",
           payChange: "Cash drawer",
           payChangeSelected: "Change selected:",
@@ -3085,8 +3084,8 @@
           m_cart: "Cart",
           m_total: "Total",
           m_left: "Left",
-          m_coin: "coins",
-          m_notEnough: "Not enough coins!",
+          m_coin: "¥",
+          m_notEnough: "Not enough yen!",
           m_emptySel: "Choose some ingredients first!",
           m_buyOk: "Purchased! -",
           m_needBuy:
@@ -3104,7 +3103,7 @@
           m_cartEmpty: "The cart is empty. Tap an item or + to choose.",
           m_introTitle: "Welcome to the market!",
           m_intro:
-            "You have {m} coins. Tap an item or use + / − to choose amounts, then press CHECKOUT to review the total and pay.",
+            "You have ¥{m}. Tap an item or use + / − to choose amounts, then press CHECKOUT to review the total and pay.",
           m_added: "selected",
 
           // sau m_added: "selected",
@@ -3132,13 +3131,16 @@
       const T = () => I18N[lang];
       const LOCALE = { vi: "vi-VN", ja: "ja-JP", en: "en-US" };
       const fmt = (v) => Number(v).toLocaleString(LOCALE[lang] || "en-US");
+      const yen = (value) => `¥${fmt(value)}`;
 
       /* ===== TRẠNG THÁI & LƯU DỮ LIỆU ===== */
       const KEY = "hotpot_save";
+      const SAVE_CURRENCY_VERSION = 2;
       /* Dữ liệu game mới: tiền ban đầu CHỈ được cấp ở đây (khi tạo mới / bắt đầu lại). */
       const newSave = () => ({
         day: 1,
         money: STARTING_MONEY,
+        currencyVersion: SAVE_CURRENCY_VERSION,
         inventory: {}, // { itemId: số lượng trong kho }
         prices: {}, // { itemId: giá bán do người chơi chỉnh }
         introSeen: false, // đã xem hướng dẫn đi chợ lần đầu chưa
@@ -3153,13 +3155,40 @@
           raw = null;
         }
         if (!raw || typeof raw !== "object") return newSave();
+        const needsCurrencyMigration =
+          Math.floor(+raw.currencyVersion || 1) < SAVE_CURRENCY_VERSION;
         if (!raw.inventory || typeof raw.inventory !== "object") {
           // Bản lưu cũ (trước khi có chợ): giữ nguyên ngày/tiền, chỉ tạo kho trống.
           // Nếu tiền còn quá ít thì nâng lên mức ban đầu 1 lần để không bị kẹt không mua được gì.
           raw.inventory = {};
-          raw.money = Math.max(+raw.money || 0, STARTING_MONEY);
+          raw.money = Math.max(
+            +raw.money || 0,
+            needsCurrencyMigration ? 10000 : STARTING_MONEY,
+          );
           raw.introSeen = false;
         }
+        if (needsCurrencyMigration) {
+          raw.money = Math.max(0, Math.floor(+raw.money || 0)) * 100;
+          if (
+            raw.prices &&
+            typeof raw.prices === "object" &&
+            !Array.isArray(raw.prices)
+          ) {
+            for (const key of Object.keys(raw.prices)) {
+              raw.prices[key] = Math.floor(+raw.prices[key] || 0) * 100;
+            }
+          }
+          if (Array.isArray(raw.history)) {
+            raw.history = raw.history.map((record) => ({
+              ...record,
+              revenue: Math.floor(+record.revenue || 0) * 100,
+              cost: Math.floor(+record.cost || 0) * 100,
+              penalty: Math.floor(+record.penalty || 0) * 100,
+              profit: Math.floor(+record.profit || 0) * 100,
+            }));
+          }
+        }
+        raw.currencyVersion = SAVE_CURRENCY_VERSION;
         raw.day = Math.max(1, Math.floor(+raw.day) || 1);
         raw.money = Math.max(0, Math.floor(+raw.money) || 0);
         for (const k of Object.keys(raw.inventory)) {
@@ -3168,7 +3197,7 @@
         if (!raw.prices || typeof raw.prices !== "object") raw.prices = {};
         for (const k of Object.keys(raw.prices)) {
           const v = Math.floor(+raw.prices[k]);
-          if (v >= 1) raw.prices[k] = Math.min(999, v);
+          if (v >= SELL_MIN) raw.prices[k] = Math.min(SELL_MAX, v);
           else delete raw.prices[k];
         }
         raw.introSeen = !!raw.introSeen;
@@ -3317,11 +3346,12 @@
           const b = e.target.closest("[data-f]");
           if (!b) return;
           const k = +b.dataset.f;
+          if (selF.has(k)) return;
           if (!selF.has(k) && ITEMS[k].purchasedQuantity <= 0) {
             $("msg").textContent = T().outOfStock; // hết hàng trong kho thì không chọn được
             return;
           }
-          selF.has(k) ? selF.delete(k) : selF.add(k);
+          selF.add(k);
           paint();
         };
       }
@@ -3382,7 +3412,7 @@
                 [12, 0],
               ];
               const [x, y] = positions[n % positions.length];
-              return `<img src="${item.potImage || item.image}" alt="${nm(item)}" title="${nm(item)}" style="left:${x}%;top:${y}%">`;
+              return `<img class="pot-ingredient" src="${item.potImage || item.image}" alt="${nm(item)}" title="${T().alreadySelected}" style="left:${x}%;top:${y}%">`;
             })
             .join("");
           layer.querySelectorAll("img").forEach((img) => {
@@ -3424,14 +3454,22 @@
         document.querySelectorAll("[data-f]").forEach((b) => {
           const it = ITEMS[b.dataset.f];
           const st = it.purchasedQuantity;
-          b.classList.toggle("selected", selF.has(+b.dataset.f));
+          const selected = selF.has(+b.dataset.f);
+          b.classList.toggle("selected", selected);
+          b.setAttribute("aria-pressed", String(selected));
+          b.title = selected ? t.alreadySelected : t.addIngredient;
+          b.setAttribute(
+            "aria-label",
+            `${selected ? t.alreadySelected : t.addIngredient}: ${nm(it)}`,
+          );
           b.classList.toggle("soldout", st <= 0);
           b.querySelector(".name").textContent = nm(it);
           b.querySelector(".stock").textContent = st > 0 ? "×" + st : "0";
         });
         $("sDay").textContent =
           lang === "ja" ? S.day + t.day : t.day + " " + S.day;
-        $("sMoney").textContent = "💰 " + (dayRevenue - dayPenalty); // tiền kiếm được trong phiên chơi (bắt đầu từ 0)
+        $("sMoney").textContent =
+          "💰 " + yen(dayRevenue - dayPenalty); // tiền kiếm được trong phiên chơi (bắt đầu từ 0)
         $("sCust").textContent = clockStr();
         if (order) {
           const f = [...order.f].map((i) => nm(ingredients[i])).join(", ");
@@ -3519,9 +3557,7 @@
         { value: 10, image: "img/coin/xu_10_yen.png" },
         { value: 50, image: "img/coin/xu_50_yen.png" },
         { value: 100, image: "img/coin/xu_100_yen.png" },
-        { value: 100, image: "img/coin/tien_100_yen.png", bill: true },
         { value: 500, image: "img/coin/xu_500_yen.png" },
-        { value: 500, image: "img/coin/tien_500_yen.png", bill: true },
         { value: 1000, image: "img/coin/tien_1000_yen.png", bill: true },
         { value: 2000, image: "img/coin/tien_2000_yen.png", bill: true },
         { value: 5000, image: "img/coin/tien_5000_yen.png", bill: true },
@@ -3548,17 +3584,16 @@
               )
               .join("")}</div>`
           : `<span class="cash-empty">${emptyLabel}</span>`;
-      const yen = (value) => `¥${fmt(value)}`;
       function renderPayment() {
         if (!pendingPayment) return;
         const t = T();
         const { amount, method, tender } = pendingPayment;
-        const changeDue = tender - amount * 100;
+        const changeDue = tender - amount;
         const changeSelected = changeSelections.reduce(
           (sum, index) => sum + CASH_DENOMINATIONS[index].value,
           0,
         );
-        $("paymentTotal").textContent = yen(amount * 100);
+        $("paymentTotal").textContent = yen(amount);
         $("cashTender").textContent = yen(tender);
         $("cashTenderPieces").innerHTML = cashPiecesMarkup(
           cashPieces(tender),
@@ -3594,7 +3629,7 @@
       }
       function beginPayment(amount) {
         const method = Math.random() < 0.5 ? "cash" : "qr";
-        const bill = amount * 100;
+        const bill = amount;
         const overpayments = [100, 500, 1000, 5000];
         const overpayment =
           overpayments[Math.floor(Math.random() * overpayments.length)];
@@ -3613,7 +3648,7 @@
           (sum, index) => sum + CASH_DENOMINATIONS[index].value,
           0,
         );
-        if (method === "cash" && changeSelected !== tender - amount * 100) {
+        if (method === "cash" && changeSelected !== tender - amount) {
           $("paymentFeedback").textContent = T().payChangeError;
           return;
         }
@@ -3627,7 +3662,7 @@
         order.f.forEach((i) => {
           ITEMS[i].purchasedQuantity = ITEMS[i].purchasedQuantity - 1;
         });
-        $("msg").textContent = T().ok + amount;
+        $("msg").textContent = T().ok + yen(amount);
         n++;
         save();
         selB = null;
@@ -3743,7 +3778,7 @@
         dayPenalty += lost;
         n++;
         save();
-        $("msg").textContent = t.angry + 50;
+        $("msg").textContent = t.angry + yen(lost);
         paint();
         c.classList.add("angry");
         later(() => c.classList.add("walking", "leaving"), 650);
@@ -4024,7 +4059,7 @@
           return (
             `<div class="cart-row"><img class="thumb" data-id="${it.id}" src="${it.image}" alt="">` +
             `<span class="cn">${nm(it)} × ${q}</span>` +
-            (withPrice ? `<span class="cs">${fmt(q * it.price)}</span>` : "") +
+            (withPrice ? `<span class="cs">${fmt(q * it.price)} ${T().m_coin}</span>` : "") +
             `</div>`
           );
         });
@@ -4049,7 +4084,7 @@
             return (
               `<div class="cart-row"><img class="thumb" data-id="${it.id}" src="${it.image}" alt="">` +
               `<span class="cn">${nm(it)}<small class="pr-sub${gain < 0 ? " neg" : ""}">` +
-              `${t.m_buyLabel} ${fmt(it.price)} · ${t.m_profitLabel} ${gain >= 0 ? "+" : "-"}${fmt(Math.abs(gain))} (${pct >= 0 ? "+" : ""}${pct}%)</small></span>` +
+              `${t.m_buyLabel} ${fmt(it.price)} ${t.m_coin} · ${t.m_profitLabel} ${gain >= 0 ? "+" : "-"}${fmt(Math.abs(gain))} ${t.m_coin} (${pct >= 0 ? "+" : ""}${pct}%)</small></span>` +
               `<span class="price-ctl" data-pid="${it.id}">` +
               `<button data-d="-1" aria-label="-"${p <= SELL_MIN ? " disabled" : ""}>−</button>` +
               `<b>${fmt(p)} ${t.m_coin}</b>` +
@@ -4075,7 +4110,7 @@
         if (!S.prices) S.prices = {};
         S.prices[pid] = Math.min(
           SELL_MAX,
-          Math.max(SELL_MIN, sellOf(it) + +b.dataset.d),
+          Math.max(SELL_MIN, sellOf(it) + +b.dataset.d * SELL_STEP),
         );
         save();
         renderPrices();
@@ -4173,7 +4208,7 @@
         const total = cartTotal(),
           cnt = cartCount();
         const unlocked = getUnlockedItemIds();
-        $("mMoney").textContent = fmt(S.money);
+        $("mMoney").textContent = `${fmt(S.money)} ${t.m_coin}`;
         ITEMS.forEach((it, i) => {
           const s = mSlots[i];
           const isUnlocked = unlocked.has(it.id);
@@ -4407,8 +4442,8 @@
         const rows = list
           .map(
             (r) =>
-              `<tr><td>${r.day}</td><td>+${fmt(r.revenue)}</td><td>-${fmt(r.cost)}</td>` +
-              `<td>-${fmt(r.penalty)}</td><td class="${r.profit < 0 ? "neg" : ""}">${sgn(r.profit)}</td></tr>`,
+              `<tr><td>${r.day}</td><td>+${fmt(r.revenue)} ${t.m_coin}</td><td>-${fmt(r.cost)} ${t.m_coin}</td>` +
+              `<td>-${fmt(r.penalty)} ${t.m_coin}</td><td class="${r.profit < 0 ? "neg" : ""}">${sgn(r.profit)} ${t.m_coin}</td></tr>`,
           )
           .join("");
         $("revBody").innerHTML =
@@ -4504,7 +4539,7 @@
         if (!button || !pendingPayment || pendingPayment.method !== "cash")
           return;
         const denomination = Number(button.dataset.denomIndex);
-        const changeDue = pendingPayment.tender - pendingPayment.amount * 100;
+        const changeDue = pendingPayment.tender - pendingPayment.amount;
         const selected = changeSelections.reduce(
           (sum, index) => sum + CASH_DENOMINATIONS[index].value,
           0,

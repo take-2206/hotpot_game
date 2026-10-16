@@ -12,6 +12,27 @@
   /* Đặt true SAU KHI đã thêm 2 cột history + prices vào bảng game_saves (SQL trong chat).
      Khi true: báo cáo doanh thu theo ngày và giá bán tự chỉnh cũng được lưu lên cloud. */
   const CLOUD_EXTRA = false;
+  const CURRENCY_SCALE = 100;
+  const toCloudAmount = (amount) =>
+    Math.round((Number(amount) || 0) / CURRENCY_SCALE);
+  const fromCloudAmount = (amount) =>
+    Math.round((Number(amount) || 0) * CURRENCY_SCALE);
+  const convertHistoryCurrency = (history, convertAmount) =>
+    (Array.isArray(history) ? history : []).map((record) => ({
+      ...record,
+      revenue: convertAmount(record.revenue),
+      cost: convertAmount(record.cost),
+      penalty: convertAmount(record.penalty),
+      profit: convertAmount(record.profit),
+    }));
+  const convertPricesCurrency = (prices, convertAmount) =>
+    Object.fromEntries(
+      Object.entries(
+        prices && typeof prices === "object" && !Array.isArray(prices)
+          ? prices
+          : {},
+      ).map(([id, amount]) => [id, convertAmount(amount)]),
+    );
 
   const sb = window.supabase
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
@@ -40,14 +61,14 @@
       const payload = {
         user_id: cloudUser.id,
         current_day: S.day,
-        money: S.money,
+        money: toCloudAmount(S.money),
         inventory: S.inventory,
         intro_seen: S.introSeen,
         updated_at: new Date(S.updatedAt || Date.now()).toISOString(),
       };
       if (CLOUD_EXTRA) {
-        payload.history = S.history || [];
-        payload.prices = S.prices || {};
+        payload.history = convertHistoryCurrency(S.history, toCloudAmount);
+        payload.prices = convertPricesCurrency(S.prices, toCloudAmount);
       }
       const { error } = await sb.from("game_saves").upsert(payload);
       if (error) console.warn("cloud save failed", error);
@@ -62,7 +83,7 @@
       day,
       won,
       correct,
-      money_after: S.money,
+      money_after: toCloudAmount(S.money),
     });
     if (error) console.warn("history failed", error);
   }
@@ -105,7 +126,7 @@
       if (row) {
         const cloud = Object.assign(newSave(), {
           day: row.current_day,
-          money: row.money,
+          money: fromCloudAmount(row.money),
           inventory: row.inventory || {},
           introSeen: row.intro_seen,
           // tài khoản đã có bản lưu trên cloud = đã qua lần truy cập đầu -> không hiện lại Luật chơi
@@ -115,8 +136,11 @@
         /* Cloud chưa lưu history/prices (trừ khi bật CLOUD_EXTRA) -> giữ bản local
            để không mất báo cáo doanh thu và giá bán đã chỉnh. */
         if (CLOUD_EXTRA) {
-          cloud.history = Array.isArray(row.history) ? row.history : [];
-          cloud.prices = row.prices && typeof row.prices === "object" ? row.prices : {};
+          cloud.history = convertHistoryCurrency(
+            row.history,
+            fromCloudAmount,
+          );
+          cloud.prices = convertPricesCurrency(row.prices, fromCloudAmount);
         } else {
           cloud.history = S.history || [];
           cloud.prices = S.prices || {};
