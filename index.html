@@ -1273,18 +1273,34 @@
         object-fit: cover;
         pointer-events: none;
       }
+      .note-title {
+        position: absolute;
+        z-index: 1;
+        top: 14.5%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 70%;
+        margin: 0;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: clamp(16px, 5vw, 30px);
+        line-height: 1.2;
+        color: #9b1f2a;
+        pointer-events: none;
+      }
       .note-content {
         position: absolute;
-        inset: 0;
+        /* chỉ cuộn trong vùng giấy: dưới tiêu đề, trên viền/nồi lẩu */
+        top: 19%;
+        bottom: 12%;
+        left: 0;
+        right: 0;
         overflow-y: auto;
-        padding: clamp(64px, 9vh, 96px) clamp(24px, 8vw, 100px) 32px;
+        overscroll-behavior: contain;
+        padding: 4px clamp(24px, 8vw, 100px) 12px;
         color: #5a3a2e;
-      }
-      .note-content h2 {
-        margin: 0 0 18px;
-        text-align: center;
-        font-size: clamp(22px, 3vw, 34px);
-        color: #9b1f2a;
       }
       .note-recipe {
         padding: 12px 0;
@@ -1304,6 +1320,7 @@
         background: rgba(255, 248, 230, 0.78);
         font-size: clamp(13px, 1.55vw, 18px);
         line-height: 1.4;
+        overflow-wrap: anywhere;
       }
       html[lang="vi"] .note-recipe [data-language="vi"],
       html[lang="ja"] .note-recipe [data-language="ja"],
@@ -1325,7 +1342,7 @@
       }
       @media (max-width: 600px) {
         .note-content {
-          padding: 62px 13vw 24px;
+          padding: 4px 13vw 12px;
         }
       }
       .btn-danger {
@@ -1546,6 +1563,17 @@
         display: block;
         pointer-events: none;
       }
+      .lang-icon-btn {
+        color: #fff3df;
+        font-weight: 900;
+        font-size: clamp(13px, 1.6vw, 20px);
+        letter-spacing: 0.02em;
+        text-shadow: 0 1px 1px rgba(30, 14, 8, 0.7);
+      }
+      .rev-ico {
+        font-size: 0.8em;
+        line-height: 1;
+      }
       .gear-ico {
         display: inline-flex;
         align-items: center;
@@ -1615,7 +1643,7 @@
         position: relative;
         overflow: hidden;
         container-type: inline-size;
-        background: #d9a681 url("img/market_bg.jpg") center / 100% 100%
+        background: #d9a681 url("img/market_bg.png") center / 100% 100%
           no-repeat;
         user-select: none;
         -webkit-user-select: none;
@@ -2303,8 +2331,13 @@
 
       /* Ô nguyên liệu bị khóa: ổ khóa + ngày mở khóa */
 
+      .mgame .bhit.locked {
+        flex-direction: column;
+        gap: 0.8cqw;
+      }
       .mgame .bhit.locked::before {
-        font-size: max(24px, 6.5cqw);
+        content: none;
+        display: none;
       }
       .mgame .bhit.locked::after {
         content: attr(data-lock-label) !important;
@@ -2313,10 +2346,11 @@
         font-weight: 900;
         line-height: 1.3;
         white-space: nowrap;
-        color: #ffd17d;
-        background: rgba(66, 38, 26, 0.92);
-        border: 2px solid #d9a96f;
+        color: #ffe3a3;
+        background: rgba(50, 28, 19, 0.96);
+        border: 2px solid #f0cf8e;
         border-radius: 999px;
+        box-shadow: 0 0.5cqw 1cqw rgba(20, 8, 4, 0.5);
       }
       /* ===== CHỈNH THÊM: nút Phục vụ ổn định trên điện thoại, thanh thông báo mờ dần, nhãn nước lẩu ===== */
       .serve,
@@ -2354,12 +2388,12 @@
         width: min(88vw, 520px);
         aspect-ratio: 900 / 460;
         container-type: inline-size;
-        padding: 14% 8% 9%;
+        padding: 11% 8% 13%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1cqw;
+        gap: 0;
         text-align: center;
         background: url("img/notice_frame.png") center / 100% 100% no-repeat;
         filter: drop-shadow(0 1.6cqw 1.6cqw rgba(30, 15, 10, 0.4));
@@ -2374,7 +2408,7 @@
       }
       .day-banner-txt {
         font-weight: 900;
-        font-size: 17cqw;
+        font-size: 15cqw;
         line-height: 1.05;
         color: #d83a4a;
         letter-spacing: 0.4cqw;
@@ -2385,6 +2419,17 @@
           0 1cqw 0 #6e1620,
           0 1.8cqw 1.6cqw rgba(110, 22, 32, 0.45),
           0 0 2.4cqw rgba(255, 255, 255, 0.9);
+      }
+      .day-banner-sub {
+        margin-top: 2.2cqw;
+        font-size: 6cqw;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: 0.8cqw;
+        white-space: nowrap;
+        color: #b9806a;
+        opacity: 0.85;
+        text-shadow: 0 0.2cqw 0 rgba(255, 255, 255, 0.7);
       }
       @keyframes dayBannerPop {
         0% {
@@ -2606,6 +2651,177 @@
         background: transparent;
         border: 0;
       }
+
+      /* ===== HÀNG ĐỢI KHÁCH (2–3 khách vào cùng lúc, order từng người) ===== */
+      .customer {
+        z-index: 2;
+        transform-origin: 50% 100%;
+      }
+      .bubble {
+        z-index: 3;
+      }
+      /* khách đứng chờ: nhỏ hơn 22%, xếp bên trái khách đang order (đổi 13cqw để chỉnh khoảng cách) */
+      .customer.from-queue {
+        transform: translateX(-15cqw) scale(0.78);
+        opacity: 1;
+      }
+      .queue-guest {
+        --slot: 1;
+        z-index: 1;
+        left: calc(44.4% - var(--slot) * 13cqw);
+        top: calc(42% + 5.28cqw);
+        width: 14.04cqw;
+        height: 18.72cqw;
+        pointer-events: none !important;
+        transition:
+          left 0.6s ease-out,
+          transform 0.8s ease-out,
+          opacity 0.8s;
+      }
+      .queue-guest img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: bottom center;
+        filter: brightness(0.93) drop-shadow(0 0.25cqw 0.25cqw rgba(40, 20, 15, 0.22));
+      }
+      .queue-guest.walking img {
+        animation: customerAnimeBob 0.3s ease-in-out infinite;
+      }
+      .queue-guest.entering {
+        transform: translateX(-45cqw);
+        opacity: 0;
+      }
+      .queue-guest.leaving {
+        transform: translateX(-45cqw);
+        opacity: 0;
+        transition:
+          transform 0.7s ease-in,
+          opacity 0.7s;
+      }
+
+      /* ===== KHAY MÌ: ramen + udon đặt cạnh khay tô nước lèo (chỉnh left/top nếu lệch) ===== */
+      #noodles {
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        pointer-events: none;
+      }
+      #noodles .ingredient {
+        position: absolute;
+        top: 78%;
+        width: 15.5%;
+        height: auto;
+        padding: 0.6cqw 0 0.4cqw;
+        gap: 0;
+        border-radius: 2.2cqw;
+        pointer-events: auto;
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      #noodles .ingredient:nth-child(1) {
+        left: 67.5%;
+      }
+      #noodles .ingredient:nth-child(2) {
+        left: 83%;
+      }
+      #noodles .food-image {
+        width: 14.5cqw;
+        height: 14.5cqw;
+        filter: drop-shadow(0 0.7cqw 0.5cqw rgba(30, 14, 8, 0.55));
+        transition:
+          transform 0.18s ease,
+          filter 0.18s ease;
+      }
+      #noodles .food-fallback {
+        width: 14.5cqw;
+        height: 14.5cqw;
+        line-height: 14.5cqw;
+        font-size: 8cqw;
+      }
+      #noodles .ingredient:hover .food-image {
+        transform: translateY(-0.6cqw) scale(1.06);
+      }
+      #noodles .ingredient:active .food-image {
+        transform: scale(0.95);
+      }
+
+      /* Nhãn tên: bảng gỗ nhỏ, bo tròn, viền vàng nhạt */
+      #noodles .name {
+        position: relative;
+        z-index: 1;
+        margin-top: -1.4cqw;
+        padding: 0.35cqw 2.4cqw;
+        font-size: max(11px, 2.3cqw);
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        color: #fff3df;
+        text-shadow: 0 1px 1px rgba(40, 20, 15, 0.9);
+        background: linear-gradient(180deg, #8a5a3b 0%, #5e3a26 100%);
+        border: 0.35cqw solid #e9c98f;
+        border-radius: 999px;
+        box-shadow:
+          0 0.5cqw 0.8cqw rgba(30, 14, 8, 0.45),
+          inset 0 0.2cqw 0 rgba(255, 255, 255, 0.25);
+        transition:
+          background 0.18s,
+          color 0.18s,
+          transform 0.18s;
+      }
+
+      /* Trạng thái đã chọn: ánh sáng ấm + khay nhún nhẹ + dấu tick */
+      #noodles .ingredient.selected {
+        background: radial-gradient(
+          ellipse at 50% 45%,
+          rgba(255, 226, 154, 0.6) 0%,
+          rgba(255, 194, 77, 0.28) 55%,
+          rgba(255, 194, 77, 0) 78%
+        );
+        box-shadow: 0 0 0 0.45cqw rgba(255, 194, 77, 0.95), 0 0 3.2cqw rgba(255, 194, 77, 0.65);
+      }
+      #noodles .ingredient.selected .food-image,
+      #noodles .ingredient.selected .food-fallback {
+        animation: noodleBob 1.6s ease-in-out infinite;
+      }
+      #noodles .ingredient.selected .name {
+        color: #5a3a2e;
+        background: linear-gradient(180deg, #ffe7a8 0%, #ffc24d 100%);
+        border-color: #fff3df;
+        text-shadow: none;
+        transform: scale(1.06);
+      }
+      #noodles .ingredient.selected::after {
+        content: "✓";
+        position: absolute;
+        top: -0.6cqw;
+        right: 0.4cqw;
+        width: 4.6cqw;
+        height: 4.6cqw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: max(11px, 2.9cqw);
+        font-weight: 900;
+        line-height: 1;
+        color: #fff;
+        background: #3fa85a;
+        border: 0.4cqw solid #fff3e6;
+        border-radius: 50%;
+        box-shadow: 0 0.4cqw 0.7cqw rgba(30, 14, 8, 0.4);
+        pointer-events: none;
+      }
+      @keyframes noodleBob {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-0.7cqw);
+        }
+      }
     </style>
   </head>
   <body>
@@ -2650,6 +2866,7 @@
         <div style="height: 14px"></div>
         <h3 class="section-title" data-i="ingr"></h3>
         <div class="cards" id="ingredients"></div>
+        <div class="cards" id="noodles"></div>
       </div>
 
       <div class="kitchen">
@@ -2721,6 +2938,14 @@
     <div class="start-screen" id="startScreen">
       <div class="top-icons">
         <button
+          class="icon-btn gear-icon-btn lang-icon-btn"
+          id="langBtn"
+          aria-label="Language"
+          title="Language"
+        >
+          <span id="langCode" aria-hidden="true">VI</span>
+        </button>
+        <button
           class="icon-btn gear-icon-btn"
           id="gearBtn"
           aria-label="Settings"
@@ -2743,9 +2968,8 @@
         <button class="btn btn-play" id="playBtn">
           <i class="tri"></i><span id="playLbl"></span>
         </button>
-        <button class="btn btn-sub" id="settingsBtn">
-          <span class="gear-ico"><img src="img/settings.png" alt="" /></span
-          >&nbsp; <span data-i="settings"></span>
+        <button class="btn btn-sub" id="startRevBtn">
+          <span data-i="revenue"></span>
         </button>
       </div>
     </div>
@@ -2753,39 +2977,39 @@
     <div class="modal hide" id="noteModal">
       <div class="panel note-panel">
         <img class="note-image" src="img/note.png" alt="" />
+        <h2 class="note-title" data-i="noteRecipes"></h2>
         <div class="note-content">
-          <h2 data-i="noteRecipes"></h2>
           <article class="note-recipe">
-            <h3 class="note-language" data-language="vi">01. Bí kíp lẩu cà chua</h3>
+            <h3 class="note-language" data-language="vi">01.  lẩu cà chua</h3>
             <h3 class="note-language" data-language="ja">01. トマト鍋のコツ</h3>
             <h3 class="note-language" data-language="en">01. Tomato Hot Pot Tips</h3>
-            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Xào cà chua trước khi cho nước dùng để tạo vị ngọt tự nhiên và màu đỏ đẹp. Thêm chút đường để cân bằng vị chua.</p>
-            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>トマトを先に炒めると、甘みと旨みが引き立ちます。少量の砂糖で酸味を整えましょう。</p>
-            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Sauté the tomatoes first to bring out their natural sweetness. Add a little sugar to balance the acidity.</p>
+            <p class="note-language" data-language="vi"><strong> Bí quyết</strong>Xào cà chua trước khi cho nước dùng để tạo vị ngọt tự nhiên và màu đỏ đẹp. Thêm chút đường để cân bằng vị chua.</p>
+            <p class="note-language" data-language="ja"><strong> おいしく作るコツ</strong>トマトを先に炒めると、甘みと旨みが引き立ちます。少量の砂糖で酸味を整えましょう。</p>
+            <p class="note-language" data-language="en"><strong> Chef's Secret</strong>Sauté the tomatoes first to bring out their natural sweetness. Add a little sugar to balance the acidity.</p>
           </article>
           <article class="note-recipe">
-            <h3 class="note-language" data-language="vi">02. Bí kíp lẩu siêu cay</h3>
+            <h3 class="note-language" data-language="vi">02. lẩu siêu cay</h3>
             <h3 class="note-language" data-language="ja">02. 激辛鍋のコツ</h3>
             <h3 class="note-language" data-language="en">02. Extra-Spicy Hot Pot Tips</h3>
-            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Phi ớt và tỏi với dầu ở lửa nhỏ để dậy mùi thơm. Không đun quá lâu ở lửa lớn vì nước lẩu dễ bị đắng.</p>
-            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>唐辛子とニンニクを弱火で炒めて香りを引き出します。強火で煮込みすぎると苦味が出るので注意しましょう。</p>
-            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Gently fry the chilies and garlic to release their aroma. Avoid prolonged high heat to prevent bitterness.</p>
+            <p class="note-language" data-language="vi"><strong> Bí quyết</strong>Phi ớt và tỏi với dầu ở lửa nhỏ để dậy mùi thơm. Không đun quá lâu ở lửa lớn vì nước lẩu dễ bị đắng.</p>
+            <p class="note-language" data-language="ja"><strong> おいしく作るコツ</strong>唐辛子とニンニクを弱火で炒めて香りを引き出します。強火で煮込みすぎると苦味が出るので注意しましょう。</p>
+            <p class="note-language" data-language="en"><strong> Chef's Secret</strong>Gently fry the chilies and garlic to release their aroma. Avoid prolonged high heat to prevent bitterness.</p>
           </article>
           <article class="note-recipe">
-            <h3 class="note-language" data-language="vi">03. Bí kíp lẩu cay</h3>
+            <h3 class="note-language" data-language="vi">03. lẩu cay</h3>
             <h3 class="note-language" data-language="ja">03. ピリ辛鍋のコツ</h3>
             <h3 class="note-language" data-language="en">03. Spicy Hot Pot Tips</h3>
-            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Kết hợp vị cay với nước dùng ngọt thanh. Cho rau vào gần cuối để giữ độ giòn và giúp nước lẩu không bị nồng.</p>
-            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>辛さとあっさりしただしの旨みを組み合わせます。野菜は仕上げに加えると食感が残ります。</p>
-            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Balance the heat with a light, savory broth. Add vegetables near the end to preserve their texture.</p>
+            <p class="note-language" data-language="vi"><strong> Bí quyết</strong>Kết hợp vị cay với nước dùng ngọt thanh. Cho rau vào gần cuối để giữ độ giòn và giúp nước lẩu không bị nồng.</p>
+            <p class="note-language" data-language="ja"><strong> おいしく作るコツ</strong>辛さとあっさりしただしの旨みを組み合わせます。野菜は仕上げに加えると食感が残ります。</p>
+            <p class="note-language" data-language="en"><strong> Chef's Secret</strong>Balance the heat with a light, savory broth. Add vegetables near the end to preserve their texture.</p>
           </article>
           <article class="note-recipe">
-            <h3 class="note-language" data-language="vi">04. Bí kíp lẩu Collagen</h3>
+            <h3 class="note-language" data-language="vi">04. lẩu Collagen</h3>
             <h3 class="note-language" data-language="ja">04. コラーゲン鍋のコツ</h3>
             <h3 class="note-language" data-language="en">04. Collagen Hot Pot Tips</h3>
-            <p class="note-language" data-language="vi"><strong>VI · Bí quyết</strong>Ninh nước dùng ở lửa nhỏ để vị ngọt từ thịt và rau hòa quyện. Thêm nấm và hành lá để tăng hương thơm.</p>
-            <p class="note-language" data-language="ja"><strong>JP · おいしく作るコツ</strong>弱火でじっくり煮込み、肉や野菜の旨みを引き出します。きのことネギを加えると香りが豊かになります。</p>
-            <p class="note-language" data-language="en"><strong>EN · Chef's Secret</strong>Simmer the broth gently to develop its flavor. Add mushrooms and green onions for extra aroma.</p>
+            <p class="note-language" data-language="vi"><strong> Bí quyết</strong>Ninh nước dùng ở lửa nhỏ để vị ngọt từ thịt và rau hòa quyện. Thêm nấm và hành lá để tăng hương thơm.</p>
+            <p class="note-language" data-language="ja"><strong> おいしく作るコツ</strong>弱火でじっくり煮込み、肉や野菜の旨みを引き出します。きのことネギを加えると香りが豊かになります。</p>
+            <p class="note-language" data-language="en"><strong> Chef's Secret</strong>Simmer the broth gently to develop its flavor. Add mushrooms and green onions for extra aroma.</p>
           </article>
         </div>
         <button class="btn btn-close note-close" data-close="noteModal">
@@ -2842,6 +3066,7 @@
     <div class="modal hide day-banner" id="dayBanner" aria-live="polite">
       <div class="day-banner-card">
         <div class="day-banner-txt" id="dayBannerTxt"></div>
+        <div class="day-banner-sub" id="dayBannerSub"></div>
       </div>
     </div>
 
@@ -2974,6 +3199,21 @@
     <script>
       /* ===== DỮ LIỆU MÓN (đổi img / emoji / tên ở đây; không có ảnh thì tự hiện emoji) ===== */
       /* Ảnh nền có 4 nồi -> 4 nước lẩu */
+      /* Mì: khách bắt buộc chọn 1 trong 2 (ảnh img/ramen.png và img/udon.png) */
+      const noodles = [
+        {
+          key: "ramen",
+          img: "img/ramen.png",
+          emoji: "🍜",
+          name: { vi: "Ramen", ja: "ラーメン", en: "Ramen" },
+        },
+        {
+          key: "udon",
+          img: "img/udon .png",
+          emoji: "🍲",
+          name: { vi: "Udon", ja: "うどん", en: "Udon" },
+        },
+      ];
       const broths = [
         {
           key: "cay",
@@ -3011,7 +3251,7 @@
          - image: ảnh PNG có sẵn trong img/. Nếu thiếu file thì tự cắt ảnh giỏ hàng
            từ market_bg.jpg để thay thế (không dùng emoji). */
       const STARTING_MONEY = 10000; // vốn khởi nghiệp: ¥10.000
-      const BUY_STEP = 5; // mỗi lần bấm (+) / (−) / giỏ hàng = 5 cái
+      const BUY_STEP = 1; // mỗi lần bấm (+) / (−) / giỏ hàng = 1 cái
       const MAX_QTY = 99; // tối đa mỗi loại trong 1 lần chọn
       /* GIÁ THEO NHÓM: cùng nhóm thì cùng giá (đơn vị: yên). Muốn đổi giá chỉ sửa 3 số này.
          Nhóm của từng món đặt ở trường group trong CATALOG. */
@@ -3036,21 +3276,21 @@
           image: "img/beef.png",
           potImage: "img/chin/beef_cooked.png",
           group: "meat",
-          name: { vi: "Thịt bò", ja: "牛肉", en: "Beef" },
+          name: { vi: " bò", ja: "牛肉", en: "Beef" },
         },
         {
           id: "chicken",
           image: "img/chicken.png",
           potImage: "img/chin/chicken_cooked.png",
           group: "meat",
-          name: { vi: "Thịt gà", ja: "鶏肉", en: "Chicken" },
+          name: { vi: " gà", ja: "鶏肉", en: "Chicken" },
         },
         {
           id: "pork",
           image: "img/pork.png",
           potImage: "img/chin/pork_cooked.png",
           group: "meat",
-          name: { vi: "Thịt heo", ja: "猪肉", en: "Pork" },
+          name: { vi: " heo", ja: "猪肉", en: "Pork" },
         },
         {
           id: "shrimp",
@@ -3109,11 +3349,11 @@
           name: { vi: "cá viên ", ja: "魚団子", en: "Fish balls" },
         },
         {
-          id: "ramen",
-          image: "img/ramen.png",
-          potImage: "img/chin/ramen_cooked.png",
+          id: "cabbage",
+          image: "img/cabbage.png",
+          potImage: "img/chin/cabbage_cooked.png",
           group: "veg",
-          name: { vi: "Mì", ja: "ラーメン", en: "Ramen" },
+          name: { vi: "Cải", ja: "白菜", en: "Cabbage" },
         },
         {
           id: "corn",
@@ -3171,10 +3411,29 @@
           UNLOCK_ORDER.length,
           STARTER_ITEM_COUNT + 2 * Math.floor((day - 1) / 2),
         );
+      /* Món mở khóa theo ngày cố định (không nằm trong UNLOCK_ORDER): cải thảo mở từ ngày 2 */
+      const UNLOCK_DAY_OVERRIDE = { cabbage: 2 };
       const getUnlockedItemIds = (day = S.day) =>
-        new Set(UNLOCK_ORDER.slice(0, unlockedItemCount(day)));
+        new Set([
+          ...UNLOCK_ORDER.slice(0, unlockedItemCount(day)),
+          ...Object.keys(UNLOCK_DAY_OVERRIDE).filter(
+            (id) => day >= UNLOCK_DAY_OVERRIDE[id],
+          ),
+        ]);
+      const unlockDayOf = (id) =>
+        UNLOCK_DAY_OVERRIDE[id] != null
+          ? UNLOCK_DAY_OVERRIDE[id]
+          : Math.max(
+              2,
+              2 *
+                Math.ceil(
+                  (UNLOCK_ORDER.indexOf(id) - STARTER_ITEM_COUNT + 1) / 2,
+                ) +
+                1,
+            );
       const nm = (o) => o.name[lang] || o.name.en || o.name.vi;
       const DAY_SECONDS = 150; // 1 ngày chơi thật = 150 giây (2,5 phút); đổi 120–180 tùy ý
+      const NOODLE_COST_PER_DAY = 500; // tiền mua ramen + udon, trừ vào doanh thu cuối mỗi ngày (¥)
       const RENT_PER_DAY = 2000; // tiền thuê mặt bằng trừ cuối mỗi ngày (¥)
       const GOAL = 8; // số khách phục vụ đúng để qua ngày
 
@@ -3193,8 +3452,9 @@
           confirmText:
             "Toàn bộ tiến trình sẽ bị xóa và bạn sẽ quay lại Ngày 1. Bạn chắc chứ?",
           rulesText:
-            '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền. Sau đó thu tiền ngẫu nhiên bằng tiền mặt (ghép đúng tiền thối) hoặc quét QR.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
+            '<ol><li>Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.</li><li>Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.</li><li>Chọn đúng nước lẩu, loại mì (ramen hoặc udon) và các nguyên liệu khách yêu cầu.</li><li>Nhìn thanh kiên nhẫn của khách: xanh là còn thời gian, đỏ là sắp hết. Hết giờ khách sẽ giận bỏ về và bạn bị trừ tiền.</li><li>Bấm "Phục vụ": đúng được tiền, sai bị mất tiền. Sau đó thu tiền ngẫu nhiên bằng tiền mặt (ghép đúng tiền thối) hoặc quét QR.</li><li>Đến 22:00 quán tự đóng cửa. Bạn sẽ thấy doanh thu trong ngày rồi sang ngày tiếp theo.</li></ol>',
           day: "Ngày",
+          bannerOpen: "Mở cửa",
           cust: "Khách",
           want: "order:",
           broth: "NƯỚC LẨU",
@@ -3236,6 +3496,9 @@
           revenue: "Doanh thu",
           penalty: "Phạt khách bỏ về",
           rent: "Tiền thuê mặt bằng",
+          noodleCost: "Mua ramen & udon",
+          hNoodle: "Mì",
+          pickNoodle: "Hãy chọn mì (ramen hoặc udon) trước!",
           net: "Lợi nhuận",
           next: "Ngày tiếp theo ",
           retry: "Chơi lại ngày này ",
@@ -3300,8 +3563,9 @@
           confirmText:
             "すべての進行状況が消えて、1日目に戻ります。よろしいですか？",
           rulesText:
-            "<ol><li>毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。</li><li>営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。</li><li>注文どおりのスープと具材を選びます。</li><li>お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。</li><li>「提供」を押すと、正解で会計に進みます。現金（お釣りを正しく選ぶ）またはQR決済がランダムに選ばれます。</li><li>22:00になると自動で閉店。その日の売上を確認して、次の日へ進みます。</li></ol>",
+            "<ol><li>毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。</li><li>営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。</li><li>注文どおりのスープ、麺（ラーメンかうどん）、具材を選びます。</li><li>お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。</li><li>「提供」を押すと、正解で会計に進みます。現金（お釣りを正しく選ぶ）またはQR決済がランダムに選ばれます。</li><li>22:00になると自動で閉店。その日の売上を確認して、次の日へ進みます。</li></ol>",
           day: "日目",
+          bannerOpen: "営業開始",
           cust: "客",
           want: "ご注文：",
           broth: "スープ",
@@ -3343,6 +3607,9 @@
           revenue: "売上",
           penalty: "怒って帰った罰金",
           rent: "店舗の家賃",
+          noodleCost: "ラーメン・うどん仕入れ",
+          hNoodle: "麺",
+          pickNoodle: "先に麺（ラーメンかうどん）を選んでください！",
           net: "利益",
           next: "次の日へ ",
           retry: "もう一度 ",
@@ -3407,8 +3674,9 @@
           confirmText:
             "All progress will be erased and you will return to Day 1. Are you sure?",
           rulesText:
-            "<ol><li>Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.</li><li>The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.</li><li>Pick the exact broth and ingredients they ask for.</li><li>Watch the patience bar: green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.</li><li>Press Serve: correct advances to payment. Payment randomly uses cash (make the exact change) or QR.</li><li>At 22:00 the shop closes automatically. You will see the day's revenue and then move on to the next day.</li></ol>",
+            "<ol><li>Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.</li><li>The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.</li><li>Pick the exact broth, noodle (ramen or udon) and ingredients they ask for.</li><li>Watch the patience bar: green means time is left, red means almost out. If it runs out the customer leaves angry and you lose money.</li><li>Press Serve: correct advances to payment. Payment randomly uses cash (make the exact change) or QR.</li><li>At 22:00 the shop closes automatically. You will see the day's revenue and then move on to the next day.</li></ol>",
           day: "Day",
+          bannerOpen: "Open for business",
           cust: "Guest",
           want: "Order:",
           broth: "BROTH",
@@ -3450,6 +3718,9 @@
           revenue: "Revenue",
           penalty: "Angry-customer penalty",
           rent: "Shop rent",
+          noodleCost: "Ramen & udon supplies",
+          hNoodle: "Noodles",
+          pickNoodle: "Pick a noodle (ramen or udon) first!",
           net: "Profit",
           next: "Next day ▶",
           retry: "Retry day ▶",
@@ -3591,6 +3862,7 @@
             cost: Math.floor(+r.cost) || 0,
             penalty: Math.floor(+r.penalty) || 0,
             rent: Math.floor(+r.rent) || 0,
+            noodle: Math.floor(+r.noodle) || 0,
             profit: Math.floor(+r.profit) || 0,
             served: Math.floor(+r.served) || 0,
           }))
@@ -3605,6 +3877,7 @@
         good = 0,
         order = null,
         selB = null,
+        selN = null, // mì đang chọn (0 = ramen, 1 = udon)
         selF = new Set(),
         playing = false,
         muted = false;
@@ -3635,6 +3908,7 @@
         closeKey = "closed";
       let pendingPayment = null,
         changeSelections = [];
+      let queue = []; // khách đang đứng chờ phía sau: { image, el }
       let dayItems = []; // chỉ số trong ITEMS đang bày trên quầy trong ngày
       // setTimeout nhưng tự chờ khi đang tạm dừng
       function setReady(v) {
@@ -3647,6 +3921,65 @@
         }, ms);
       const cust = () => document.querySelector(".customer"),
         bub = () => document.querySelector(".bubble");
+
+      /* ===== KHÁCH ĐẾN TỰ NHIÊN: khách mới có thể vào bất cứ lúc nào (kể cả khi đang phục vụ) rồi xếp hàng chờ ===== */
+      const ARRIVAL_MIN_MS = 6000; // khách mới đến cách nhau ngẫu nhiên trong khoảng này
+      const ARRIVAL_MAX_MS = 14000;
+      const MAX_WAITING = 2; // tối đa 2 khách đứng chờ (cộng khách đang order = 3)
+      function pickCustomerImage() {
+        const all = [1, 2, 3, 4, 5, 6].map(
+          (k) => `img/customers/customers_${String(k).padStart(2, "0")}.png`,
+        );
+        const cur = cust().querySelector("img.customer-image");
+        const free = all.filter(
+          (p) =>
+            !queue.some((g) => g.image === p) &&
+            !(cur && cur.getAttribute("src") === p),
+        );
+        const pool = free.length ? free : all;
+        return pool[Math.floor(Math.random() * pool.length)];
+      }
+      function scheduleArrival() {
+        const token = dayToken;
+        later(
+          () => {
+            if (!clockRunning || token !== dayToken) return;
+            if (queue.length < MAX_WAITING) addToQueue(pickCustomerImage(), 80);
+            scheduleArrival();
+          },
+          ARRIVAL_MIN_MS + Math.random() * (ARRIVAL_MAX_MS - ARRIVAL_MIN_MS),
+        );
+      }
+      function layoutQueue() {
+        queue.forEach((g, i) => g.el.style.setProperty("--slot", i + 1));
+      }
+      function addToQueue(image, delay) {
+        const el = document.createElement("div");
+        el.className = "queue-guest entering";
+        const img = document.createElement("img");
+        img.src = image;
+        img.alt = "";
+        el.appendChild(img);
+        document.querySelector(".scene").appendChild(el);
+        queue.push({ image, el });
+        layoutQueue();
+        const token = dayToken;
+        later(() => {
+          if (token !== dayToken || !el.isConnected) return;
+          el.classList.add("walking");
+          el.classList.remove("entering");
+          later(() => el.classList.remove("walking"), 850);
+        }, delay);
+      }
+      function clearQueue(animate) {
+        queue = [];
+        document.querySelectorAll(".queue-guest").forEach((el) => {
+          if (animate) {
+            el.classList.add("leaving");
+            setTimeout(() => el.remove(), 800);
+          } else el.remove();
+        });
+      }
 
       /* ===== ẢNH NGUYÊN LIỆU: PNG có sẵn, thiếu file thì cắt từ ảnh chợ ===== */
       const MW = 768,
@@ -3669,7 +4002,7 @@
         const x0 = Math.min(MW - size, Math.max(0, s.x - size / 2));
         const y0 = Math.min(MH - size, Math.max(0, s.y - 74 - size / 2));
         return (
-          `background:url(img/market_bg.jpg) no-repeat;` +
+          `background:url(img/market_bg.png) no-repeat;` +
           `background-size:${(MW / size) * 100}% auto;` +
           `background-position:${(x0 / (MW - size)) * 100}% ${(y0 / (MH - size)) * 100}%;` +
           `aspect-ratio:1/1;`
@@ -3718,6 +4051,22 @@
             return;
           }
           selB = +b.dataset.b;
+          paint();
+        };
+        $("noodles").innerHTML = noodles.map((o, i) => card("n", i, o)).join("");
+        document.querySelectorAll("#noodles .food-image").forEach((img) =>
+          img.addEventListener("error", () => {
+            const b = img.closest(".ingredient");
+            const d = document.createElement("div");
+            d.className = "food-fallback";
+            d.textContent = noodles[b.dataset.n].emoji;
+            img.replaceWith(d);
+          }),
+        );
+        $("noodles").onclick = (e) => {
+          const b = e.target.closest("[data-n]");
+          if (!b) return;
+          selN = +b.dataset.n; // chọn lại mì kia thì đổi luôn
           paint();
         };
         $("ingredients").onclick = (e) => {
@@ -3822,6 +4171,10 @@
           b.classList.toggle("selected", +b.dataset.b === selB);
           b.querySelector(".name").textContent = nm(broths[b.dataset.b]);
         });
+        document.querySelectorAll("[data-n]").forEach((b) => {
+          b.classList.toggle("selected", +b.dataset.n === selN);
+          b.querySelector(".name").textContent = nm(noodles[b.dataset.n]);
+        });
         document.querySelectorAll("[data-f]").forEach((b) => {
           const it = ITEMS[b.dataset.f];
           const st = it.purchasedQuantity;
@@ -3844,7 +4197,7 @@
         $("sCust").textContent = clockStr();
         if (order) {
           const f = [...order.f].map((i) => nm(ingredients[i])).join(", ");
-          $("orderTxt").innerHTML = `${nm(broths[order.b])}<br>${f}`;
+          $("orderTxt").innerHTML = `${nm(noodles[order.n])} · ${nm(broths[order.b])}<br>${f}`;
         } else {
           $("orderTxt").textContent = "";
         }
@@ -3860,6 +4213,7 @@
           .forEach((b) =>
             b.classList.toggle("active", b.dataset.lang === lang),
           );
+        $("langCode").textContent = lang.toUpperCase();
         renderPayment();
         document.documentElement.lang = lang;
         renderMarket();
@@ -3899,6 +4253,7 @@
         setReady(false);
         order = null;
         bub().classList.remove("show");
+        clearQueue(true);
         cust().classList.add("walking", "leaving");
         $("msg").textContent = T()[closeKey]; // thông báo đóng cửa
         const tok = dayToken;
@@ -4039,11 +4394,35 @@
         $("cashPayment").hidden = method !== "cash";
         $("qrPayment").hidden = method !== "qr";
       }
+      /* Số tờ/xu thối ít nhất (tham lam) – dùng để chọn tiền thối đủ "khó" */
+      const greedyCount = (amount) => {
+        let r = amount,
+          c = 0;
+        [...CASH_DENOMINATIONS]
+          .filter(({ value }) => value !== 2000 && value !== 10000)
+          .reverse()
+          .forEach(({ value }) => {
+            c += Math.floor(r / value);
+            r %= value;
+          });
+        return c;
+      };
+      /* Khách đưa số tiền lẻ làm tiền thối phải ghép từ nhiều tờ/xu (3–8 món) */
+      function makeTender(amount) {
+        const units = [100, 500, 1000, 5000];
+        for (let i = 0; i < 80; i++) {
+          const unit = units[Math.floor(Math.random() * units.length)];
+          const tender =
+            Math.ceil((amount + 1 + Math.floor(Math.random() * 90)) / unit) * unit;
+          const change = tender - amount;
+          const n = greedyCount(change);
+          if (change <= 5000 && n >= 3 && n <= 8) return tender;
+        }
+        return Math.ceil((amount + 1) / 100) * 100 + 500; // dự phòng: tròn trăm + 500
+      }
       function beginPayment(amount) {
-        const overpayments = [100, 500, 1000, 5000];
-        const overpayment =
-          overpayments[Math.floor(Math.random() * overpayments.length)];
-        const tender = amount + overpayment;
+        const tender = makeTender(amount);
+        const overpayment = tender - amount;
         let method = Math.random() < CASH_RATE ? "cash" : "qr";
         if (method === "cash") {
           // két (đã cộng tiền khách đưa) có ghép được đúng tiền thối không? Không thì chuyển sang QR.
@@ -4098,6 +4477,7 @@
         n++;
         save();
         selB = null;
+        selN = null;
         selF = new Set();
         order = null;
         paint();
@@ -4121,13 +4501,28 @@
         const cnt = Math.min(2 + Math.floor(S.day / 2), 5, pool.length);
         order = {
           b: Math.floor(Math.random() * broths.length),
+          n: Math.floor(Math.random() * noodles.length), // khách bắt buộc gọi ramen hoặc udon
           f: new Set(pool.slice(0, cnt)),
         };
-        presentGuest({ order, image: randomCustomerImage() });
+        let image,
+          fromQueue = false;
+        if (queue.length) {
+          // khách đang chờ bước lên quầy, những người còn lại nhích lên
+          const g = queue.shift();
+          image = g.image;
+          fromQueue = true;
+          g.el.remove();
+          layoutQueue();
+        } else {
+          // không có ai chờ: khách mới đi vào quán
+          image = pickCustomerImage();
+        }
+        presentGuest({ order, image, fromQueue });
       }
       function presentGuest(guest) {
         order = guest.order;
         selB = null;
+        selN = null;
         selF = new Set();
         setReady(false);
         showRedo(false);
@@ -4143,10 +4538,15 @@
         c.classList.remove("angry", "walking");
         // đặt khách ngoài cửa (không animation) rồi cho đi vào
         c.style.transition = "none";
-        c.classList.add("leaving");
+        if (guest.fromQueue) {
+          c.classList.remove("leaving");
+          c.classList.add("from-queue"); // bắt đầu từ chỗ đang đứng chờ
+        } else {
+          c.classList.add("leaving");
+        }
         c.offsetWidth;
         c.style.transition = "";
-        c.classList.remove("leaving");
+        c.classList.remove("leaving", "from-queue");
         c.classList.add("walking");
         $("timeFill").style.width = "100%";
         $("timeFill").style.background = "hsl(120 80% 45%)";
@@ -4166,8 +4566,13 @@
           $("msg").textContent = t.pick;
           return;
         }
+        if (selN === null) {
+          $("msg").textContent = t.pickNoodle;
+          return;
+        }
         const ok =
           selB === order.b &&
+          selN === order.n &&
           selF.size === order.f.size &&
           [...selF].every((x) => order.f.has(x));
         if (!ok) {
@@ -4191,7 +4596,8 @@
       }
       function redo() {
         if (!playing) return;
-        selB = null; // mở khóa nước lẩu
+        selB = null;
+        selN = null; // mở khóa nước lẩu
         selF = new Set();
         $("msg").textContent = "";
         showRedo(false);
@@ -4202,7 +4608,8 @@
       function leave() {
         stopTimer();
         showRedo(false);
-        selB = null; // tô biến mất cùng lúc khách bỏ về
+        selB = null;
+        selN = null; // tô biến mất cùng lúc khách bỏ về
         selF = new Set();
         playing = false;
         setReady(false);
@@ -4230,9 +4637,11 @@
         playing = false;
         const rent = Math.min(S.money, RENT_PER_DAY); // trả tiền thuê mặt bằng cuối ngày
         S.money -= rent;
+        const noodleCost = Math.min(S.money, NOODLE_COST_PER_DAY); // tiền mua ramen + udon
+        S.money -= noodleCost;
         const t = T(),
           day = S.day,
-          profit = dayRevenue - dayMarketSpend - dayPenalty - rent,
+          profit = dayRevenue - dayMarketSpend - dayPenalty - rent - noodleCost,
           dayLabel = lang === "ja" ? day + t.day : t.day + " " + day;
         $("dayTitle").textContent = dayLabel + " " + t.dayEnd;
         const sign = (v) => (v >= 0 ? "+" : "-") + fmt(Math.abs(v));
@@ -4245,6 +4654,7 @@
           row(t.marketCost, "-" + fmt(dayMarketSpend)) +
           row(t.penalty, "-" + fmt(dayPenalty)) +
           row(t.rent, "-" + fmt(rent)) +
+          row(t.noodleCost, "-" + fmt(noodleCost)) +
           row(t.net, sign(profit), "rep-total" + (profit < 0 ? " neg" : "")) +
           `<div style="text-align:center;margin-top:10px">💰 ${t.m_moneyLabel}: <b>${fmt(S.money)}</b> ${t.m_coin}</div>`;
         $("nextBtn").textContent = t.next;
@@ -4256,6 +4666,7 @@
           cost: dayMarketSpend,
           penalty: dayPenalty,
           rent,
+          noodle: noodleCost,
           profit,
           served: good,
         });
@@ -4279,6 +4690,7 @@
         dayPenalty = 0;
         playing = true;
         $("msg").textContent = "";
+        clearQueue();
         buildTrays(); // bày nguyên liệu trong kho lên quầy
         clockR = 0;
         dayStart = Date.now();
@@ -4287,10 +4699,12 @@
         clockTimer = setInterval(clockTick, 200);
         clockTick();
         newCustomer();
+        scheduleArrival(); // khách mới sẽ tự đến lẻ tẻ trong ngày
       }
       /* Dừng hẳn ngày chơi đang chạy (khi bắt đầu lại / quay về chợ) */
       function abortDay() {
         dayToken++;
+        clearQueue();
         clearInterval(clockTimer);
         clockRunning = false;
         stopTimer();
@@ -4620,6 +5034,7 @@
           t = T();
         $("dayBannerTxt").textContent =
           lang === "ja" ? S.day + t.day : t.day + " " + S.day;
+        $("dayBannerSub").textContent = t.bannerOpen;
         el.classList.remove("hide");
         clearTimeout(bannerTimer);
         bannerTimer = setTimeout(() => {
@@ -4667,14 +5082,7 @@
             s.hit.removeAttribute("data-lock-label");
             s.hit.setAttribute("aria-label", nm(it) + " +" + BUY_STEP);
           } else {
-            const unlockDay = Math.max(
-              2,
-              2 *
-                Math.ceil(
-                  (UNLOCK_ORDER.indexOf(it.id) - STARTER_ITEM_COUNT + 1) / 2,
-                ) +
-                1,
-            );
+            const unlockDay = unlockDayOf(it.id);
             const lockLabel =
               lang === "ja" ? `${unlockDay}${t.day}` : `${t.day} ${unlockDay}`;
             s.hit.dataset.lockLabel = lockLabel;
@@ -4713,6 +5121,7 @@
         clockR = 0;
         order = null;
         selB = null;
+        selN = null;
         selF = new Set();
         $("msg").textContent = "";
         paint();
@@ -4742,15 +5151,15 @@
         vi: [
           [
             "Đi chợ",
-            "Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu trong kho.",
+            "Mỗi ngày hãy đi chợ mua nguyên liệu trước khi mở quán. ",
           ],
           [
             "Mở quán",
-            "Quán mở cửa từ 11:00 đến 22:00 (một ngày chơi khoảng 2,5 phút). Khách lần lượt đến, mỗi khách gọi 1 nồi lẩu.",
+            "Quán mở cửa từ 11:00 đến 22:00 ",
           ],
           [
             "Chọn món",
-            "Chọn đúng nước lẩu và đúng các nguyên liệu khách yêu cầu.",
+            "Chọn đúng nước lẩu, loại mì (ramen hoặc udon) và các nguyên liệu khách yêu cầu.",
           ],
           [
             "Độ kiên nhẫn",
@@ -4758,7 +5167,7 @@
           ],
           [
             "Phục vụ & thu tiền",
-            'Phục vụ đúng rồi thu tiền: ghép tiền thối khi khách trả tiền mặt hoặc xác nhận đã quét QR.',
+            'Phục vụ đúng rồi thu tiền: ghép đúng tiền thối (hoặc xác nhận đã quét QR). Khách mới có thể vào bất cứ lúc nào, kể cả khi bạn đang phục vụ; họ xếp hàng chờ và gọi món từng người một.',
           ],
           [
             "Đóng cửa",
@@ -4768,20 +5177,20 @@
         ja: [
           [
             "市場へ",
-            "毎日、開店前に市場で食材を買います。正しく提供するたびに、使った食材が1つずつ在庫から減ります。",
+            "毎日、開店前に市場で食材を買います。。",
           ],
           [
             "開店",
-            "営業は11:00〜22:00（1日は約2分半）。お客さんが順番に来て、火鍋を1つずつ注文します。",
+            "営業は11:00〜22:00（1日は約2分半）。",
           ],
-          ["注文を選ぶ", "注文どおりのスープと具材を選びます。"],
+          ["注文を選ぶ", "注文どおりのスープ、麺（ラーメンかうどん）、具材を選びます。"],
           [
             "我慢ゲージ",
             "お客さんの我慢ゲージは緑から赤に変わります。時間切れで怒って帰り、お金が減ります。",
           ],
           [
             "提供・会計",
-            "正しく提供したら会計へ。現金なら正しいお釣りを選び、QRなら支払いを確認します。",
+            "正しく提供したら会計へ。現金なら正しいお釣りを選び（QRなら支払いを確認）。接客中でも新しいお客さんが来て列に並びますが、注文は1人ずつです。",
           ],
           [
             "閉店",
@@ -4791,15 +5200,15 @@
         en: [
           [
             "Go shopping",
-            "Each day, shop at the market before opening. Every correct order uses up 1 of each ingredient from your stock.",
+            "Each day, shop at the market before opening. ",
           ],
           [
             "Open the shop",
-            "The shop is open 11:00–22:00 (about 2.5 minutes per day). Customers arrive one after another, each ordering one hot pot.",
+            "The shop is open 11:00–22:00 ",
           ],
           [
             "Pick the order",
-            "Pick the exact broth and ingredients they ask for.",
+            "Pick the exact broth, noodle (ramen or udon) and ingredients they ask for.",
           ],
           [
             "Watch patience",
@@ -4807,7 +5216,7 @@
           ],
           [
             "Serve & collect",
-            "After a correct order, collect payment by either giving exact change for cash or confirming a QR payment.",
+            "After a correct order, collect payment: give the exact change (or confirm a QR payment). New customers can walk in while you are serving and wait in line, but they order one at a time.",
           ],
           [
             "Closing time",
@@ -4887,7 +5296,7 @@
           .map(
             (r) =>
               `<tr><td>${r.day}</td><td>+${fmt(r.revenue)} ${t.m_coin}</td><td>-${fmt(r.cost)} ${t.m_coin}</td>` +
-              `<td>-${fmt(r.penalty)} ${t.m_coin}</td><td>-${fmt(r.rent || 0)} ${t.m_coin}</td><td class="${r.profit < 0 ? "neg" : ""}">${sgn(r.profit)} ${t.m_coin}</td></tr>`,
+              `<td>-${fmt(r.penalty)} ${t.m_coin}</td><td>-${fmt(r.rent || 0)} ${t.m_coin}</td><td>-${fmt(r.noodle || 0)} ${t.m_coin}</td><td class="${r.profit < 0 ? "neg" : ""}">${sgn(r.profit)} ${t.m_coin}</td></tr>`,
           )
           .join("");
         $("revBody").innerHTML =
@@ -4895,8 +5304,9 @@
           line(t.marketCost, "-" + fmt(sum("cost"))) +
           line(t.penalty, "-" + fmt(sum("penalty"))) +
           line(t.rent, "-" + fmt(sum("rent"))) +
+          line(t.noodleCost, "-" + fmt(sum("noodle"))) +
           line(t.net, sgn(profit), "rep-total" + (profit < 0 ? " neg" : "")) +
-          `<table class="rev-table"><thead><tr><th>${t.hDay}</th><th>${t.hRev}</th><th>${t.hCost}</th><th>${t.hPen}</th><th>${t.hRent}</th><th>${t.hNet}</th></tr></thead><tbody>${rows}</tbody></table>`;
+          `<table class="rev-table"><thead><tr><th>${t.hDay}</th><th>${t.hRev}</th><th>${t.hCost}</th><th>${t.hPen}</th><th>${t.hRent}</th><th>${t.hNoodle}</th><th>${t.hNet}</th></tr></thead><tbody>${rows}</tbody></table>`;
       }
       function openRevenue(fromDayModal = false) {
         const hist = S.history || [];
@@ -4951,8 +5361,14 @@
         startGame();
       };
       $("noteBtn").onclick = () => openModal("noteModal");
-      $("settingsBtn").onclick = $("gearBtn").onclick = () =>
-        openModal("settingsModal");
+      $("gearBtn").onclick = () => openModal("settingsModal");
+      $("startRevBtn").onclick = () => openRevenue();
+      $("langBtn").onclick = () => {
+        const order = ["vi", "ja", "en"]; // bấm để đổi ngôn ngữ lần lượt
+        lang = order[(order.indexOf(lang) + 1) % order.length];
+        localStorage.setItem("hotpot_lang", lang);
+        paint();
+      };
       $("rulesBtn").onclick = () => {
         rulesPage = 0;
         goRules(0);
