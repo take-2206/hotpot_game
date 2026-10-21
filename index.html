@@ -2826,6 +2826,177 @@
           transform: translateY(-0.7cqw);
         }
       }
+    
+      /* ===== CHẾ ĐỘ HƯỚNG DẪN TỪNG NÚT ===== */
+      .tour-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 3000;
+        touch-action: manipulation;
+      }
+      .tour-layer[hidden] {
+        display: none;
+      }
+      .tour-hole {
+        position: fixed;
+        left: 50%;
+        top: 40%;
+        width: 0;
+        height: 0;
+        border-radius: 14px;
+        box-shadow: 0 0 0 100vmax rgba(30, 18, 14, 0.74);
+        outline: 3px solid #ffd17d;
+        outline-offset: 0;
+        pointer-events: none;
+        transition:
+          left 0.25s ease,
+          top 0.25s ease,
+          width 0.25s ease,
+          height 0.25s ease;
+        animation: tourPulse 1.3s ease-in-out infinite;
+      }
+      .tour-hole.none {
+        outline-color: transparent;
+        animation: none;
+      }
+      .tour-hole.snap,
+      .tour-tip.snap {
+        transition: none !important;
+      }
+      @keyframes tourPulse {
+        50% {
+          outline-color: #fff;
+          outline-offset: 3px;
+        }
+      }
+      .tour-tip {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: min(92vw, 350px);
+        padding: 12px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: #f6e3c3;
+        border: 4px solid #b98a62;
+        border-radius: 20px;
+        box-shadow:
+          0 6px 0 #a07650,
+          0 0 0 4px #fff6e6 inset;
+        color: #5a3a2e;
+        transition:
+          left 0.25s ease,
+          top 0.25s ease;
+      }
+      .tour-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .tour-step {
+        font-size: 12px;
+        font-weight: 900;
+        color: #a07650;
+        letter-spacing: 0.03em;
+      }
+      .tour-skip {
+        padding: 2px 4px;
+        font-size: 13px;
+        font-weight: 800;
+        color: #8a6a58;
+        background: none;
+        border: 0;
+        text-decoration: underline;
+      }
+      .tour-title {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: clamp(17px, 4.8vw, 21px);
+        font-weight: 900;
+        color: #9b1f2a;
+        line-height: 1.2;
+      }
+      .tour-ic {
+        font-size: 1.25em;
+        line-height: 1;
+      }
+      .tour-body {
+        margin: 0;
+        font-size: clamp(14px, 3.9vw, 16px);
+        line-height: 1.5;
+      }
+      .tour-act {
+        padding: 9px 12px;
+        font-weight: 900;
+        color: #5a3a2e;
+        background: linear-gradient(#fbeed6, #efd7b0);
+        border: 3px solid #b98a62;
+        border-radius: 999px;
+        box-shadow: 0 3px 0 #a07650;
+      }
+      .tour-act[hidden] {
+        display: none;
+      }
+      .tour-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tour-prog {
+        flex: 1;
+        height: 8px;
+        background: #e5cfa6;
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .tour-prog i {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: #ee5560;
+        border-radius: 99px;
+        transition: width 0.25s ease;
+      }
+      .tour-btn {
+        padding: 9px 14px;
+        font-size: 15px;
+        font-weight: 900;
+        white-space: nowrap;
+        color: #5a3a2e;
+        background: linear-gradient(#fbeed6, #efd7b0);
+        border: 3px solid #b98a62;
+        border-radius: 999px;
+        box-shadow: 0 3px 0 #a07650;
+      }
+      .tour-btn.next {
+        color: #fff;
+        background: linear-gradient(#ff6a73, #e0434e);
+        border-color: #a9242f;
+        box-shadow: 0 3px 0 #8c1d27;
+      }
+      .tour-btn:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+      .tour-btn:active,
+      .tour-act:active {
+        transform: translateY(2px);
+      }
+      /* nút "?" ở màn hình đầu / chợ và nút bật-tắt trong Cài đặt */
+      #guideBtn {
+        font-size: clamp(18px, 2.4vw, 28px);
+      }
+      #mGuideBtn {
+        cursor: pointer;
+      }
+      #guideToggleBtn.on {
+        outline-color: #3c8f4e;
+        background: linear-gradient(#e9f7df, #cde8b4);
+      }
     </style>
   </head>
   <body>
@@ -5537,6 +5708,872 @@
         goRules(0);
         openModal("rulesModal");
       }
+    </script>
+    <script>
+      /* =====================================================================
+         ===== CHẾ ĐỘ HƯỚNG DẪN CHI TIẾT TỪNG NÚT =============================
+         - Nút "?" ở màn hình đầu và màn hình chợ: xem hướng dẫn của màn đang mở.
+         - Cài đặt -> "Hướng dẫn từng nút": xem hướng dẫn của màn đang chơi (kể cả trong game).
+         - Cài đặt -> "Chế độ hướng dẫn": BẬT thì mỗi màn hình tự hướng dẫn 1 lần khi mở.
+         - Muốn bật sẵn cho người chơi mới: đổi DEFAULT_ON thành true.
+         ===================================================================== */
+      (function () {
+        "use strict";
+        const DEFAULT_ON = false;
+        const LS_MODE = "hotpot_guide";
+        const LS_SEEN = "hotpot_guide_seen";
+        const PAD = 6;
+        const LI = { vi: 0, ja: 1, en: 2 };
+        const lg = () => (LI[lang] !== undefined ? lang : "vi");
+        const pick = (arr) => arr[LI[lg()]] || arr[0];
+        const byId = (id) => document.getElementById(id);
+        const all = (s) => [...document.querySelectorAll(s)];
+        const store = {
+          get(k) {
+            try {
+              return localStorage.getItem(k);
+            } catch (e) {
+              return null;
+            }
+          },
+          set(k, v) {
+            try {
+              localStorage.setItem(k, v);
+            } catch (e) {}
+          },
+        };
+        const modeOn = () => {
+          const v = store.get(LS_MODE);
+          return v === null ? DEFAULT_ON : v === "1";
+        };
+        const seenMap = () => {
+          try {
+            return JSON.parse(store.get(LS_SEEN) || "{}") || {};
+          } catch (e) {
+            return {};
+          }
+        };
+        const markSeen = (k) => {
+          const m = seenMap();
+          m[k] = 1;
+          store.set(LS_SEEN, JSON.stringify(m));
+        };
+        const vis = (e) => {
+          if (!e || !e.isConnected) return false;
+          if (e.closest(".hide") || e.closest("[hidden]")) return false;
+          const r = e.getBoundingClientRect();
+          if (r.width < 2 || r.height < 2) return false;
+          return getComputedStyle(e).visibility !== "hidden";
+        };
+        /* U(selector): bao quanh TẤT CẢ phần tử nhìn thấy khớp selector */
+        const U = (sel) => () => all(sel).filter(vis);
+
+        /* ---------- Chữ giao diện ---------- */
+        const UI = {
+          step: ["Bước", "ステップ", "Step"],
+          prev: ["◀ Trước", "◀ 戻る", "◀ Back"],
+          next: ["Tiếp ▶", "次へ ▶", "Next ▶"],
+          done: ["Xong ✓", "完了 ✓", "Done ✓"],
+          skip: ["Bỏ qua", "スキップ", "Skip"],
+          run: ["📖 Hướng dẫn từng nút", "📖 ボタンの使い方", "📖 Button guide"],
+          guideTitle: ["Hướng dẫn từng nút", "ボタンの使い方", "Button guide"],
+        };
+        const modeLabel = (on) =>
+          pick([
+            "🧭 Chế độ hướng dẫn: " + (on ? "BẬT" : "TẮT"),
+            "🧭 ガイドモード：" + (on ? "オン" : "オフ"),
+            "🧭 Guide mode: " + (on ? "ON" : "OFF"),
+          ]);
+
+        /* ---------- Các bước hướng dẫn ---------- */
+        /* st(đích, biểu tượng, [tiêu đề vi, ja, en], [nội dung vi, ja, en], tuỳ chọn)
+           đích: chuỗi selector (phần tử nhìn thấy đầu tiên) | hàm trả về phần tử/mảng | null (hộp giữa màn hình)
+           opt: true = bỏ qua bước này nếu không tìm thấy phần tử */
+        const st = (t, ic, ti, b, o) => Object.assign({ t, ic, ti, b }, o || {});
+        const CTX = {};
+
+        CTX.start = [
+          st("#langBtn", "🌐", ["Nút ngôn ngữ", "言語ボタン", "Language button"], [
+            "Bấm để đổi ngôn ngữ của game theo vòng: Tiếng Việt → 日本語 → English. Chữ trên nút (VI / JA / EN) cho biết ngôn ngữ đang dùng.",
+            "タップするたびに ベトナム語 → 日本語 → 英語 の順に切り替わります。ボタンの文字（VI / JA / EN）が現在の言語です。",
+            "Tap to cycle the game language: Vietnamese → Japanese → English. The code on the button (VI / JA / EN) shows the current language.",
+          ]),
+          st("#gearBtn", "⚙️", ["Nút Cài đặt", "設定ボタン", "Settings button"], [
+            "Mở bảng Cài đặt: chọn ngôn ngữ, xem Luật chơi, bật/tắt chế độ hướng dẫn và Bắt đầu lại từ đầu.",
+            "設定を開きます。言語の選択、あそびかた、ガイドモードのオン/オフ、最初からやり直す、がここにあります。",
+            "Opens Settings: pick a language, read How to play, switch guide mode on/off, or restart from the beginning.",
+          ]),
+          st("#noteBtn", "📝", ["Sổ công thức", "レシピメモ", "Recipe notes"], [
+            "Mở sổ mẹo nấu cho 4 loại nước lẩu: cà chua, siêu cay, cay và collagen.",
+            "4種類のスープ（トマト・激辛・辛口・コラーゲン）のコツをまとめたメモを開きます。",
+            "Opens tips for the 4 broths: tomato, super spicy, spicy and collagen.",
+          ]),
+          st("#guideBtn", "❓", ["Nút Hướng dẫn", "ガイドボタン", "Guide button"], [
+            "Bấm bất cứ lúc nào để xem lại hướng dẫn từng nút của màn hình đang mở.",
+            "いつでもタップすると、いま開いている画面のボタン説明をもう一度見られます。",
+            "Tap any time to replay the button-by-button guide for the screen you are on.",
+          ]),
+          st("#playBtn", "▶️", ["Bắt đầu / Chơi tiếp", "はじめる / つづきから", "Start / Continue"], [
+            "Lần đầu nút ghi “Bắt đầu” và tạo ván mới. Khi đã có tiến trình, nút đổi thành “Chơi tiếp” và đưa bạn tới ngày đang chơi dở, không xóa dữ liệu. Muốn chơi lại từ đầu: Cài đặt → Bắt đầu lại từ đầu.",
+            "初めてのときは「はじめる」で新しいゲームを作ります。進行データがあると「つづきから」に変わり、データを消さずに続きから遊べます。最初からやり直すには 設定 → 最初からやり直す。",
+            "The first time it reads “Start” and creates a new game. Once you have progress it becomes “Continue” and resumes your current day without erasing anything. To restart: Settings → Restart from the beginning.",
+          ]),
+          st("#startRevBtn", "📊", ["Nút Doanh thu", "売上ボタン", "Revenue button"], [
+            "Xem báo cáo doanh thu theo tháng: thu, chi, phạt, tiền thuê và lãi của từng ngày đã chơi.",
+            "月ごとの売上レポートを開きます。遊んだ日ごとの売上・支出・罰金・家賃・利益が見られます。",
+            "Opens the monthly revenue report: income, costs, penalties, rent and profit for each day you played.",
+          ]),
+          st(null, "🧭", ["Chế độ hướng dẫn tự động", "自動ガイドモード", "Automatic guide mode"], [
+            "Khi bật, mỗi màn hình (đi chợ, quầy nấu, thu tiền, báo cáo…) sẽ tự chỉ từng nút một lần đầu bạn mở nó. Bạn cũng có thể bật/tắt trong Cài đặt.",
+            "オンにすると、各画面（市場・調理・会計・レポートなど）を初めて開いたときにボタンの説明が自動で始まります。設定からも切り替えできます。",
+            "When on, each screen (market, kitchen, payment, report…) automatically walks you through its buttons the first time you open it. You can also switch it in Settings.",
+          ], {
+            act: () => ({
+              label: pick(
+                modeOn()
+                  ? ["Tắt chế độ hướng dẫn tự động", "自動ガイドをオフにする", "Turn automatic guide off"]
+                  : ["Bật chế độ hướng dẫn tự động", "自動ガイドをオンにする", "Turn automatic guide on"],
+              ),
+              fn: () => setMode(!modeOn()),
+            }),
+          }),
+        ];
+
+        CTX.settings = [
+          st(".langs", "🌐", ["Chọn ngôn ngữ", "言語の選択", "Choose a language"], [
+            "Ba nút Tiếng Việt, 日本語, English: bấm để đổi ngôn ngữ ngay. Nút đang sáng đỏ là ngôn ngữ hiện tại.",
+            "Tiếng Việt・日本語・English の3つのボタンで、すぐに言語を切り替えます。赤く光っているのが現在の言語です。",
+            "Three buttons: Tiếng Việt, 日本語, English. Tap one to switch instantly. The red one is the current language.",
+          ]),
+          st("#rulesBtn", "📜", ["Luật chơi", "あそびかた", "How to play"], [
+            "Mở Luật chơi theo từng trang. Bấm mũi tên hoặc vuốt để lật trang.",
+            "あそびかたをページごとに表示します。矢印のタップやスワイプでページをめくれます。",
+            "Opens the rules page by page. Tap the arrows or swipe to turn pages.",
+          ]),
+          st("#guideRunBtn", "📖", ["Hướng dẫn từng nút", "ボタンの使い方", "Button guide"], [
+            "Xem hướng dẫn từng nút của màn hình bạn đang chơi. Mở từ trong game thì sẽ chỉ các nút của quầy nấu; ván chơi đang tạm dừng cho tới khi hướng dẫn xong.",
+            "いま遊んでいる画面のボタン説明を表示します。ゲーム中に開くと調理画面のボタンを説明し、終わるまでゲームは一時停止します。",
+            "Shows the button guide for the screen you are playing. Opened in-game it explains the kitchen buttons; the game stays paused until the guide ends.",
+          ]),
+          st("#guideToggleBtn", "🧭", ["Chế độ hướng dẫn", "ガイドモード", "Guide mode"], [
+            "BẬT: mỗi màn hình tự hướng dẫn từng nút một lần khi bạn mở nó. TẮT: chỉ hiện khi bạn bấm nút hướng dẫn. Mỗi lần bật lại, các hướng dẫn sẽ chạy lại từ đầu.",
+            "オン：各画面を開いたときに一度だけボタン説明が自動で始まります。オフ：ガイドボタンを押したときだけ表示。オンにし直すたびに最初から再生されます。",
+            "ON: each screen explains its buttons once, automatically, when you open it. OFF: only when you tap a guide button. Switching it on again replays every guide.",
+          ]),
+          st("#restartBtn", "🔄", ["Bắt đầu lại từ đầu", "最初からやり直す", "Restart from the beginning"], [
+            "Xóa toàn bộ tiến trình và quay về Ngày 1. Game sẽ hỏi xác nhận trước khi xóa.",
+            "進行データをすべて消して1日目に戻ります。消す前に確認が出ます。",
+            "Erases all progress and returns to Day 1. The game asks you to confirm first.",
+          ]),
+          st("#settingsModal .btn-close", "✖️", ["Nút Đóng", "閉じる", "Close"], [
+            "Đóng bảng Cài đặt. Nếu bạn mở từ trong game thì ván chơi tiếp tục.",
+            "設定を閉じます。ゲーム中に開いた場合は、ゲームが再開します。",
+            "Closes Settings. If you opened it during a game, play resumes.",
+          ]),
+        ];
+
+        CTX.rules = [
+          st("#rulesPrev", "◀️", ["Trang trước", "前のページ", "Previous page"], [
+            "Lật về trang luật trước. Bạn cũng có thể vuốt sang phải hoặc nhấn phím ←.",
+            "前のページに戻ります。右にスワイプ、または ← キーでも戻れます。",
+            "Goes back one page. You can also swipe right or press the ← key.",
+          ]),
+          st("#rulesNext", "▶️", ["Trang sau", "次のページ", "Next page"], [
+            "Lật sang trang luật kế tiếp. Bạn cũng có thể vuốt sang trái hoặc nhấn phím →.",
+            "次のページに進みます。左にスワイプ、または → キーでも進めます。",
+            "Goes to the next page. You can also swipe left or press the → key.",
+          ]),
+          st("#rulesDots", "⚪", ["Các chấm trang", "ページの点", "Page dots"], [
+            "Mỗi chấm là một trang. Chạm vào chấm để nhảy thẳng tới trang đó; chấm đỏ là trang đang xem.",
+            "点ひとつがページひとつです。タップするとそのページへ移動します。赤い点が現在のページです。",
+            "Each dot is a page. Tap a dot to jump straight to it; the red one is the current page.",
+          ]),
+          st("#rulesModal .btn-close", "✖️", ["Nút Đóng", "閉じる", "Close"], [
+            "Đóng Luật chơi và quay lại màn hình trước.",
+            "あそびかたを閉じて、前の画面に戻ります。",
+            "Closes the rules and returns to the previous screen.",
+          ]),
+        ];
+
+        CTX.intro = [
+          st("#introDay", "📅", ["Ngày hiện tại", "現在の日付", "Current day"], [
+            "Cho biết bạn đang ở ngày thứ mấy. Mỗi ngày kết thúc, game tự sang ngày kế tiếp.",
+            "いま何日目かを表示します。1日が終わると自動で次の日に進みます。",
+            "Shows which day you are on. When a day ends, the game moves on to the next one automatically.",
+          ]),
+          st("#introMoney", "💰", ["Tiền hiện có", "所持金", "Your money"], [
+            "Số tiền bạn có để đi chợ mua nguyên liệu. Tiền kiếm được từ khách sẽ cộng vào đây.",
+            "市場で材料を買うためのお金です。お客さんから得た売上がここに加算されます。",
+            "The money you can spend on ingredients at the market. Earnings from customers are added here.",
+          ]),
+          st("#introGo", "🛒", ["Nút Đi chợ", "市場へ行く", "Go to market"], [
+            "Vào chợ để mua nguyên liệu. Mỗi ngày bạn đều phải đi chợ trước khi mở quán.",
+            "市場に入って材料を買います。毎日、開店前に市場へ行く必要があります。",
+            "Enter the market to buy ingredients. You shop first every day before opening the shop.",
+          ]),
+          st("#introRevenue", "📊", ["Nút Doanh thu", "売上ボタン", "Revenue button"], [
+            "Xem báo cáo doanh thu theo tháng của những ngày đã chơi.",
+            "これまでに遊んだ日の月別売上レポートを見ます。",
+            "View the monthly revenue report for the days you have played.",
+          ]),
+        ];
+
+        CTX.rev = [
+          st("#revPrev", "◀️", ["Tháng trước", "前の月", "Previous month"], [
+            "Chuyển về tháng trước đó. Một tháng gồm 30 ngày chơi.",
+            "前の月に切り替えます。1か月は30プレイ日です。",
+            "Switches to the previous month. One month is 30 play days.",
+          ]),
+          st("#revMonth", "📅", ["Tháng đang xem", "表示中の月", "Month shown"], [
+            "Cho biết bạn đang xem tháng nào.",
+            "いま表示している月を示します。",
+            "Shows which month you are viewing.",
+          ]),
+          st("#revNext", "▶️", ["Tháng sau", "次の月", "Next month"], [
+            "Chuyển sang tháng kế tiếp.",
+            "次の月に切り替えます。",
+            "Switches to the next month.",
+          ]),
+          st("#revBody", "📋", ["Bảng từng ngày", "日ごとの表", "Daily table"], [
+            "Mỗi dòng là một ngày: Thu (doanh thu), Chi (đi chợ), Phạt (khách bỏ về), Thuê (mặt bằng) và Lãi. Cuối bảng có tổng doanh thu của tháng.",
+            "1行が1日分です。売上・支出（市場）・罰金（お客さんが帰った分）・家賃・利益が並び、最後に月の合計売上が出ます。",
+            "Each row is one day: income, market costs, penalties (customers who left), rent and profit. The monthly total is at the bottom.",
+          ]),
+          st("#revModal .btn-close", "✖️", ["Nút Đóng", "閉じる", "Close"], [
+            "Đóng báo cáo và quay lại màn hình trước đó.",
+            "レポートを閉じて、前の画面に戻ります。",
+            "Closes the report and returns to the previous screen.",
+          ]),
+        ];
+
+        CTX.market = [
+          st("#mBack", "◀️", ["Nút Quay lại", "戻るボタン", "Back button"], [
+            "Về màn hình đầu. Số lượng bạn đang chọn nhưng chưa mua sẽ bị bỏ.",
+            "タイトル画面に戻ります。選んだだけで買っていない分は破棄されます。",
+            "Returns to the title screen. Anything selected but not yet bought is discarded.",
+          ]),
+          st("#mGuideBtn", "❓", ["Nút Hướng dẫn", "ガイドボタン", "Guide button"], [
+            "Bấm bất cứ lúc nào ở màn hình chợ để xem lại hướng dẫn này.",
+            "市場画面でいつでもタップすると、この説明をもう一度見られます。",
+            "Tap any time on the market screen to replay this guide.",
+          ]),
+          st("#mRevBtn", "📊", ["Nút Doanh thu", "売上ボタン", "Revenue button"], [
+            "Xem báo cáo doanh thu theo tháng ngay trong chợ để tính xem nên mua bao nhiêu.",
+            "市場の中で月別売上レポートを開けます。どれだけ買うかの目安になります。",
+            "Open the monthly revenue report right in the market to help decide how much to buy.",
+          ]),
+          st("#mPriceBtn", "🏷️", ["Nút Giá bán", "販売価格ボタン", "Selling price button"], [
+            "Mở bảng giá bán: xem giá mua, lãi của từng món và chỉnh giá bán bằng nút − / +. Giá nước lẩu cố định.",
+            "販売価格表を開きます。材料ごとの仕入れ値と利益を確認し、− / + で販売価格を変えられます。スープの価格は固定です。",
+            "Opens the selling-price table: see each item’s buy price and profit, and change its selling price with − / +. The broth price is fixed.",
+          ]),
+          st("#mMoney", "💰", ["Tiền hiện có", "所持金", "Your money"], [
+            "Số tiền bạn đang có để mua nguyên liệu hôm nay.",
+            "今日の材料購入に使えるお金です。",
+            "The money you have to buy ingredients today.",
+          ]),
+          st(() => all("#mSlots .bhit:not(.locked)").find(vis), "🥩", ["Chạm vào nguyên liệu", "材料をタップ", "Tap an ingredient"], [
+            "Mỗi lần chạm vào ảnh nguyên liệu là chọn thêm 1 phần (chưa tốn tiền). Món có ổ khóa sẽ mở ở những ngày sau.",
+            "材料の画像をタップするたびに1個ずつ選択されます（まだお金はかかりません）。ロック中の材料は後の日に解放されます。",
+            "Each tap on an ingredient picture selects 1 more portion (no money spent yet). Locked items unlock on later days.",
+          ]),
+          st(() => all("#mSlots .ptag").find(vis), "🏷️", ["Giá mua", "仕入れ値", "Buy price"], [
+            "Giá mua của một phần nguyên liệu này. Cùng nhóm (thịt, hải sản, rau) thì cùng giá.",
+            "この材料1個の仕入れ値です。同じグループ（肉・海鮮・野菜）は同じ値段です。",
+            "The buy price of one portion. Items in the same group (meat, seafood, veg) cost the same.",
+          ]),
+          st(() => all("#mSlots .bstock").find(vis), "📦", ["Số lượng trong kho", "在庫数", "Stock owned"], [
+            "Số phần bạn đang có sẵn trong kho. Chỉ hiện khi bạn có ít nhất 1 phần.",
+            "すでに倉庫にある個数です。1個以上あるときだけ表示されます。",
+            "How many portions you already own. Only shown when you have at least 1.",
+          ], { opt: true }),
+          st(() => {
+            const c = all("#mSlots .mcard").find(vis);
+            return c && c.querySelector('[data-act="dec"]');
+          }, "➖", ["Nút −", "−ボタン", "Minus button"], [
+            "Bớt 1 phần đang chọn của món này. Mờ đi khi số lượng đang là 0.",
+            "このアイテムの選択数を1つ減らします。0のときは押せません。",
+            "Removes 1 selected portion of this item. It is disabled when the amount is 0.",
+          ]),
+          st(() => {
+            const c = all("#mSlots .mcard").find(vis);
+            return c && c.querySelector(".mq");
+          }, "🔢", ["Số lượng đang chọn", "選択中の数", "Selected amount"], [
+            "Số phần bạn đang chọn mua của món này. Tối đa 99.",
+            "このアイテムを買うために選んでいる個数です。最大99です。",
+            "How many portions of this item you have selected. The maximum is 99.",
+          ]),
+          st(() => {
+            const c = all("#mSlots .mcard").find(vis);
+            return c && c.querySelector('[data-act="inc"]');
+          }, "➕", ["Nút +", "＋ボタン", "Plus button"], [
+            "Thêm 1 phần. Nút xám nghĩa là không đủ tiền hoặc đã đạt tối đa. Tiền chỉ bị trừ khi bạn xác nhận Mở quán.",
+            "1個追加します。グレーのときはお金が足りないか上限です。お金は「開店」を確定したときに引かれます。",
+            "Adds 1 portion. A greyed-out button means not enough money or the maximum reached. Money is only spent when you confirm Open shop.",
+          ]),
+          st("#mCartTop", "🧺", ["Giỏ hàng (phía trên)", "かご（上）", "Cart (top)"], [
+            "Mở giỏ hàng để xem các món đang chọn, tổng tiền, tiền còn lại và kho hiện có. Số đỏ trên giỏ là tổng số phần đã chọn.",
+            "かごを開いて、選択中の材料・合計金額・残りのお金・倉庫の在庫を確認します。赤い数字は選択した個数の合計です。",
+            "Opens the cart: selected items, total, money left and your stock. The red number is the total portions selected.",
+          ]),
+          st("#mCartBottom", "🧺", ["Giỏ hàng (phía dưới)", "かご（下）", "Cart (bottom)"], [
+            "Cùng chức năng với giỏ hàng phía trên, tiện bấm khi bạn đang ở cuối màn hình.",
+            "上のかごと同じ機能です。画面の下のほうにいるときに便利です。",
+            "Same as the top cart, handy when you are near the bottom of the screen.",
+          ]),
+          st("#mSum", "🧮", ["Tổng tiền đang chọn", "選択中の合計", "Selected total"], [
+            "Tổng tiền của tất cả nguyên liệu đang chọn. Luôn kiểm tra con số này không vượt quá tiền hiện có.",
+            "選択中の材料の合計金額です。所持金を超えないように確認しましょう。",
+            "The total cost of everything selected. Make sure it does not exceed your money.",
+          ]),
+          st("#mCheckout", "✅", ["Nút Hoàn tất", "会計ボタン", "Checkout button"], [
+            "Mở bảng Tổng kết đi chợ. Ở đó bạn chọn “Mua thêm” để quay lại hoặc “Mở quán” để trả tiền và bắt đầu ngày mới. Chưa chọn gì thì game sẽ nhắc bạn.",
+            "買い物のまとめを開きます。「もっと買う」で戻るか、「開店」で支払って1日を始めます。何も選んでいないと案内が出ます。",
+            "Opens the market summary. Choose “Keep shopping” to go back or “Open shop” to pay and start the day. If nothing is selected, the game reminds you.",
+          ]),
+        ];
+
+        CTX.cart = [
+          st("#cartList", "🧺", ["Nội dung giỏ hàng", "かごの中身", "Cart contents"], [
+            "Danh sách món đang chọn kèm số lượng và giá, bên dưới là tổng tiền và tiền còn lại, rồi đến kho nguyên liệu bạn đang có. Muốn sửa số lượng, đóng bảng và dùng nút − / + ở chợ.",
+            "選択中の材料と個数・金額、その下に合計と残りのお金、さらに倉庫の在庫が並びます。個数を変えるには閉じて、市場の − / ＋ を使います。",
+            "Lists selected items with amounts and prices, then the total and money left, then your stock. To change amounts, close this and use − / + in the market.",
+          ]),
+          st("#cartModal .btn-close", "✖️", ["Nút Đóng", "閉じる", "Close"], [
+            "Đóng giỏ hàng và quay lại chợ.",
+            "かごを閉じて市場に戻ります。",
+            "Closes the cart and returns to the market.",
+          ]),
+        ];
+
+        CTX.price = [
+          st("#priceList", "🏷️", ["Bảng giá bán", "販売価格表", "Selling price table"], [
+            "Dòng đầu là nước lẩu (giá cố định). Các dòng sau là nguyên liệu đã mở khóa, mỗi dòng ghi giá mua, lãi và % lãi.",
+            "最初の行はスープ（固定価格）。続く行は解放済みの材料で、仕入れ値・利益・利益率が表示されます。",
+            "The first row is the broth (fixed price). The rest are unlocked ingredients with buy price, profit and profit %.",
+          ]),
+          st(() => {
+            const b = all('#priceList [data-d="-1"]').find(vis);
+            return b;
+          }, "➖", ["Nút − (giảm giá bán)", "−（値下げ）", "Minus (lower price)"], [
+            "Giảm giá bán của món này một bước. Giá thấp hơn thì khách trả ít hơn nhưng lãi cũng giảm; nếu thấp hơn giá mua bạn sẽ lỗ.",
+            "この材料の販売価格を1段階下げます。安くするとお客さんの支払いも減ります。仕入れ値より安いと赤字です。",
+            "Lowers this item’s selling price one step. Customers pay less, and below the buy price you lose money.",
+          ]),
+          st(() => all('#priceList [data-d="1"]').find(vis), "➕", ["Nút + (tăng giá bán)", "＋（値上げ）", "Plus (raise price)"], [
+            "Tăng giá bán của món này một bước. Giá mới được lưu và áp dụng cho các đơn hàng sau.",
+            "この材料の販売価格を1段階上げます。新しい価格は保存され、以降の注文に反映されます。",
+            "Raises this item’s selling price one step. The new price is saved and used for later orders.",
+          ]),
+          st("#priceModal .btn-close", "✖️", ["Nút Đóng", "閉じる", "Close"], [
+            "Đóng bảng giá bán và quay lại chợ.",
+            "価格表を閉じて市場に戻ります。",
+            "Closes the price table and returns to the market.",
+          ]),
+        ];
+
+        CTX.ck = [
+          st("#ckText", "🧾", ["Tổng kết đi chợ", "買い物のまとめ", "Market summary"], [
+            "Xem lại món sẽ mua, tổng tiền, tiền còn lại và kho nguyên liệu. Tiền chưa bị trừ cho tới khi bạn bấm “Mở quán”.",
+            "買う材料、合計金額、残りのお金、在庫を確認します。「開店」を押すまでお金は引かれません。",
+            "Review what you will buy, the total, money left and your stock. No money is spent until you press “Open shop”.",
+          ]),
+          st("#ckModal .btn-sub", "🛒", ["Nút Mua thêm", "もっと買う", "Keep shopping"], [
+            "Quay lại chợ để chọn thêm hoặc sửa số lượng.",
+            "市場に戻って、追加で選んだり個数を直したりします。",
+            "Goes back to the market to add more or change amounts.",
+          ]),
+          st("#ckGo", "🏮", ["Nút Mở quán", "開店", "Open shop"], [
+            "Trả tiền cho các món đã chọn rồi mở quán. Hiện bảng “Ngày N”, sau đó khách bắt đầu đến. Không đủ tiền thì game báo và không mở quán.",
+            "選んだ材料の代金を払って開店します。「◯日目」の表示のあと、お客さんが来ます。お金が足りないときは開店できません。",
+            "Pays for the selected items and opens the shop. A “Day N” banner appears, then customers arrive. If you cannot afford it, the shop does not open.",
+          ]),
+        ];
+
+        CTX.game = [
+          st("#sDay", "📅", ["Ngày", "日付", "Day"], [
+            "Cho biết bạn đang chơi ngày thứ mấy.",
+            "いま何日目かを表示します。",
+            "Shows which day you are playing.",
+          ]),
+          st("#sMoney", "💰", ["Tiền kiếm hôm nay", "今日の稼ぎ", "Today’s earnings"], [
+            "Số tiền kiếm được trong ngày hôm nay, bắt đầu từ 0. Phục vụ đúng thì tăng, khách bỏ về thì bị trừ phạt.",
+            "今日の稼ぎです。0から始まり、正しく提供すると増え、お客さんが帰ると罰金で減ります。",
+            "Your earnings today, starting from 0. It rises when you serve correctly and drops when a customer leaves.",
+          ]),
+          st("#sCust", "🕐", ["Đồng hồ quán", "お店の時計", "Shop clock"], [
+            "Giờ trong quán chạy từ 11:00 tới 22:00. Hết giờ quán tự đóng cửa và hiện báo cáo cuối ngày.",
+            "お店の時間は11:00から22:00まで進みます。時間になると自動で閉店し、1日のレポートが出ます。",
+            "Shop time runs from 11:00 to 22:00. When it ends the shop closes and the end-of-day report appears.",
+          ]),
+          st("#pauseBtn", "⏸️", ["Nút Tạm dừng", "一時停止", "Pause button"], [
+            "Dừng đồng hồ và thanh kiên nhẫn. Trong bảng tạm dừng bạn có thể chơi tiếp hoặc đóng cửa sớm. Phím Esc cũng tạm dừng.",
+            "時計と我慢ゲージを止めます。一時停止の画面で再開か早めの閉店を選べます。Escキーでも一時停止できます。",
+            "Stops the clock and the patience bar. In the pause panel you can resume or close early. The Esc key also pauses.",
+          ]),
+          st("#gameGearBtn", "⚙️", ["Nút Cài đặt trong game", "ゲーム内の設定", "In-game settings"], [
+            "Mở Cài đặt và tự tạm dừng ván chơi. Đóng bảng thì chơi tiếp. Từ đây bạn cũng xem lại được hướng dẫn này.",
+            "設定を開き、ゲームを自動で一時停止します。閉じると再開します。ここからこのガイドをもう一度見られます。",
+            "Opens Settings and pauses the game automatically. Closing it resumes play. You can replay this guide from there.",
+          ]),
+          st(".customer .timebar", "⏳", ["Thanh kiên nhẫn", "我慢ゲージ", "Patience bar"], [
+            "Xanh là khách còn kiên nhẫn, đỏ là sắp hết. Hết thanh khách giận bỏ về và bạn bị phạt. Phục vụ sai sẽ bị trừ 3 giây.",
+            "緑はまだ待てる状態、赤はもうすぐ限界です。なくなるとお客さんは怒って帰り、罰金になります。間違えると3秒減ります。",
+            "Green means the customer is patient, red means almost out. When it empties they leave angrily and you are fined. A wrong serve costs 3 seconds.",
+          ]),
+          st(".bubble", "💬", ["Đơn của khách", "お客さんの注文", "Customer order"], [
+            "Ghi loại mì, nước lẩu và các nguyên liệu khách muốn. Bạn phải làm đúng và đủ mọi thứ trong đơn.",
+            "麺・スープ・具材が書かれています。注文の内容をすべて、過不足なく用意します。",
+            "Lists the noodle, broth and ingredients the customer wants. You must prepare exactly what is ordered.",
+          ]),
+          st(U("#broths [data-b]"), "🍲", ["Bốn nước lẩu", "4つのスープ", "The four broths"], [
+            "Bấm một nồi để chọn nước lẩu khớp đơn. Đã chọn thì bị khóa, muốn đổi phải bấm “Làm lại”.",
+            "注文に合うスープの鍋をタップして選びます。一度選ぶとロックされ、変えるには「やり直す」を押します。",
+            "Tap a pot to choose the broth that matches the order. Once chosen it locks; press “Redo” to change it.",
+          ]),
+          st(U("#noodles [data-n]"), "🍜", ["Ramen và Udon", "ラーメンとうどん", "Ramen and udon"], [
+            "Khách bắt buộc gọi một trong hai loại mì. Bấm để chọn; bấm loại còn lại thì đổi luôn.",
+            "お客さんは必ずどちらかの麺を注文します。タップして選び、もう一方をタップすると切り替わります。",
+            "Every customer orders one of the two noodles. Tap to choose; tapping the other swaps it.",
+          ]),
+          st(U("#ingredients [data-f]"), "🥬", ["Khay nguyên liệu", "具材トレイ", "Ingredient trays"], [
+            "Bấm từng nguyên liệu khách yêu cầu để thả vào nồi. Đã chọn rồi thì không bỏ ra được, chọn nhầm thì bấm “Làm lại”.",
+            "注文された具材を1つずつタップして鍋に入れます。入れたものは取り消せないので、間違えたら「やり直す」を押します。",
+            "Tap each ingredient the customer asked for to put it in the pot. You cannot remove one, so if you slip, press “Redo”.",
+          ]),
+          st(() => all("#ingredients .stock").find(vis), "📦", ["Số lượng còn lại", "残りの個数", "Amount left"], [
+            "Dạng ×N là số phần còn trong kho. Mỗi khách phục vụ đúng sẽ dùng 1 phần mỗi nguyên liệu. Số 0 thì không chọn được nữa.",
+            "×N は倉庫に残っている個数です。正しく提供するたびに、使った具材が1個ずつ減ります。0のときは選べません。",
+            "×N is how many portions are left. Each correct serve uses 1 portion of every ingredient in the order. At 0 you cannot pick it.",
+          ], { opt: true }),
+          st("#stovePot", "🔥", ["Nồi trên bếp", "コンロの鍋", "Pot on the stove"], [
+            "Khi bạn chọn, nồi đặt trên bếp ở phía dưới màn hình sẽ hiện nước lẩu, mì và nguyên liệu bạn đã chọn. Nhìn vào đây để đối chiếu với đơn của khách.",
+            "選ぶと、画面下のコンロの鍋に、選んだスープ・麺・具材が表示されます。お客さんの注文と見比べましょう。",
+            "As you pick, the pot on the stove near the bottom of the screen shows your broth, noodles and ingredients. Compare it with the customer’s order.",
+          ]),
+          st("#redoBtn", "↩️", ["Nút Làm lại", "やり直すボタン", "Redo button"], [
+            "Xóa hết lựa chọn của khách hiện tại (nước lẩu, mì, nguyên liệu) để chọn lại từ đầu. Thanh kiên nhẫn vẫn chạy.",
+            "いまのお客さんへの選択（スープ・麺・具材）をすべて消して、最初から選び直します。我慢ゲージは進み続けます。",
+            "Clears everything chosen for the current customer so you can start over. The patience bar keeps running.",
+          ]),
+          st("#serveBtn", "🛎️", ["Nút Phục vụ", "提供ボタン", "Serve button"], [
+            "Giao nồi lẩu cho khách. Đúng đơn thì chuyển sang bước thu tiền; sai thì mất 3 giây kiên nhẫn. Chưa chọn nước lẩu hoặc mì thì game nhắc bạn chọn.",
+            "お客さんに鍋を出します。注文どおりなら会計に進み、違うと我慢ゲージが3秒減ります。スープや麺が未選択なら案内が出ます。",
+            "Hands the pot to the customer. If it matches the order you move on to payment; if not you lose 3 seconds. If broth or noodles are missing, the game reminds you.",
+          ]),
+        ];
+
+        CTX.pause = [
+          st("#resumeBtn", "▶️", ["Nút Tiếp tục", "再開ボタン", "Resume button"], [
+            "Chơi tiếp từ chỗ đang dừng. Đồng hồ và thanh kiên nhẫn chạy lại, không mất thời gian đã dừng.",
+            "止めたところから再開します。時計と我慢ゲージが再び動き、止めていた時間は消費されません。",
+            "Carries on from where you stopped. The clock and patience bar restart, and paused time is not counted.",
+          ]),
+          st("#closeEarlyBtn", "🚪", ["Nút Đóng cửa sớm", "早めに閉店", "Close early"], [
+            "Kết thúc ngày chơi ngay và xem báo cáo cuối ngày, dù chưa tới 22:00.",
+            "22:00前でもその日を終了して、1日のレポートを表示します。",
+            "Ends the day right away and shows the end-of-day report, even before 22:00.",
+          ]),
+        ];
+
+        CTX.payCash = [
+          st(".payment-total", "🧾", ["Tổng hóa đơn", "お会計金額", "Order total"], [
+            "Số tiền khách phải trả: nước lẩu cộng giá bán của từng nguyên liệu trong đơn.",
+            "お客さんが払う金額です。スープ代と、注文した具材の販売価格の合計です。",
+            "What the customer owes: the broth plus the selling price of each ingredient in the order.",
+          ]),
+          st(".pay-recv", "💴", ["Khách đưa", "お客さんのお支払い", "Customer pays"], [
+            "Số tiền khách đưa ra, thường lớn hơn hóa đơn. Phần dư chính là tiền thối bạn phải trả lại.",
+            "お客さんが出した金額です。会計金額より多く、その差額がお釣りになります。",
+            "The amount handed over, usually more than the bill. The difference is the change you owe.",
+          ]),
+          st(".pay-chg", "🪙", ["Tiền thối", "お釣り", "Change"], [
+            "Bên trái là số tiền bạn đã ghép, bên phải là số tiền thối cần trả. Hai số phải bằng nhau mới xong.",
+            "左がいま選んだお釣りの合計、右が渡すべきお釣りです。2つが同じ金額になれば完了です。",
+            "Left is the change you have picked, right is the change due. The two must match to finish.",
+          ]),
+          st("#paymentDenominations", "💵", ["Khay tiền trong két", "レジの紙幣・硬貨", "Cash drawer"], [
+            "Bấm tờ hoặc đồng xu để thêm vào tiền thối. Số nhỏ trên mỗi ô là số tờ còn trong két. Ô sẽ không nhận nếu vượt quá tiền thối hoặc két hết loại đó.",
+            "紙幣や硬貨をタップしてお釣りに加えます。各マスの小さな数字はレジに残っている枚数です。お釣りを超える場合や在庫がない場合は追加できません。",
+            "Tap a note or coin to add it to the change. The small number is how many are left in the drawer. It will not add if it exceeds the change or none are left.",
+          ]),
+          st(".drawer-bar", "🗄️", ["Trong két", "レジの中身", "In drawer"], [
+            "Tổng tiền đang có trong két và mức tăng giảm sau mỗi lần ghép tiền thối.",
+            "レジにある合計金額と、お釣りを選ぶたびの増減を表示します。",
+            "Shows the total cash in the drawer and how it changes as you pick change.",
+          ]),
+          st("#clearChangeBtn", "↩️", ["Nút Xóa lựa chọn", "選び直す", "Clear selection"], [
+            "Bỏ hết các tờ/xu đã ghép để ghép lại từ đầu khi bạn chọn sai.",
+            "選んだ紙幣・硬貨をすべて外して、最初から選び直します。",
+            "Removes every note and coin you picked so you can start again after a mistake.",
+          ]),
+          st("#cashConfirmBtn", "✅", ["Nút Xác nhận tiền thối", "お釣りを渡す", "Give exact change"], [
+            "Đưa tiền thối cho khách khi đã ghép đúng số tiền. Nếu sai số, game báo lỗi và bạn ghép lại. Xong bước này bạn nhận tiền và khách tiếp theo đến.",
+            "金額が合ったらお釣りを渡します。違っているとエラーが出るので選び直します。完了すると売上が入り、次のお客さんが来ます。",
+            "Hands over the change once the amount is exact. If it is off, the game shows an error and you re-pick. After this you get paid and the next customer arrives.",
+          ]),
+        ];
+
+        CTX.payQr = [
+          st(".payment-total", "🧾", ["Tổng hóa đơn", "お会計金額", "Order total"], [
+            "Số tiền khách phải trả cho đơn này.",
+            "このご注文でお客さんが払う金額です。",
+            "What the customer owes for this order.",
+          ]),
+          st(".payment-qr", "📱", ["Mã QR của khách", "お客さんのQRコード", "Customer’s QR code"], [
+            "Khách thanh toán bằng QR nên không cần thối tiền. Mã này là mã để quét nhận tiền.",
+            "QR決済なのでお釣りはありません。このコードを読み取って入金を受け取ります。",
+            "The customer pays by QR, so no change is needed. This is the code you scan to receive payment.",
+          ]),
+          st(".payment-hint", "💬", ["Lời nhắc", "ヒント", "Hint"], [
+            "Nhắc bạn quét mã QR của khách rồi xác nhận đã nhận tiền.",
+            "お客さんのQRコードを読み取ってから、入金を確認するよう案内しています。",
+            "Reminds you to scan the customer’s QR and then confirm you received the money.",
+          ]),
+          st("#qrConfirmBtn", "✅", ["Nút Đã quét QR", "スキャン完了ボタン", "QR scanned button"], [
+            "Bấm sau khi quét xong để nhận tiền. Doanh thu được cộng ngay và khách tiếp theo đến.",
+            "スキャンが終わったら押して入金を確認します。売上がすぐに加算され、次のお客さんが来ます。",
+            "Press after scanning to confirm payment. Your earnings are added right away and the next customer arrives.",
+          ]),
+        ];
+
+        CTX.day = [
+          st("#dayTxt", "📋", ["Báo cáo cuối ngày", "1日のレポート", "End-of-day report"], [
+            "Tóm tắt ngày vừa chơi: số khách phục vụ đúng, doanh thu, chi phí đi chợ, tiền phạt, tiền thuê mặt bằng, tiền mua ramen và udon, lợi nhuận và số tiền hiện có.",
+            "その日のまとめです。正しく提供した数、売上、市場の費用、罰金、家賃、ラーメンとうどんの代金、利益、所持金が表示されます。",
+            "A summary of the day: correct serves, income, market cost, penalties, rent, ramen and udon cost, profit and your money now.",
+          ]),
+          st("#dayRevenueBtn", "📊", ["Nút Doanh thu", "売上ボタン", "Revenue button"], [
+            "Xem báo cáo doanh thu theo tháng; đóng lại thì quay về bảng này.",
+            "月別売上レポートを開きます。閉じるとこの画面に戻ります。",
+            "Opens the monthly revenue report; closing it returns you here.",
+          ]),
+          st("#nextBtn", "➡️", ["Nút Ngày tiếp theo", "次の日へ", "Next day"], [
+            "Sang ngày mới và đi chợ. Tiến trình đã được lưu tự động.",
+            "次の日に進んで市場へ行きます。進行状況は自動で保存されています。",
+            "Moves on to the next day and the market. Your progress is saved automatically.",
+          ]),
+        ];
+
+        /* ---------- Giao diện hướng dẫn ---------- */
+        const layer = document.createElement("div");
+        layer.className = "tour-layer";
+        layer.hidden = true;
+        layer.innerHTML =
+          '<div class="tour-hole none"></div>' +
+          '<div class="tour-tip" role="dialog" aria-live="polite">' +
+          '<div class="tour-top"><span class="tour-step"></span><button type="button" class="tour-skip"></button></div>' +
+          '<h3 class="tour-title"><span class="tour-ic"></span><span class="tour-ti"></span></h3>' +
+          '<p class="tour-body"></p>' +
+          '<button type="button" class="tour-act" hidden></button>' +
+          '<div class="tour-bar"><button type="button" class="tour-btn prev"></button>' +
+          '<div class="tour-prog"><i></i></div>' +
+          '<button type="button" class="tour-btn next"></button></div></div>';
+        document.body.appendChild(layer);
+        const hole = layer.querySelector(".tour-hole");
+        const tip = layer.querySelector(".tour-tip");
+        const $s = (c) => layer.querySelector(c);
+
+        let active = null;
+        let loopT = null;
+
+        function resolve(t) {
+          if (!t) return [];
+          let r = typeof t === "function" ? t() : t;
+          if (typeof r === "string") {
+            const f = all(r).find(vis);
+            return f ? [f] : [];
+          }
+          if (!r) return [];
+          if (r instanceof Element) return vis(r) ? [r] : [];
+          return [...r].filter(vis);
+        }
+        function unionRect(els) {
+          let l = 1e9,
+            t = 1e9,
+            r = -1e9,
+            b = -1e9;
+          els.forEach((e) => {
+            const x = e.getBoundingClientRect();
+            l = Math.min(l, x.left);
+            t = Math.min(t, x.top);
+            r = Math.max(r, x.right);
+            b = Math.max(b, x.bottom);
+          });
+          return {
+            left: l - PAD,
+            top: t - PAD,
+            right: r + PAD,
+            bottom: b + PAD,
+            width: r - l + PAD * 2,
+            height: b - t + PAD * 2,
+          };
+        }
+        const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+        function layout() {
+          if (!active) return;
+          const s = active.steps[active.i];
+          const els = resolve(s.t);
+          const vw = window.innerWidth,
+            vh = window.innerHeight,
+            m = 10;
+          const tw = tip.offsetWidth,
+            th = tip.offsetHeight;
+          let top, left;
+          if (els.length) {
+            const r = unionRect(els);
+            hole.classList.remove("none");
+            hole.style.left = r.left + "px";
+            hole.style.top = r.top + "px";
+            hole.style.width = r.width + "px";
+            hole.style.height = r.height + "px";
+            const below = vh - r.bottom,
+              above = r.top;
+            if (below >= th + 16 + m) top = r.bottom + 12;
+            else if (above >= th + 16 + m) top = r.top - th - 12;
+            else top = below >= above ? vh - th - m : m;
+            left = r.left + r.width / 2 - tw / 2;
+          } else {
+            hole.classList.add("none");
+            hole.style.left = "50%";
+            hole.style.top = "40%";
+            hole.style.width = "0px";
+            hole.style.height = "0px";
+            top = (vh - th) / 2;
+            left = (vw - tw) / 2;
+          }
+          tip.style.left = clamp(left, m, Math.max(m, vw - tw - m)) + "px";
+          tip.style.top = clamp(top, m, Math.max(m, vh - th - m)) + "px";
+        }
+
+        function render(snap) {
+          const a = active;
+          const s = a.steps[a.i];
+          const n = a.steps.length;
+          $s(".tour-step").textContent = pick(UI.step) + " " + (a.i + 1) + "/" + n;
+          $s(".tour-skip").textContent = pick(UI.skip);
+          $s(".tour-ic").textContent = s.ic;
+          $s(".tour-ti").textContent = pick(s.ti);
+          $s(".tour-body").textContent = pick(s.b);
+          $s(".tour-prog i").style.width = ((a.i + 1) / n) * 100 + "%";
+          const prev = $s(".tour-btn.prev"),
+            next = $s(".tour-btn.next");
+          prev.textContent = pick(UI.prev);
+          prev.disabled = a.i === 0;
+          next.textContent = pick(a.i === n - 1 ? UI.done : UI.next);
+          const act = $s(".tour-act");
+          if (s.act) {
+            const o = s.act();
+            act.textContent = o.label;
+            act.hidden = false;
+            act.onclick = () => {
+              o.fn();
+              render(false);
+            };
+          } else {
+            act.hidden = true;
+            act.onclick = null;
+          }
+          const first = resolve(s.t)[0];
+          if (first) {
+            try {
+              first.scrollIntoView({ block: "nearest", inline: "nearest" });
+            } catch (e) {}
+          }
+          if (snap) {
+            hole.classList.add("snap");
+            tip.classList.add("snap");
+          }
+          layout();
+          if (snap) {
+            void tip.offsetWidth;
+            hole.classList.remove("snap");
+            tip.classList.remove("snap");
+          }
+        }
+
+        function go(dir) {
+          if (!active) return;
+          const j = active.i + dir;
+          if (j >= active.steps.length) return end(false);
+          if (j < 0) return;
+          active.i = j;
+          render(false);
+        }
+
+        function end() {
+          if (!active) return;
+          const a = active;
+          active = null;
+          clearInterval(loopT);
+          layer.hidden = true;
+          markSeen(a.ctx);
+          if (a.tourPaused && typeof paused !== "undefined" && paused) resumeGame();
+          if (a.opts.fromSettings && typeof gearPaused !== "undefined" && gearPaused) {
+            gearPaused = false;
+            resumeGame();
+          }
+          schedule();
+        }
+
+        function run(ctx, opts) {
+          opts = opts || {};
+          const def = CTX[ctx];
+          if (!def || active) return false;
+          const steps = def.filter((s) => !s.opt || resolve(s.t).length);
+          if (!steps.length) return false;
+          active = { ctx, steps, i: 0, opts, tourPaused: false };
+          if (ctx === "game" && typeof clockRunning !== "undefined" && clockRunning && !paused) {
+            pauseGame(false);
+            active.tourPaused = paused;
+          }
+          layer.hidden = false;
+          render(true);
+          clearInterval(loopT);
+          loopT = setInterval(layout, 200);
+          return true;
+        }
+
+        $s(".tour-btn.prev").onclick = () => go(-1);
+        $s(".tour-btn.next").onclick = () => go(1);
+        $s(".tour-skip").onclick = () => end();
+        window.addEventListener("resize", layout);
+        window.addEventListener(
+          "keydown",
+          (e) => {
+            if (!active) return;
+            if (e.key === "Escape") end();
+            else if (e.key === "ArrowRight") go(1);
+            else if (e.key === "ArrowLeft") go(-1);
+            else return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          },
+          true,
+        );
+
+        /* ---------- Biết đang ở màn hình nào ---------- */
+        const shown = (id) => {
+          const e = byId(id);
+          return !!e && !e.classList.contains("hide");
+        };
+        function ctxNow(skipSettings) {
+          if (shown("paymentModal")) return byId("qrPayment").hidden ? "payCash" : "payQr";
+          if (shown("dayModal")) return "day";
+          if (shown("pauseModal")) return "pause";
+          if (shown("confirmModal")) return null;
+          if (shown("ckModal")) return "ck";
+          if (shown("cartModal")) return "cart";
+          if (shown("priceModal")) return "price";
+          if (shown("revModal")) return "rev";
+          if (shown("rulesModal")) return "rules";
+          if (!skipSettings && shown("settingsModal")) return "settings";
+          if (shown("noteModal") || shown("infoModal") || shown("dayBanner")) return null;
+          if (shown("introModal")) return "intro";
+          if (!byId("market").classList.contains("hide")) return "market";
+          if (shown("startScreen")) return "start";
+          return "game";
+        }
+
+        /* ---------- Tự chạy khi bật Chế độ hướng dẫn ---------- */
+        let autoT = null;
+        function schedule() {
+          clearTimeout(autoT);
+          if (!modeOn()) return;
+          autoT = setTimeout(() => {
+            if (!modeOn() || active) return;
+            let c = ctxNow();
+            if (!c || c === "settings" || seenMap()[c]) return;
+            if (c === "game") {
+              // chờ khách bước vào và hiện đơn rồi mới hướng dẫn
+              autoT = setTimeout(() => {
+                if (!modeOn() || active) return;
+                if (ctxNow() === "game" && typeof clockRunning !== "undefined" && clockRunning && !paused && !seenMap().game) {
+                  run("game", { auto: true });
+                }
+              }, 1100);
+              return;
+            }
+            run(c, { auto: true });
+          }, 450);
+        }
+        const mo = new MutationObserver(schedule);
+        all(".modal, .market, .start-screen").forEach((e) =>
+          mo.observe(e, { attributes: true, attributeFilter: ["class"] }),
+        );
+
+        /* ---------- Bật / tắt chế độ ---------- */
+        function setMode(on) {
+          store.set(LS_MODE, on ? "1" : "0");
+          if (on) store.set(LS_SEEN, "{}"); // bật lại thì các hướng dẫn chạy lại từ đầu
+          labels();
+          schedule();
+        }
+
+        /* ---------- Thêm các nút vào giao diện ---------- */
+        const gbtn = document.createElement("button");
+        gbtn.id = "guideBtn";
+        gbtn.className = "icon-btn gear-icon-btn lang-icon-btn";
+        gbtn.type = "button";
+        gbtn.innerHTML = '<span aria-hidden="true">?</span>';
+        byId("noteBtn").after(gbtn);
+        gbtn.onclick = () => {
+          const c = ctxNow();
+          if (c) run(c, {});
+        };
+
+        const mbtn = document.createElement("button");
+        mbtn.id = "mGuideBtn";
+        mbtn.className = "m-back";
+        mbtn.type = "button";
+        mbtn.innerHTML = '<span aria-hidden="true">?</span>';
+        byId("mgame").appendChild(mbtn);
+        place(mbtn, 110, 38, 52, 52);
+        mbtn.onclick = () => {
+          if (!active) run("market", {});
+        };
+
+        const runBtn = document.createElement("button");
+        runBtn.id = "guideRunBtn";
+        runBtn.className = "btn btn-sub";
+        runBtn.type = "button";
+        const toggleBtn = document.createElement("button");
+        toggleBtn.id = "guideToggleBtn";
+        toggleBtn.className = "btn btn-sub";
+        toggleBtn.type = "button";
+        byId("rulesBtn").after(runBtn, toggleBtn);
+        runBtn.onclick = () => {
+          const c = ctxNow(true);
+          closeModal("settingsModal");
+          if (!c || !run(c, { fromSettings: true })) {
+            // không có gì để hướng dẫn: đóng Cài đặt như bình thường
+            if (typeof gearPaused !== "undefined" && gearPaused) {
+              gearPaused = false;
+              resumeGame();
+            }
+          }
+        };
+        toggleBtn.onclick = () => setMode(!modeOn());
+
+        function labels() {
+          const t = pick(UI.guideTitle);
+          gbtn.title = t;
+          gbtn.setAttribute("aria-label", t);
+          mbtn.title = t;
+          mbtn.setAttribute("aria-label", t);
+          runBtn.textContent = pick(UI.run);
+          toggleBtn.textContent = modeLabel(modeOn());
+          toggleBtn.classList.toggle("on", modeOn());
+          if (active) render(false);
+        }
+        new MutationObserver(labels).observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ["lang"],
+        });
+        labels();
+        schedule(); // lần tải trang đầu tiên (nếu đã bật chế độ hướng dẫn)
+      })();
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
     <script src="supabase.js"></script>
