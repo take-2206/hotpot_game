@@ -3148,7 +3148,7 @@
         </button>
       </div>
     </div>
-
+<!-- bí quyết -->
     <div class="modal hide" id="noteModal">
       <div class="panel note-panel">
         <img class="note-image" src="img/note.png" alt="" />
@@ -3193,6 +3193,7 @@
       </div>
     </div>
 
+<!-- cài đặt -->
     <div class="modal hide" id="settingsModal">
       <div class="panel">
         <h2 data-i="settings"></h2>
@@ -3212,7 +3213,7 @@
         </button>
       </div>
     </div>
-
+<!-- luật chơi  -->
     <div class="modal hide" id="rulesModal">
       <div class="panel rules-panel">
         <div class="rules-head">
@@ -3245,6 +3246,7 @@
       </div>
     </div>
 
+<!-- bảng “Bắt đầu lại” (restart) -->
     <div class="modal hide" id="confirmModal">
       <div class="panel">
         <h2 data-i="restart"></h2>
@@ -3260,6 +3262,7 @@
       </div>
     </div>
 
+    <!-- pause -->
     <div class="modal hide" id="pauseModal">
       <div class="panel">
         <h2 data-i="pause"></h2>
@@ -3285,6 +3288,7 @@
       </div>
     </div>
 
+    <!-- thanh toán -->
     <div class="modal hide" id="paymentModal">
       <div class="panel payment-panel">
         <h2 data-i="payTitle"></h2>
@@ -3393,28 +3397,28 @@
         {
           key: "cay",
           img: "img/broth_cay.png",
-          pot: "img/pot_cay.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
+          pot: "img/pot_cay.png",
           emoji: "🌶️",
           name: { vi: "Cay", ja: "辛口", en: "Spicy" },
         },
         {
           key: "sieu_cay",
           img: "img/broth_sieu_cay.png",
-          pot: "img/pot_sieu_cay.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
+          pot: "img/pot_sieu_cay.png", 
           emoji: "🍜",
           name: { vi: "siêu cay", ja: "超辛口", en: "Super Spicy" },
         },
         {
           key: "ca_chua",
           img: "img/broth_ca_chua.png",
-          pot: "img/pot_ca_chua.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
+          pot: "img/pot_ca_chua.png", 
           emoji: "🍅",
           name: { vi: "Cà chua", ja: "トマト", en: "Tomato" },
         },
         {
           key: "thanh_dam",
           img: "img/broth_collagen.png",
-          pot: "img/pot_collagen.png", // ảnh tô/nồi hiện trên bếp khi chọn (khác ảnh ở quầy)
+          pot: "img/pot_collagen.png", 
           emoji: "🥣",
           name: { vi: "Collagen", ja: "コラーゲン", en: "Collagen" },
         },
@@ -3445,6 +3449,8 @@
             : SELL_PRICE[it.group];
       const orderPrice = (idxSet) =>
         BROTH_PRICE + [...idxSet].reduce((s, i) => s + sellOf(ITEMS[i]), 0); // khách trả = nước lẩu + giá từng nguyên liệu
+
+        // nguyên liệu
       const CATALOG = [
         {
           id: "beef",

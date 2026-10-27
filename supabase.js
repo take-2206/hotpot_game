@@ -12,7 +12,7 @@
   /* Đặt true SAU KHI đã thêm 2 cột history + prices vào bảng game_saves (SQL trong chat).
      Khi true: báo cáo doanh thu theo ngày và giá bán tự chỉnh cũng được lưu lên cloud. */
   const CLOUD_EXTRA = false;
-  const CURRENCY_SCALE = 100;
+  const CURRENCY_SCALE = 1;
   const toCloudAmount = (amount) =>
     Math.round((Number(amount) || 0) / CURRENCY_SCALE);
   const fromCloudAmount = (amount) =>
